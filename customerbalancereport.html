@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Balance Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= PROFESSIONAL REPORT STYLES ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+      gap: 10px;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 8px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(225, 29, 72, 0.25);
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #ffe4e6;
+      border-color: #fb7185;
+      color: #be123c;
+    }
+
+    /* KPI Summary Cards */
+    .pr-kpi-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pr-kpi-val.rose {
+      color: #e11d48;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    .pr-kpi-val.blue {
+      color: #2563eb;
+    }
+
+    .pr-kpi-val.indigo {
+      color: #4f46e5;
+    }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: none;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      animation: slideDown 0.2s ease-out;
+      flex-shrink: 0;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 0 10px;
+      height: 32px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: #1e293b;
+      background: #fff;
+      outline: none;
+      min-width: 140px;
+      transition: all 0.2s ease;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+    }
+
+    /* Table Container */
+    .pr-table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pr-table-area {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .pr-table-area table {
+      width: 100%;
+      min-width: 750px;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      table-layout: auto;
+      border: 1px solid #cbd5e1;
+    }
+
+    .pr-table-area thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #1e293b;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+      border: 1px solid #334155;
+    }
+
+    .pr-table-area thead th.text-center,
+    .pr-table-area tbody td.text-center,
+    .pr-table-area tfoot td.text-center {
+      text-align: center;
+    }
+
+    .pr-table-area thead th.text-right,
+    .pr-table-area tbody td.text-right,
+    .pr-table-area tfoot td.text-right {
+      text-align: right;
+    }
+
+    .pr-table-area tbody td {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      white-space: nowrap;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 12px;
+      text-align: left;
+      background: #ffffff;
+    }
+
+    .pr-table-area tbody tr {
+      transition: background-color 0.15s ease;
+      cursor: pointer;
+    }
+
+    .pr-table-area tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    /* Standard Report Hover Effect - identical to Game Report & Payment Report */
+    .pr-table-area tbody tr:hover td {
+      background: #e2e8f0 !important;
+      color: #0f172a;
+    }
+
+    /* Total Row matching standard report green theme */
+    .pr-table-area tfoot td,
+    .pr-table-area tbody tr.total-row td {
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+      background: #dcfce7 !important;
+      font-weight: 700;
+      color: #047857;
+      border: 1px solid #86efac;
+      border-top: 2px solid #10b981;
+      font-size: 12px;
+      padding: 10px 12px;
+    }
+
+    .rfid-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11.5px;
+      background: #e0e7ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        overflow: visible;
+        font-size: 9pt;
+      }
+
+      .pr-wrapper {
+        padding: 0;
+        overflow: visible;
+      }
+
+      .pr-header-actions,
+      .pr-filter-panel,
+      .pr-btn-back {
+        display: none !important;
+      }
+
+      .pr-table-card {
+        border: none;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .pr-table-area {
+        overflow: visible;
+      }
+
+      table {
+        min-width: 100%;
+        page-break-inside: auto;
+      }
+
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      tfoot {
+        display: table-footer-group;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header Bar -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">◉</div>
+        <div>
+          <h1 class="pr-title">Customer Balance Report</h1>
+          <p class="pr-subtitle">Real-time overview of active customer RFID balances and available credits</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="toggleFilterBtn" onclick="toggleFilter()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="printReport()" title="Print or Save PDF">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Summary Cards Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Customers</span>
+        <span class="pr-kpi-val rose" id="kpiTotalCustomers">4 Cards</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Main Balance</span>
+        <span class="pr-kpi-val green" id="kpiTotalMain">1410.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Bonus Balance</span>
+        <span class="pr-kpi-val blue" id="kpiTotalBonus">320.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Combined Balance</span>
+        <span class="pr-kpi-val indigo" id="kpiCombinedBalance">1730.00</span>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div class="pr-filter-field">
+        <label>Search (RFID / Name / Phone)</label>
+        <input type="text" id="filterSearch" placeholder="Enter keyword..." oninput="applyFilter()" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Balance Filter</label>
+        <select id="filterBalance" onchange="applyFilter()">
+          <option value="">All Balances</option>
+          <option value="has_main">With Main Balance (&gt; 0)</option>
+          <option value="has_bonus">With Bonus Balance (&gt; 0)</option>
+        </select>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <button class="pr-btn pr-btn-filter" type="button" onclick="resetFilter()">Reset</button>
+        <button class="pr-btn" type="button" style="background:#e11d48; color:#fff; border-color:#e11d48;" onclick="applyFilter()">Apply Filter</button>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="pr-table-card">
+      <div class="pr-table-area">
+        <table id="customerBalanceTable">
+          <thead>
+            <tr>
+              <th>RFID</th>
+              <th>NAME</th>
+              <th>PHONE</th>
+              <th class="text-right">BALANCE_MAIN</th>
+              <th class="text-right">BALANCE_BONUS</th>
+              <th class="text-right">TOTAL_BALANCE</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dummy Data Rows -->
+            <tr>
+              <td><span class="rfid-badge">RF-84291</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Mohit Sharma</td>
+              <td>9876543210</td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">450.00</td>
+              <td class="text-right" style="font-weight: 600; color: #2563eb;">100.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a;">550.00</td>
+            </tr>
+            <tr>
+              <td><span class="rfid-badge">RF-84292</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Rahul Verma</td>
+              <td>9812345678</td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">220.00</td>
+              <td class="text-right" style="font-weight: 600; color: #2563eb;">50.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a;">270.00</td>
+            </tr>
+            <tr>
+              <td><span class="rfid-badge">RF-84293</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Pooja Singh</td>
+              <td>9765432109</td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">600.00</td>
+              <td class="text-right" style="font-weight: 600; color: #2563eb;">150.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a;">750.00</td>
+            </tr>
+            <tr>
+              <td><span class="rfid-badge">RF-84294</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Amit Saxena</td>
+              <td>9823456781</td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">140.00</td>
+              <td class="text-right" style="font-weight: 600; color: #2563eb;">20.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a;">160.00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row" id="totalRow">
+              <td>Total :</td>
+              <td id="sumCustomerCount">4 Customers</td>
+              <td></td>
+              <td class="text-right" id="sumBalanceMain">1410.00</td>
+              <td class="text-right" id="sumBalanceBonus">320.00</td>
+              <td class="text-right" id="sumTotalBalance">1730.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleFilter() {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('toggleFilterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function resetFilter() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterBalance').value = '';
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const search = (document.getElementById('filterSearch').value || '').toLowerCase().trim();
+      const balFilter = document.getElementById('filterBalance').value;
+
+      const rows = document.querySelectorAll('#tableBody tr');
+      let visibleCount = 0;
+      let totalMain = 0;
+      let totalBonus = 0;
+      let totalComb = 0;
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const cells = row.querySelectorAll('td');
+        const main = parseFloat(cells[3].innerText) || 0;
+        const bonus = parseFloat(cells[4].innerText) || 0;
+        const total = parseFloat(cells[5].innerText) || 0;
+
+        const matchSearch = !search || text.includes(search);
+        let matchBal = true;
+        if (balFilter === 'has_main') matchBal = main > 0;
+        if (balFilter === 'has_bonus') matchBal = bonus > 0;
+
+        if (matchSearch && matchBal) {
+          row.style.display = '';
+          visibleCount++;
+          totalMain += main;
+          totalBonus += bonus;
+          totalComb += total;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Update Footer
+      document.getElementById('sumCustomerCount').textContent = `${visibleCount} Customers`;
+      document.getElementById('sumBalanceMain').textContent = totalMain.toFixed(2);
+      document.getElementById('sumBalanceBonus').textContent = totalBonus.toFixed(2);
+      document.getElementById('sumTotalBalance').textContent = totalComb.toFixed(2);
+
+      // Update Top KPIs
+      document.getElementById('kpiTotalCustomers').textContent = `${visibleCount} Cards`;
+      document.getElementById('kpiTotalMain').textContent = totalMain.toFixed(2);
+      document.getElementById('kpiTotalBonus').textContent = totalBonus.toFixed(2);
+      document.getElementById('kpiCombinedBalance').textContent = totalComb.toFixed(2);
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById('customerBalanceTable');
+      let csv = [];
+      for (let r = 0; r < table.rows.length; r++) {
+        let row = [];
+        let cols = table.rows[r].querySelectorAll('td, th');
+        for (let c = 0; c < cols.length; c++) {
+          let text = cols[c].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+          text = text.replace(/"/g, '""');
+          row.push('"' + text + '"');
+        }
+        csv.push(row.join(','));
+      }
+      const csvString = csv.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', "Customer_Balance_Report_" + new Date().toISOString().slice(0, 10) + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+  </script>
+</body>
+
+</html>

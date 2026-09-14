@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer OR List</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= LAYOUT CONTAINER ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 16px 20px;
+      overflow: hidden;
+      gap: 12px;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #f3e8ff;
+      border-color: #d8b4fe;
+      color: #6b21a8;
+    }
+
+    /* KPI Summary Cards */
+    .pr-kpi-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      min-width: 150px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pr-kpi-val.purple {
+      color: #7c3aed;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    .pr-kpi-val.blue {
+      color: #2563eb;
+    }
+
+    .pr-kpi-val.amber {
+      color: #d97706;
+    }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      padding: 12px 16px;
+      display: none;
+      align-items: flex-end;
+      gap: 14px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      animation: slideDown 0.2s ease-out;
+      flex-shrink: 0;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 0 10px;
+      height: 32px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: #1e293b;
+      background: #fff;
+      outline: none;
+      min-width: 140px;
+      transition: all 0.2s ease;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .btn-apply-filter {
+      height: 32px;
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .btn-apply-filter:hover {
+      background: #6d28d9;
+    }
+
+    .btn-reset-filter {
+      height: 32px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reset-filter:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* Table Container */
+    .pr-table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pr-table-toolbar {
+      padding: 10px 16px;
+      background: #faf5ff;
+      border-bottom: 1px solid #e9d5ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #6b21a8;
+      font-weight: 600;
+    }
+
+    .pr-table-area {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .pr-table-area table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      table-layout: auto;
+      border: 1px solid #cbd5e1;
+    }
+
+    .pr-table-area thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #1e293b;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+      border: 1px solid #334155;
+    }
+
+    .pr-table-area thead th.text-center,
+    .pr-table-area tbody td.text-center,
+    .pr-table-area tfoot td.text-center {
+      text-align: center;
+    }
+
+    .pr-table-area thead th.text-right,
+    .pr-table-area tbody td.text-right,
+    .pr-table-area tfoot td.text-right {
+      text-align: right;
+    }
+
+    .pr-table-area tbody td {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      white-space: nowrap;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 12px;
+      text-align: left;
+      background: #ffffff;
+    }
+
+    .pr-table-area tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .pr-table-area tbody tr:hover td {
+      background: #f3e8ff !important;
+    }
+
+    .pr-table-area tfoot td {
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #0f172a;
+      border-top: 2px solid #94a3b8;
+      border-bottom: 1px solid #94a3b8;
+      padding: 9px 12px;
+      font-size: 12.5px;
+    }
+
+    /* Badges & Monospace formatting */
+    .badge-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .badge-rfid {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #0369a1;
+      background: #e0f2fe;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      border: 1px solid #bae6fd;
+      display: inline-block;
+    }
+
+    .badge-qr {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #6b21a8;
+      background: #f3e8ff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      border: 1px solid #e9d5ff;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .val-main {
+      font-weight: 700;
+      color: #059669;
+    }
+
+    .val-bonus {
+      font-weight: 700;
+      color: #d97706;
+    }
+
+    .date-text {
+      color: #64748b;
+      font-size: 11.5px;
+    }
+
+    .phone-text {
+      font-family: 'JetBrains Mono', monospace;
+      color: #334155;
+      font-size: 11.5px;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+
+      .pr-wrapper {
+        padding: 0;
+      }
+
+      .pr-header-actions,
+      .pr-filter-panel,
+      .pr-btn {
+        display: none !important;
+      }
+
+      .pr-table-card {
+        border: none;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header Bar -->
+    <div class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <div>
+          <h1 class="pr-title">Customer OR List</h1>
+          <p class="pr-subtitle">Customer OR list, QR code registration, RFID mapping, balance and validity audit report</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="toggleFilterBtn" onclick="toggleFilter()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="printReport()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div class="pr-filter-panel" id="filterPanel">
+      <div class="pr-filter-field">
+        <label>Search Keyword</label>
+        <input type="text" id="filterSearch" placeholder="Name, Phone, RFID, QR..." oninput="applyFilters()" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Start Date From</label>
+        <input type="date" id="filterStartDate" onchange="applyFilters()" />
+      </div>
+      <div class="pr-filter-field">
+        <label>End Date To</label>
+        <input type="date" id="filterEndDate" onchange="applyFilters()" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Balance Status</label>
+        <select id="filterBalance" onchange="applyFilters()">
+          <option value="ALL">All Balances</option>
+          <option value="POSITIVE">Positive Balance (&gt; 0)</option>
+          <option value="ZERO">Zero Balance</option>
+          <option value="BONUS">Has Bonus Balance</option>
+        </select>
+      </div>
+      <button class="btn-apply-filter" onclick="applyFilters()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Apply
+      </button>
+      <button class="btn-reset-filter" onclick="resetFilters()">Reset</button>
+    </div>
+
+    <!-- KPI Summary Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total QR Customers</span>
+        <span class="pr-kpi-val purple" id="kpiTotalCust">8</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Main Balance</span>
+        <span class="pr-kpi-val green" id="kpiTotalMain">₹ 14,850.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Bonus Balance</span>
+        <span class="pr-kpi-val amber" id="kpiTotalBonus">₹ 3,420.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Active Validity</span>
+        <span class="pr-kpi-val blue" id="kpiActiveCount">8 / 8 Active</span>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="pr-table-card">
+      <div class="pr-table-toolbar">
+        <span id="recordCountText">Showing 8 of 8 customer OR records</span>
+        <span>Customer OR List Audit &amp; Balance Registry</span>
+      </div>
+      <div class="pr-table-area">
+        <table id="customerQrTable">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 55px;">ID</th>
+              <th class="text-center" style="width: 120px;">RFID</th>
+              <th class="text-center" style="width: 140px;">QR Code</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th class="text-right">Main Bal</th>
+              <th class="text-right">Bonus Bal</th>
+              <th class="text-center">End Date</th>
+              <th class="text-center">Start Date</th>
+              <th class="text-center">Date</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Populated via Javascript -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="text-right">TOTAL:</td>
+              <td class="text-right val-main" id="footTotalMain">₹ 14,850.00</td>
+              <td class="text-right val-bonus" id="footTotalBonus">₹ 3,420.00</td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample Customer QR Records matching the requested schema:
+    // ID, RFID, QR Code, Name, Phone, Main Bal, Bonus Bal, End Date, Start Date, Date
+    const customerQrData = [
+      {
+        id: 1001,
+        rfid: '04A12F3B',
+        qrCode: 'QR-FS-89201',
+        name: 'Rahul Sharma',
+        phone: '9876543210',
+        mainBal: 2450.00,
+        bonusBal: 500.00,
+        endDate: '2026-12-31',
+        startDate: '2026-01-01',
+        date: '2026-09-14 10:15 AM'
+      },
+      {
+        id: 1002,
+        rfid: '5A3C89B1',
+        qrCode: 'QR-FS-78412',
+        name: 'Priya Patel',
+        phone: '9823456781',
+        mainBal: 1800.00,
+        bonusBal: 350.00,
+        endDate: '2026-11-30',
+        startDate: '2026-02-15',
+        date: '2026-09-14 10:45 AM'
+      },
+      {
+        id: 1003,
+        rfid: 'E28011606',
+        qrCode: 'QR-FS-67319',
+        name: 'Amit Verma',
+        phone: '9988776655',
+        mainBal: 3100.00,
+        bonusBal: 750.00,
+        endDate: '2026-12-31',
+        startDate: '2026-03-01',
+        date: '2026-09-14 11:10 AM'
+      },
+      {
+        id: 1004,
+        rfid: '04D892A1',
+        qrCode: 'QR-FS-55420',
+        name: 'Sneha Kulkarni',
+        phone: '9765432109',
+        mainBal: 950.00,
+        bonusBal: 120.00,
+        endDate: '2026-10-15',
+        startDate: '2026-04-10',
+        date: '2026-09-14 11:35 AM'
+      },
+      {
+        id: 1005,
+        rfid: '7B89C012',
+        qrCode: 'QR-FS-44391',
+        name: 'Vikas Gupta',
+        phone: '9812345678',
+        mainBal: 2200.00,
+        bonusBal: 600.00,
+        endDate: '2026-12-31',
+        startDate: '2026-05-20',
+        date: '2026-09-14 11:55 AM'
+      },
+      {
+        id: 1006,
+        rfid: 'A1B2C3D4',
+        qrCode: 'QR-FS-33280',
+        name: 'Neha Singh',
+        phone: '9900112233',
+        mainBal: 1400.00,
+        bonusBal: 250.00,
+        endDate: '2026-11-15',
+        startDate: '2026-06-05',
+        date: '2026-09-14 12:10 PM'
+      },
+      {
+        id: 1007,
+        rfid: 'F5E4D3C2',
+        qrCode: 'QR-FS-22177',
+        name: 'Rohan Desai',
+        phone: '9845123654',
+        mainBal: 1650.00,
+        bonusBal: 450.00,
+        endDate: '2026-12-31',
+        startDate: '2026-07-12',
+        date: '2026-09-14 12:25 PM'
+      },
+      {
+        id: 1008,
+        rfid: '3C2B1A0F',
+        qrCode: 'QR-FS-11064',
+        name: 'Pooja Joshi',
+        phone: '9722334455',
+        mainBal: 1300.00,
+        bonusBal: 400.00,
+        endDate: '2026-10-31',
+        startDate: '2026-08-01',
+        date: '2026-09-14 12:30 PM'
+      }
+    ];
+
+    function fmtCurr(val) {
+      return '₹ ' + Number(val || 0).toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      let totalMain = 0;
+      let totalBonus = 0;
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding: 30px; color: #94a3b8; font-weight: 500;">No customer QR records found</td></tr>';
+        document.getElementById('footTotalMain').textContent = fmtCurr(0);
+        document.getElementById('footTotalBonus').textContent = fmtCurr(0);
+        document.getElementById('kpiTotalCust').textContent = '0';
+        document.getElementById('kpiTotalMain').textContent = fmtCurr(0);
+        document.getElementById('kpiTotalBonus').textContent = fmtCurr(0);
+        document.getElementById('kpiActiveCount').textContent = '0 / 0 Active';
+        document.getElementById('recordCountText').textContent = 'Showing 0 records';
+        return;
+      }
+
+      data.forEach(item => {
+        totalMain += item.mainBal;
+        totalBonus += item.bonusBal;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center"><span class="badge-id">${item.id}</span></td>
+          <td class="text-center"><span class="badge-rfid">${item.rfid}</span></td>
+          <td class="text-center">
+            <span class="badge-qr">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              ${item.qrCode}
+            </span>
+          </td>
+          <td><strong>${item.name}</strong></td>
+          <td><span class="phone-text">${item.phone}</span></td>
+          <td class="text-right val-main">${fmtCurr(item.mainBal)}</td>
+          <td class="text-right val-bonus">${fmtCurr(item.bonusBal)}</td>
+          <td class="text-center date-text">${item.endDate}</td>
+          <td class="text-center date-text">${item.startDate}</td>
+          <td class="text-center date-text">${item.date}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Update Table Footer
+      document.getElementById('footTotalMain').textContent = fmtCurr(totalMain);
+      document.getElementById('footTotalBonus').textContent = fmtCurr(totalBonus);
+
+      // Update KPI Cards
+      document.getElementById('kpiTotalCust').textContent = data.length;
+      document.getElementById('kpiTotalMain').textContent = fmtCurr(totalMain);
+      document.getElementById('kpiTotalBonus').textContent = fmtCurr(totalBonus);
+      document.getElementById('kpiActiveCount').textContent = data.length + ' / ' + data.length + ' Active';
+      document.getElementById('recordCountText').textContent = 'Showing ' + data.length + ' of ' + customerQrData.length + ' customer QR records';
+    }
+
+    function toggleFilter() {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('toggleFilterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('filterSearch').value || '').trim().toLowerCase();
+      const startFrom = document.getElementById('filterStartDate').value;
+      const endTo = document.getElementById('filterEndDate').value;
+      const balFilter = document.getElementById('filterBalance').value;
+
+      const filtered = customerQrData.filter(item => {
+        // Keyword Search across ID, RFID, QR, Name, Phone
+        if (q) {
+          const matchId = String(item.id).toLowerCase().includes(q);
+          const matchRfid = item.rfid.toLowerCase().includes(q);
+          const matchQr = item.qrCode.toLowerCase().includes(q);
+          const matchName = item.name.toLowerCase().includes(q);
+          const matchPhone = item.phone.toLowerCase().includes(q);
+          if (!matchId && !matchRfid && !matchQr && !matchName && !matchPhone) {
+            return false;
+          }
+        }
+
+        // Start Date From filter
+        if (startFrom) {
+          if (item.startDate < startFrom) return false;
+        }
+
+        // End Date To filter
+        if (endTo) {
+          if (item.endDate > endTo) return false;
+        }
+
+        // Balance Filter
+        if (balFilter === 'POSITIVE') {
+          if (item.mainBal <= 0) return false;
+        } else if (balFilter === 'ZERO') {
+          if (item.mainBal > 0) return false;
+        } else if (balFilter === 'BONUS') {
+          if (item.bonusBal <= 0) return false;
+        }
+
+        return true;
+      });
+
+      renderTable(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterStartDate').value = '';
+      document.getElementById('filterEndDate').value = '';
+      document.getElementById('filterBalance').value = 'ALL';
+      renderTable(customerQrData);
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById('customerQrTable');
+      const rows = table.querySelectorAll('tr');
+      const csv = [];
+
+      for (let r = 0; r < rows.length; r++) {
+        const row = [];
+        const cols = rows[r].querySelectorAll('th, td');
+        for (let c = 0; c < cols.length; c++) {
+          let text = cols[c].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+          text = text.replace(/"/g, '""');
+          row.push('"' + text + '"');
+        }
+        csv.push(row.join(','));
+      }
+
+      const csvString = csv.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', "Customer_OR_List_" + new Date().toISOString().slice(0, 10) + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+
+    // Forward Ctrl+Shift+R shortcut to parent window if iframe has focus
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'r' || e.key === 'R' || e.keyCode === 82)) {
+        e.preventDefault();
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'trigger-reconcile-modal' }, '*');
+        }
+      }
+    });
+
+    // Initial table render
+    renderTable(customerQrData);
+  </script>
+</body>
+
+</html>

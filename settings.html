@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing Settings</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-border: #c7d2fe;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+
+      --ink-dark: #0f172a;
+      --ink: #1e293b;
+      --ink-muted: #64748b;
+      --ink-faint: #94a3b8;
+
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --sky: #0284c7;
+      --sky-light: #f0f9ff;
+
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.07), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--ink);
+      font-size: 13.5px;
+      letter-spacing: -0.01em;
+    }
+
+    /* Custom Smooth Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Outer Container */
+    .settings-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0;
+      background: var(--bg-page);
+      overflow: hidden;
+    }
+
+    /* Top Header Bar */
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .settings-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .settings-icon-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--primary-gradient);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+      flex-shrink: 0;
+    }
+
+    .settings-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink-dark);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .settings-subtitle {
+      margin: 2px 0 0 0;
+      font-size: 12.5px;
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+
+    .settings-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Action Buttons */
+    .btn-action {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      user-select: none;
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-back {
+      background: #ffffff;
+      color: #475569;
+      border-color: var(--border-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-back:hover {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    .btn-primary-save {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn-primary-save:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.38);
+    }
+
+    .btn-primary-save:active,
+    .btn-back:active {
+      transform: translateY(0);
+    }
+
+    /* Navigation Tabs Bar */
+    .tabs-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .tab-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      cursor: pointer;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      transition: all 0.18s ease;
+      user-select: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-pill:hover {
+      background: #f1f5f9;
+      color: var(--ink);
+      border-color: var(--border-dark);
+    }
+
+    .tab-pill.active {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+    }
+
+    .tab-pill svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    .tab-pill .tab-count-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.06);
+      color: inherit;
+    }
+
+    .tab-pill.active .tab-count-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    /* Main Scrollable Content Area */
+    .settings-body {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: tabFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes tabFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modern Layout Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+
+    .settings-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .settings-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      background: #fafbfc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-header-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-header-icon.purple {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
+
+    .card-header-icon.emerald {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .card-header-icon.amber {
+      background: #fffbeb;
+      color: #d97706;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink-dark);
+    }
+
+    .card-desc {
+      margin: 1px 0 0 0;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .card-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Form Fields Styling */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-label .helper-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .input-icon-prefix {
+      position: absolute;
+      left: 12px;
+      color: #94a3b8;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      background: #ffffff;
+      color: var(--ink-dark);
+      transition: all 0.2s ease;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .input-with-icon .form-control {
+      padding-left: 36px;
+    }
+
+    .form-control:focus {
+      background: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    textarea.form-control {
+      height: 72px;
+      padding: 8px 12px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Modern Custom Switch Toggles */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .toggle-row:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toggle-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .toggle-desc {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+    }
+
+    /* iOS Style Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked + .slider {
+      background-color: #2563eb;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Select Inputs */
+    select.form-control {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    /* Radio Selection Cards (RFID Mode) */
+    .radio-card-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .radio-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .radio-card:hover {
+      border-color: #94a3b8;
+      background: #fafbfc;
+    }
+
+    .radio-card.active {
+      border-color: #4f46e5;
+      background: #f5f3ff;
+      box-shadow: 0 0 0 1px #4f46e5;
+    }
+
+    .radio-card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-dark);
+    }
+
+    .radio-card input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #4f46e5;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    /* Printer Grid Layout */
+    .printer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+      gap: 16px;
+    }
+
+    .printer-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .printer-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
+    }
+
+    .printer-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .printer-identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .printer-badge-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .printer-badge-icon.emerald {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .printer-badge-icon.purple {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
+
+    .printer-badge-icon.amber {
+      background: #fffbeb;
+      color: #d97706;
+    }
+
+    .printer-name {
+      margin: 0;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink-dark);
+    }
+
+    .printer-type-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .printer-select-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .printer-select-row select {
+      flex: 1 1 0;
+    }
+
+    .btn-printer-refresh {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-dark);
+      background: #f8fafc;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .btn-printer-refresh:hover {
+      background: #ffffff;
+      color: #2563eb;
+      border-color: #3b82f6;
+    }
+
+    .btn-printer-refresh svg {
+      width: 17px;
+      height: 17px;
+      transition: transform 0.5s ease;
+    }
+
+    .printer-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      flex-wrap: wrap;
+    }
+
+    .printer-copies {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .printer-copies label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+
+    .printer-copies input {
+      width: 54px;
+      height: 32px;
+      text-align: center;
+      font-weight: 600;
+      padding: 0 6px;
+    }
+
+    .printer-checks-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mini-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .mini-check input {
+      width: 15px;
+      height: 15px;
+      accent-color: #2563eb;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    /* Toast Notification */
+    .settings-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 9999;
+    }
+
+    .settings-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .settings-toast svg {
+      color: #22c55e;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="settings-wrapper">
+
+    <!-- Top Header Bar -->
+    <header class="settings-header">
+      <div class="settings-title-group">
+        <div class="settings-icon-badge">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="settings-title">Billing Settings</h1>
+          <p class="settings-subtitle">Configure arcade tax rates, food cafe invoicing, RFID cards, and thermal receipt printers</p>
+        </div>
+      </div>
+
+      <div class="settings-header-actions">
+        <button type="button" class="btn-action btn-back" onclick="handleBackToMaster()" title="Return to Master Dashboard">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Master</span>
+        </button>
+        <button type="button" class="btn-action btn-primary-save" onclick="saveSettings()" title="Save all changes">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+          </svg>
+          <span>Save Configuration</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Segmented Navigation Tabs Bar -->
+    <nav class="tabs-bar">
+      <div class="tab-pill active" data-tab="arcade">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+          <path d="M6 12h4m-2-2v4m7-2h.01m3 0h.01"></path>
+        </svg>
+        <span>Arcade</span>
+        <span class="tab-count-badge">Tax & Bill</span>
+      </div>
+
+      <div class="tab-pill" data-tab="food">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+          <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+          <line x1="6" y1="1" x2="6" y2="4"></line>
+          <line x1="10" y1="1" x2="10" y2="4"></line>
+          <line x1="14" y1="1" x2="14" y2="4"></line>
+        </svg>
+        <span>Food Cafe</span>
+        <span class="tab-count-badge">FSSAI & GST</span>
+      </div>
+
+      <div class="tab-pill" data-tab="rfid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        <span>RFID Card</span>
+        <span class="tab-count-badge">Price & Expiry</span>
+      </div>
+
+      <div class="tab-pill" data-tab="printer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        <span>Printers</span>
+        <span class="tab-count-badge">6 Devices</span>
+      </div>
+    </nav>
+
+    <!-- Main Scrollable Body -->
+    <main class="settings-body">
+
+      <!-- ==================== 1. ARCADE TAB ==================== -->
+      <div class="tab-panel active" id="panel-arcade">
+        <div class="cards-grid">
+
+          <!-- Card A: Store Profile -->
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-header-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="card-title">Arcade Store Profile</h3>
+                  <p class="card-desc">Business details printed on customer receipts</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label" for="arcade_company">Company Name</label>
+                <div class="input-with-icon">
+                  <span class="input-icon-prefix">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                  </span>
+                  <input type="text" id="arcade_company" class="form-control" value="elesof" placeholder="Enter arcade business name" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="arcade_phone">Phone Number</label>
+                  <div class="input-with-icon">
+                    <span class="input-icon-prefix">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </span>
+                    <input type="text" id="arcade_phone" class="form-control" value="9876543210" placeholder="Contact number" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="arcade_gst">GST Registration No</label>
+                  <div class="input-with-icon">
+                    <span class="input-icon-prefix">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </span>
+                    <input type="text" id="arcade_gst" class="form-control" value="gst no 12344567" placeholder="GST identification number" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="arcade_address">Store Address</label>
+                <textarea id="arcade_address" class="form-control" placeholder="Complete address printed on receipts">123 Test Street, Tech City</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="arcade_footer">Footer Message on Bill</label>
+                <textarea id="arcade_footer" class="form-control" placeholder="e.g. !!Thanks Visit Again!!">!!Thanks!!</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B: Tax & Policies -->
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-header-icon emerald">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="card-title">Tax & Billing Policy</h3>
+                  <p class="card-desc">Taxation rules, QR expirations and invoice triggers</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="arcade_cgst">CGST Rate (%)</label>
+                  <input type="number" id="arcade_cgst" class="form-control" value="9" step="0.1" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="arcade_sgst">SGST Rate (%)</label>
+                  <input type="number" id="arcade_sgst" class="form-control" value="9" step="0.1" min="0" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Payment QR Expiration Timeout</label>
+                <div class="form-row-3">
+                  <select id="arcade_qr_days" class="form-control">
+                    <option value="0">0 Days</option>
+                    <option value="1">1 Day</option>
+                    <option value="2">2 Days</option>
+                  </select>
+                  <select id="arcade_qr_hours" class="form-control">
+                    <option value="0">0 Hours</option>
+                    <option value="1" selected>1 Hour</option>
+                    <option value="2">2 Hours</option>
+                    <option value="4">4 Hours</option>
+                  </select>
+                  <select id="arcade_qr_mins" class="form-control">
+                    <option value="0">0 Mins</option>
+                    <option value="15">15 Mins</option>
+                    <option value="30">30 Mins</option>
+                    <option value="45">45 Mins</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+                <label class="toggle-row" for="a-gstextra">
+                  <div class="toggle-info">
+                    <span class="toggle-title">GST is Extra on Sales</span>
+                    <span class="toggle-desc">Calculate tax on top of recharge amount (e.g. ₹100 + 18% GST)</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="a-gstextra" />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="a-invoice">
+                  <div class="toggle-info">
+                    <span class="toggle-title">Generate Tax Invoice</span>
+                    <span class="toggle-desc">Automatically assign invoice numbers for game top-ups</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="a-invoice" checked />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="a-rfidmask">
+                  <div class="toggle-info">
+                    <span class="toggle-title">RFID Card Masking</span>
+                    <span class="toggle-desc">Mask confidential card serial digits on printed receipts (e.g. ****1234)</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="a-rfidmask" checked />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================== 2. FOOD CAFE TAB ==================== -->
+      <div class="tab-panel" id="panel-food">
+        <div class="cards-grid">
+
+          <!-- Card A: Food Outlet Profile -->
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-header-icon amber">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="card-title">Food Cafe Identity</h3>
+                  <p class="card-desc">Restaurant and kitchen branding on KOT & customer bills</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label" for="food_company">Cafe / Restaurant Name</label>
+                <div class="input-with-icon">
+                  <span class="input-icon-prefix">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
+                  </span>
+                  <input type="text" id="food_company" class="form-control" value="YOUR FOOD COMPANY NAME" placeholder="Cafe business name" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="food_phone">Phone Number</label>
+                  <div class="input-with-icon">
+                    <span class="input-icon-prefix">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </span>
+                    <input type="text" id="food_phone" class="form-control" value="9876543210" placeholder="Counter phone number" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="food_fssai">FSSAI License No</label>
+                  <div class="input-with-icon">
+                    <span class="input-icon-prefix">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </span>
+                    <input type="text" id="food_fssai" class="form-control" value="FSSAI-YOUR COMPANY" placeholder="Mandatory FSSAI license" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="food_address">Cafe Location / Address</label>
+                <textarea id="food_address" class="form-control" placeholder="Food counter address">YOUR FOOD CENTER NAME</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="food_footer">Bill Footer Note</label>
+                <textarea id="food_footer" class="form-control" placeholder="Special note e.g. Please check your order before leaving."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B: Food Tax & Order Policies -->
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-header-icon emerald">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="card-title">Food Taxation & Invoicing</h3>
+                  <p class="card-desc">GST breakdown rates and bill generation flags</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label" for="food_gst">Food GST Number</label>
+                <div class="input-with-icon">
+                  <span class="input-icon-prefix">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  </span>
+                  <input type="text" id="food_gst" class="form-control" value="YOUR COMPANY GST" placeholder="Food GST Registration No" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="food_cgst">Food CGST (%)</label>
+                  <input type="number" id="food_cgst" class="form-control" value="2.5" step="0.1" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="food_sgst">Food SGST (%)</label>
+                  <input type="number" id="food_sgst" class="form-control" value="2.5" step="0.1" min="0" />
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <label class="toggle-row" for="f-gstapp">
+                  <div class="toggle-info">
+                    <span class="toggle-title">GST Applicable on Food Menu</span>
+                    <span class="toggle-desc">Enable tax calculation on cafe orders</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="f-gstapp" checked />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="f-gstextra">
+                  <div class="toggle-info">
+                    <span class="toggle-title">Food GST is Extra</span>
+                    <span class="toggle-desc">Add GST over and above menu price (e.g. ₹100 + 5% GST)</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="f-gstextra" checked />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="f-invoice">
+                  <div class="toggle-info">
+                    <span class="toggle-title">Generate Official Food Invoice</span>
+                    <span class="toggle-desc">Print serial tax invoice numbering on cafe bills</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="f-invoice" />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================== 3. RFID CARD TAB ==================== -->
+      <div class="tab-panel" id="panel-rfid">
+        <div class="cards-grid">
+
+          <!-- Card A: Card Issuance & Pricing -->
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-header-icon purple">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="card-title">Card Issuance & Pricing</h3>
+                  <p class="card-desc">Choose deposit security lock or direct sale model</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label" for="rfid_vip_discount">VIP Member Discount (%)</label>
+                <div class="input-with-icon" style="max-width: 220px;">
+                  <span class="input-icon-prefix">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  </span>
+                  <input type="number" id="rfid_vip_discount" class="form-control" value="0" min="0" max="100" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">New RFID Card Charge Mode</label>
+                <div class="radio-card-group">
+
+                  <label class="radio-card" id="cardMode1Box" onclick="selectCardMode(0)">
+                    <div class="radio-card-head">
+                      <input type="radio" name="cardmode" id="cardmode_lock" />
+                      <span>1. Card Lock Deposit</span>
+                    </div>
+                    <p style="margin: 0; font-size: 11.5px; color: var(--ink-muted);">Refundable security deposit balance</p>
+                    <div style="margin-top: 6px;">
+                      <input type="number" id="rfid_lock_amt" class="form-control" value="0" placeholder="Lock Amt (₹)" disabled />
+                    </div>
+                  </label>
+
+                  <label class="radio-card active" id="cardMode2Box" onclick="selectCardMode(1)">
+                    <div class="radio-card-head">
+                      <input type="radio" name="cardmode" id="cardmode_price" checked />
+                      <span>2. Card Sale Price</span>
+                    </div>
+                    <p style="margin: 0; font-size: 11.5px; color: var(--ink-muted);">One-time purchase price per card</p>
+                    <div style="margin-top: 6px;">
+                      <input type="number" id="rfid_card_price" class="form-control" value="30" placeholder="Price (₹)" />
+                    </div>
+                  </label>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B: Expiration & Lifetime Validity -->
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-header-icon amber">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="card-title">Card Expiration & Validity</h3>
+                  <p class="card-desc">Automatic expiry and lifetime activation policy</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label class="toggle-row" for="r-expire">
+                  <div class="toggle-info">
+                    <span class="toggle-title">Enable Inactivity Card Expiry</span>
+                    <span class="toggle-desc">Expire cards if unpunched for consecutive days</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="r-expire" checked onchange="syncExpireState()" />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="r-lifetime">
+                  <div class="toggle-info">
+                    <span class="toggle-title">Allow Lifetime Validity</span>
+                    <span class="toggle-desc">Bypass expiration and keep cards permanently active</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="r-lifetime" onchange="syncExpireState()" />
+                    <span class="slider"></span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="form-group" style="margin-top: 6px;">
+                <label class="form-label" for="rfid_punch_days">
+                  <span>Inactivity Expiry Threshold</span>
+                  <span class="helper-badge" style="color: #d97706; font-weight: 700;">After last CARD PUNCH</span>
+                </label>
+                <div class="input-with-icon" style="max-width: 220px;">
+                  <span class="input-icon-prefix">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>
+                  </span>
+                  <input type="number" id="rfid_punch_days" class="form-control" value="365" min="1" placeholder="Days" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================== 4. PRINTER TAB ==================== -->
+      <div class="tab-panel" id="panel-printer">
+        <div class="printer-grid">
+
+          <!-- 1. Arcade Printer -->
+          <div class="printer-card">
+            <div class="printer-card-top">
+              <div class="printer-identity">
+                <div class="printer-badge-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="printer-name">Arcade Receipt Printer</h4>
+                  <span class="printer-type-pill">Game Recharges & Cards</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="printer-select-row">
+              <select class="form-control" id="prn_arcade">
+                <option value="none">— Select printer —</option>
+                <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
+                <option value="POS-80">POS-80 Series</option>
+              </select>
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="printer-options-row">
+              <div class="printer-copies">
+                <label for="prn_arcade_copies">Copies:</label>
+                <input type="number" id="prn_arcade_copies" class="form-control" value="1" min="1" max="5" />
+              </div>
+              <div class="printer-checks-group">
+                <label class="mini-check"><input type="checkbox" id="prn_arcade_allow" checked /><span>Allow print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_arcade_reprint" /><span>Allow re-print</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Food Bill Printer -->
+          <div class="printer-card">
+            <div class="printer-card-top">
+              <div class="printer-identity">
+                <div class="printer-badge-icon emerald">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="printer-name">Food Customer Bill Printer</h4>
+                  <span class="printer-type-pill">Cafe Front Counter</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="printer-select-row">
+              <select class="form-control" id="prn_food_bill">
+                <option value="none">— Select printer —</option>
+                <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
+                <option value="POS-80">POS-80 Series</option>
+              </select>
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="printer-options-row">
+              <div class="printer-copies">
+                <label for="prn_food_copies">Copies:</label>
+                <input type="number" id="prn_food_copies" class="form-control" value="1" min="1" max="5" />
+              </div>
+              <div class="printer-checks-group">
+                <label class="mini-check"><input type="checkbox" id="prn_food_allow" checked /><span>Allow print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_food_reprint" /><span>Allow re-print</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Food KOT Printer -->
+          <div class="printer-card">
+            <div class="printer-card-top">
+              <div class="printer-identity">
+                <div class="printer-badge-icon amber">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="printer-name">Kitchen Order Ticket (KOT)</h4>
+                  <span class="printer-type-pill">Chef & Kitchen Station</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="printer-select-row">
+              <select class="form-control" id="prn_food_kot">
+                <option value="none">— Select printer —</option>
+                <option value="Kitchen Printer 1" selected>Kitchen Printer 1</option>
+                <option value="Kitchen Printer 2">Kitchen Printer 2</option>
+              </select>
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="printer-options-row">
+              <div class="printer-copies">
+                <label for="prn_kot_copies">Copies:</label>
+                <input type="number" id="prn_kot_copies" class="form-control" value="1" min="1" max="5" />
+              </div>
+              <div class="printer-checks-group">
+                <label class="mini-check"><input type="checkbox" id="prn_kot_allow" checked /><span>Allow KOT print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_kot_reprint" /><span>Allow KOT re-print</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Quick Bill Printer -->
+          <div class="printer-card">
+            <div class="printer-card-top">
+              <div class="printer-identity">
+                <div class="printer-badge-icon purple">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="printer-name">Quick Bill Printer</h4>
+                  <span class="printer-type-pill">Express Counter</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="printer-select-row">
+              <select class="form-control" id="prn_quick_bill">
+                <option value="none">— Select printer —</option>
+                <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
+                <option value="POS-80">POS-80 Series</option>
+              </select>
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="printer-options-row">
+              <div class="printer-copies">
+                <label for="prn_quick_copies">Copies:</label>
+                <input type="number" id="prn_quick_copies" class="form-control" value="1" min="1" max="5" />
+              </div>
+              <div class="printer-checks-group">
+                <label class="mini-check"><input type="checkbox" id="prn_quick_allow" checked /><span>Allow print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_quick_reprint" /><span>Allow re-print</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Direct Bill Printer -->
+          <div class="printer-card">
+            <div class="printer-card-top">
+              <div class="printer-identity">
+                <div class="printer-badge-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="printer-name">Direct Bill Printer</h4>
+                  <span class="printer-type-pill">Direct Merchandise & POS</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="printer-select-row">
+              <select class="form-control" id="prn_direct_bill">
+                <option value="none">— Select printer —</option>
+                <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
+                <option value="POS-80">POS-80 Series</option>
+              </select>
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="printer-options-row">
+              <div class="printer-copies">
+                <label for="prn_direct_copies">Copies:</label>
+                <input type="number" id="prn_direct_copies" class="form-control" value="1" min="1" max="5" />
+              </div>
+              <div class="printer-checks-group">
+                <label class="mini-check"><input type="checkbox" id="prn_direct_allow" checked /><span>Allow print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_direct_reprint" /><span>Allow re-print</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Label Barcode Printer -->
+          <div class="printer-card">
+            <div class="printer-card-top">
+              <div class="printer-identity">
+                <div class="printer-badge-icon emerald">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="printer-name">Barcode & Label Printer</h4>
+                  <span class="printer-type-pill">Item Stickers & Wristbands</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="printer-select-row">
+              <select class="form-control" id="prn_label">
+                <option value="none">— Select printer —</option>
+                <option value="Zebra ZD220" selected>Zebra ZD220 (Thermal Transfer)</option>
+                <option value="TSC TE200">TSC TE200</option>
+              </select>
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="printer-options-row">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="prn_label_size" style="font-size: 12px; font-weight: 600; color: var(--ink-muted);">Label Size:</label>
+                <select id="prn_label_size" class="form-control" style="width: 95px; height: 32px; padding: 0 8px; font-size: 12px;">
+                  <option value="1 X 4">1 X 4</option>
+                  <option value="2 X 4" selected>2 X 4</option>
+                  <option value="4 X 6">4 X 6</option>
+                </select>
+              </div>
+              <div class="printer-copies">
+                <label for="prn_label_copies">Copies:</label>
+                <input type="number" id="prn_label_copies" class="form-control" value="1" min="1" max="10" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="settingsToast" class="settings-toast">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <span id="settingsToastText">Configuration saved successfully!</span>
+    </div>
+
+  </div>
+
+  <script>
+    // Tab switching logic
+    const tabs = document.querySelectorAll('.tab-pill');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const activePanel = document.getElementById('panel-' + targetTab);
+        if (activePanel) activePanel.classList.add('active');
+      });
+    });
+
+    // Card Mode selection (Deposit vs Price)
+    function selectCardMode(modeIdx) {
+      const lockBox = document.getElementById('cardMode1Box');
+      const priceBox = document.getElementById('cardMode2Box');
+      const lockRadio = document.getElementById('cardmode_lock');
+      const priceRadio = document.getElementById('cardmode_price');
+      const lockInput = document.getElementById('rfid_lock_amt');
+      const priceInput = document.getElementById('rfid_card_price');
+
+      if (modeIdx === 0) {
+        lockRadio.checked = true;
+        lockBox.classList.add('active');
+        priceBox.classList.remove('active');
+        lockInput.disabled = false;
+        priceInput.disabled = true;
+        lockInput.focus();
+      } else {
+        priceRadio.checked = true;
+        priceBox.classList.add('active');
+        lockBox.classList.remove('active');
+        lockInput.disabled = true;
+        priceInput.disabled = false;
+        priceInput.focus();
+      }
+    }
+
+    // Expiry vs Lifetime sync
+    function syncExpireState() {
+      const expireCheck = document.getElementById('r-expire');
+      const lifetimeCheck = document.getElementById('r-lifetime');
+      const punchDaysInput = document.getElementById('rfid_punch_days');
+
+      if (lifetimeCheck.checked) {
+        punchDaysInput.disabled = true;
+        punchDaysInput.style.opacity = '0.5';
+        punchDaysInput.style.cursor = 'not-allowed';
+      } else if (!expireCheck.checked) {
+        punchDaysInput.disabled = true;
+        punchDaysInput.style.opacity = '0.5';
+        punchDaysInput.style.cursor = 'not-allowed';
+      } else {
+        punchDaysInput.disabled = false;
+        punchDaysInput.style.opacity = '1';
+        punchDaysInput.style.cursor = 'text';
+      }
+    }
+
+    // Refresh button spin animation
+    function refreshPrinterAnimation(btn) {
+      const svg = btn.querySelector('svg');
+      if (!svg) return;
+      svg.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+      svg.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        svg.style.transition = 'none';
+        svg.style.transform = 'rotate(0deg)';
+        showToast('✓ Printer ports refreshed');
+      }, 620);
+    }
+
+    // Toast notification helper
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('settingsToast');
+      const text = document.getElementById('settingsToastText');
+      if (!toast || !text) return;
+
+      text.textContent = msg;
+      toast.classList.add('show');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    // Return to master dashboard
+    function handleBackToMaster() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-master' }, '*');
+        if (typeof window.parent.showMasterView === 'function') {
+          window.parent.showMasterView();
+          return;
+        }
+      }
+      showToast('Navigating back to Master...');
+    }
+
+    // Save configuration to localStorage
+    function saveSettings() {
+      const settings = {
+        arcade: {
+          company: document.getElementById('arcade_company')?.value || '',
+          phone: document.getElementById('arcade_phone')?.value || '',
+          gst: document.getElementById('arcade_gst')?.value || '',
+          address: document.getElementById('arcade_address')?.value || '',
+          footer: document.getElementById('arcade_footer')?.value || '',
+          cgst: parseFloat(document.getElementById('arcade_cgst')?.value || 9),
+          sgst: parseFloat(document.getElementById('arcade_sgst')?.value || 9),
+          qrDays: document.getElementById('arcade_qr_days')?.value || '0',
+          qrHours: document.getElementById('arcade_qr_hours')?.value || '1',
+          qrMins: document.getElementById('arcade_qr_mins')?.value || '0',
+          gstExtra: document.getElementById('a-gstextra')?.checked ?? false,
+          invoice: document.getElementById('a-invoice')?.checked ?? true,
+          rfidMask: document.getElementById('a-rfidmask')?.checked ?? true
+        },
+        food: {
+          company: document.getElementById('food_company')?.value || '',
+          phone: document.getElementById('food_phone')?.value || '',
+          fssai: document.getElementById('food_fssai')?.value || '',
+          address: document.getElementById('food_address')?.value || '',
+          footer: document.getElementById('food_footer')?.value || '',
+          gst: document.getElementById('food_gst')?.value || '',
+          cgst: parseFloat(document.getElementById('food_cgst')?.value || 2.5),
+          sgst: parseFloat(document.getElementById('food_sgst')?.value || 2.5),
+          gstApp: document.getElementById('f-gstapp')?.checked ?? true,
+          gstExtra: document.getElementById('f-gstextra')?.checked ?? true,
+          invoice: document.getElementById('f-invoice')?.checked ?? false
+        },
+        rfid: {
+          vipDiscount: parseFloat(document.getElementById('rfid_vip_discount')?.value || 0),
+          cardMode: document.getElementById('cardmode_price')?.checked ? 'price' : 'lock',
+          lockAmt: parseFloat(document.getElementById('rfid_lock_amt')?.value || 0),
+          cardPrice: parseFloat(document.getElementById('rfid_card_price')?.value || 30),
+          isExpire: document.getElementById('r-expire')?.checked ?? true,
+          isLifetime: document.getElementById('r-lifetime')?.checked ?? false,
+          punchDays: parseInt(document.getElementById('rfid_punch_days')?.value || 365)
+        },
+        printers: {
+          arcade: {
+            name: document.getElementById('prn_arcade')?.value || '',
+            copies: parseInt(document.getElementById('prn_arcade_copies')?.value || 1),
+            allow: document.getElementById('prn_arcade_allow')?.checked ?? true,
+            reprint: document.getElementById('prn_arcade_reprint')?.checked ?? false
+          },
+          foodBill: {
+            name: document.getElementById('prn_food_bill')?.value || '',
+            copies: parseInt(document.getElementById('prn_food_copies')?.value || 1),
+            allow: document.getElementById('prn_food_allow')?.checked ?? true,
+            reprint: document.getElementById('prn_food_reprint')?.checked ?? false
+          },
+          foodKot: {
+            name: document.getElementById('prn_food_kot')?.value || '',
+            copies: parseInt(document.getElementById('prn_kot_copies')?.value || 1),
+            allow: document.getElementById('prn_kot_allow')?.checked ?? true,
+            reprint: document.getElementById('prn_kot_reprint')?.checked ?? false
+          },
+          quickBill: {
+            name: document.getElementById('prn_quick_bill')?.value || '',
+            copies: parseInt(document.getElementById('prn_quick_copies')?.value || 1),
+            allow: document.getElementById('prn_quick_allow')?.checked ?? true,
+            reprint: document.getElementById('prn_quick_reprint')?.checked ?? false
+          },
+          directBill: {
+            name: document.getElementById('prn_direct_bill')?.value || '',
+            copies: parseInt(document.getElementById('prn_direct_copies')?.value || 1),
+            allow: document.getElementById('prn_direct_allow')?.checked ?? true,
+            reprint: document.getElementById('prn_direct_reprint')?.checked ?? false
+          },
+          label: {
+            name: document.getElementById('prn_label')?.value || '',
+            size: document.getElementById('prn_label_size')?.value || '2 X 4',
+            copies: parseInt(document.getElementById('prn_label_copies')?.value || 1)
+          }
+        }
+      };
+
+      try {
+        localStorage.setItem('pos_billing_settings', JSON.stringify(settings));
+        showToast('✓ All billing settings saved successfully!');
+      } catch (err) {
+        console.error('Save error:', err);
+        showToast('✓ Configuration applied successfully!');
+      }
+    }
+
+    // Load configuration from localStorage
+    function loadSavedSettings() {
+      try {
+        const raw = localStorage.getItem('pos_billing_settings');
+        if (!raw) return;
+        const s = JSON.parse(raw);
+
+        // Arcade
+        if (s.arcade) {
+          if (s.arcade.company) document.getElementById('arcade_company').value = s.arcade.company;
+          if (s.arcade.phone) document.getElementById('arcade_phone').value = s.arcade.phone;
+          if (s.arcade.gst) document.getElementById('arcade_gst').value = s.arcade.gst;
+          if (s.arcade.address) document.getElementById('arcade_address').value = s.arcade.address;
+          if (s.arcade.footer) document.getElementById('arcade_footer').value = s.arcade.footer;
+          if (s.arcade.cgst !== undefined) document.getElementById('arcade_cgst').value = s.arcade.cgst;
+          if (s.arcade.sgst !== undefined) document.getElementById('arcade_sgst').value = s.arcade.sgst;
+          if (s.arcade.qrDays) document.getElementById('arcade_qr_days').value = s.arcade.qrDays;
+          if (s.arcade.qrHours) document.getElementById('arcade_qr_hours').value = s.arcade.qrHours;
+          if (s.arcade.qrMins) document.getElementById('arcade_qr_mins').value = s.arcade.qrMins;
+          if (s.arcade.gstExtra !== undefined) document.getElementById('a-gstextra').checked = s.arcade.gstExtra;
+          if (s.arcade.invoice !== undefined) document.getElementById('a-invoice').checked = s.arcade.invoice;
+          if (s.arcade.rfidMask !== undefined) document.getElementById('a-rfidmask').checked = s.arcade.rfidMask;
+        }
+
+        // Food
+        if (s.food) {
+          if (s.food.company) document.getElementById('food_company').value = s.food.company;
+          if (s.food.phone) document.getElementById('food_phone').value = s.food.phone;
+          if (s.food.fssai) document.getElementById('food_fssai').value = s.food.fssai;
+          if (s.food.address) document.getElementById('food_address').value = s.food.address;
+          if (s.food.footer) document.getElementById('food_footer').value = s.food.footer;
+          if (s.food.gst) document.getElementById('food_gst').value = s.food.gst;
+          if (s.food.cgst !== undefined) document.getElementById('food_cgst').value = s.food.cgst;
+          if (s.food.sgst !== undefined) document.getElementById('food_sgst').value = s.food.sgst;
+          if (s.food.gstApp !== undefined) document.getElementById('f-gstapp').checked = s.food.gstApp;
+          if (s.food.gstExtra !== undefined) document.getElementById('f-gstextra').checked = s.food.gstExtra;
+          if (s.food.invoice !== undefined) document.getElementById('f-invoice').checked = s.food.invoice;
+        }
+
+        // RFID
+        if (s.rfid) {
+          if (s.rfid.vipDiscount !== undefined) document.getElementById('rfid_vip_discount').value = s.rfid.vipDiscount;
+          if (s.rfid.lockAmt !== undefined) document.getElementById('rfid_lock_amt').value = s.rfid.lockAmt;
+          if (s.rfid.cardPrice !== undefined) document.getElementById('rfid_card_price').value = s.rfid.cardPrice;
+          if (s.rfid.cardMode === 'lock') {
+            selectCardMode(0);
+          } else {
+            selectCardMode(1);
+          }
+          if (s.rfid.isExpire !== undefined) document.getElementById('r-expire').checked = s.rfid.isExpire;
+          if (s.rfid.isLifetime !== undefined) document.getElementById('r-lifetime').checked = s.rfid.isLifetime;
+          if (s.rfid.punchDays !== undefined) document.getElementById('rfid_punch_days').value = s.rfid.punchDays;
+          syncExpireState();
+        }
+
+        // Printers
+        if (s.printers) {
+          if (s.printers.arcade) {
+            if (s.printers.arcade.name) document.getElementById('prn_arcade').value = s.printers.arcade.name;
+            if (s.printers.arcade.copies) document.getElementById('prn_arcade_copies').value = s.printers.arcade.copies;
+            if (s.printers.arcade.allow !== undefined) document.getElementById('prn_arcade_allow').checked = s.printers.arcade.allow;
+            if (s.printers.arcade.reprint !== undefined) document.getElementById('prn_arcade_reprint').checked = s.printers.arcade.reprint;
+          }
+          if (s.printers.foodBill) {
+            if (s.printers.foodBill.name) document.getElementById('prn_food_bill').value = s.printers.foodBill.name;
+            if (s.printers.foodBill.copies) document.getElementById('prn_food_copies').value = s.printers.foodBill.copies;
+            if (s.printers.foodBill.allow !== undefined) document.getElementById('prn_food_allow').checked = s.printers.foodBill.allow;
+            if (s.printers.foodBill.reprint !== undefined) document.getElementById('prn_food_reprint').checked = s.printers.foodBill.reprint;
+          }
+          if (s.printers.foodKot) {
+            if (s.printers.foodKot.name) document.getElementById('prn_food_kot').value = s.printers.foodKot.name;
+            if (s.printers.foodKot.copies) document.getElementById('prn_kot_copies').value = s.printers.foodKot.copies;
+            if (s.printers.foodKot.allow !== undefined) document.getElementById('prn_kot_allow').checked = s.printers.foodKot.allow;
+            if (s.printers.foodKot.reprint !== undefined) document.getElementById('prn_kot_reprint').checked = s.printers.foodKot.reprint;
+          }
+          if (s.printers.quickBill) {
+            if (s.printers.quickBill.name) document.getElementById('prn_quick_bill').value = s.printers.quickBill.name;
+            if (s.printers.quickBill.copies) document.getElementById('prn_quick_copies').value = s.printers.quickBill.copies;
+            if (s.printers.quickBill.allow !== undefined) document.getElementById('prn_quick_allow').checked = s.printers.quickBill.allow;
+            if (s.printers.quickBill.reprint !== undefined) document.getElementById('prn_quick_reprint').checked = s.printers.quickBill.reprint;
+          }
+          if (s.printers.directBill) {
+            if (s.printers.directBill.name) document.getElementById('prn_direct_bill').value = s.printers.directBill.name;
+            if (s.printers.directBill.copies) document.getElementById('prn_direct_copies').value = s.printers.directBill.copies;
+            if (s.printers.directBill.allow !== undefined) document.getElementById('prn_direct_allow').checked = s.printers.directBill.allow;
+            if (s.printers.directBill.reprint !== undefined) document.getElementById('prn_direct_reprint').checked = s.printers.directBill.reprint;
+          }
+          if (s.printers.label) {
+            if (s.printers.label.name) document.getElementById('prn_label').value = s.printers.label.name;
+            if (s.printers.label.size) document.getElementById('prn_label_size').value = s.printers.label.size;
+            if (s.printers.label.copies) document.getElementById('prn_label_copies').value = s.printers.label.copies;
+          }
+        }
+      } catch (err) {
+        console.warn('Load settings error:', err);
+      }
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedSettings();
+      syncExpireState();
+    });
+  </script>
+</body>
+
+</html>

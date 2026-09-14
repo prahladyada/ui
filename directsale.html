@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Direct Sale</title>
+  <style>
+    :root {
+      --indigo: #4338ca;
+      --indigo-dark: #3730a3;
+      --indigo-light: #eef2ff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --ink-faint: #94a3b8;
+      --line: #e2e8f0;
+      --line-strong: #cbd5e1;
+      --bg: #f8fafc;
+      --danger: #b91c1c;
+      --ok: #15803d;
+      --warn: #c2410c;
+      --radius: 10px;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 13.5px;
+      overflow-y: hidden;
+    }
+
+    /* Shared Direct Sale CSS */
+    .ds-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #f1f5f9;
+    }
+
+    .pr-table-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e2e8f0;
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pr-filter-field label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #6366f1;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .ds-group-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #475569;
+      font-weight: 600;
+      font-size: 12.5px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .ds-group-btn.active,
+    .ds-group-btn:hover {
+      background: #4f46e5;
+      color: #fff;
+      border-color: #4f46e5;
+    }
+
+    .ds-item-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      width: 100%;
+      max-width: 125px;
+    }
+
+    .ds-item-card:hover {
+      border-color: #6366f1;
+      box-shadow: 0 6px 12px -3px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .ds-item-card:active {
+      transform: translateY(0);
+    }
+
+    .ds-item-img {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12.5px;
+      text-align: center;
+      padding: 3px 6px;
+      line-height: 1.2;
+    }
+
+    .ds-item-info {
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #fff;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .ds-item-info span {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ds-item-info strong {
+      color: #4f46e5;
+      font-size: 13px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #4338ca;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      font-weight: 700;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .qty-btn:hover {
+      border-color: #4338ca;
+      background: #eef2ff;
+    }
+
+    @media (max-width: 1100px) {
+      .ds-main-layout {
+        gap: 8px !important;
+        padding: 0 !important;
+      }
+
+      .ds-catalog-column {
+        flex: 3 1 0 !important;
+        min-width: 0;
+        gap: 8px !important;
+        padding-right: 0 !important;
+      }
+
+      #customerFormCard {
+        min-width: 0;
+        width: 100%;
+        padding: 10px !important;
+      }
+
+      #customerFormCard > div:nth-child(2) {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+
+      #customerFormCard .pr-filter-field,
+      #customerFormCard .pr-filter-field input,
+      #customerFormCard .pr-filter-field select {
+        min-width: 0;
+        width: 100%;
+      }
+
+      #customerFormCard .pr-filter-field > div {
+        min-width: 0;
+      }
+
+      #customerFormCard .pr-filter-field > div input {
+        min-width: 0;
+      }
+
+      .ds-items-panel {
+        padding: 10px !important;
+      }
+
+      .ds-items-header {
+        flex-wrap: wrap;
+        gap: 6px !important;
+        margin-bottom: 8px !important;
+      }
+
+      .ds-items-header h3 {
+        font-size: 13px !important;
+        white-space: nowrap;
+      }
+
+      .ds-items-header > div:last-child {
+        flex: 1 1 210px;
+        min-width: 0;
+      }
+
+      .ds-items-header > div:last-child > div {
+        width: auto !important;
+        flex: 1 1 130px;
+        min-width: 0;
+      }
+
+      .ds-items-header > div:last-child input {
+        min-width: 0;
+      }
+
+      .ds-category-nav {
+        flex-wrap: wrap;
+        gap: 4px !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 8px !important;
+      }
+
+      .ds-category-nav .ds-group-btn {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+
+      .ds-items-grid {
+        grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)) !important;
+        gap: 8px !important;
+        overflow-x: hidden !important;
+        padding-right: 0 !important;
+      }
+
+      .ds-checkout-panel {
+        flex: 1 1 300px !important;
+        min-width: 280px !important;
+      }
+
+      .ds-checkout-panel > div:first-child,
+      .ds-cart-items,
+      .ds-checkout-panel > div:last-child {
+        padding: 12px !important;
+      }
+
+      .ds-cart-items {
+        gap: 10px !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .ds-main-layout {
+        flex-direction: column !important;
+        overflow-y: auto !important;
+      }
+
+      .ds-catalog-column,
+      .ds-checkout-panel {
+        flex: 0 0 auto !important;
+        width: 100%;
+        min-width: 0 !important;
+      }
+
+      #customerFormCard > div:nth-child(2) {
+        grid-template-columns: 1fr !important;
+      }
+
+      .ds-items-panel {
+        min-height: 360px;
+      }
+
+      .ds-checkout-panel {
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ds-wrapper">
+
+    <div class="ds-main-layout" style="display: flex; flex: 1; overflow: hidden; gap: 14px; padding: 0;">
+      <!-- Left Side: Forms & Items -->
+      <div class="ds-catalog-column" style="flex: 3; display: flex; flex-direction: column; gap: 14px; overflow: hidden; padding-right: 4px;">
+
+        <!-- Customer Form (Hidden by default) -->
+        <div id="customerFormCard" class="pr-table-card" style="display: none; padding: 14px 16px; flex: none; overflow: visible; transition: all 0.3s ease;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+            <div style="font-weight: 700; color: #0f172a; font-size: 13.5px; display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" fill="none" stroke="#4f46e5" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Customer Details
+            </div>
+            <button onclick="toggleCustomerForm()" style="background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer; padding: 0 4px; line-height: 1;" title="Close">✕</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div class="pr-filter-field"><label>Mobile</label><input type="text" placeholder="Enter mobile" /></div>
+            <div class="pr-filter-field"><label>Name</label><input type="text" placeholder="Enter name" /></div>
+
+            <div class="pr-filter-field">
+              <label>DOB</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="date" style="flex: 1; cursor: pointer;" onclick="try{this.showPicker()}catch(e){}" />
+                <button id="moreCustomerBtn"
+                  style="padding: 0 12px; border: none; border-radius: 6px; background: #4338ca; color: #fff; font-weight: 600; cursor: pointer; font-size: 13px; box-shadow: 0 2px 4px rgba(67, 56, 202, 0.2);">More</button>
+              </div>
+            </div>
+
+            <div class="pr-filter-field extra-customer-field" style="display: none;"><label>Location</label><input
+                type="text" placeholder="Enter location" /></div>
+            <div class="pr-filter-field extra-customer-field" style="display: none;"><label>Email</label><input
+                type="email" placeholder="Enter email address" /></div>
+          </div>
+        </div>
+
+        <!-- Items Section -->
+        <div class="pr-table-card ds-items-panel"
+          style="padding: 14px 16px; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+          <div class="ds-items-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 12px;">
+            <h3 style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 700;">Item Groups &amp; Details</h3>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="position: relative; width: 190px;">
+                <span
+                  style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; display: flex; align-items: center; pointer-events: none;">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                <input type="text" placeholder="Search items..."
+                  oninput="filterDirectSaleItems(this.value)"
+                  style="width: 100%; padding: 6px 10px 6px 30px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13px; outline: none; transition: border-color 0.2s; background: #f8fafc;"
+                  onfocus="this.style.borderColor='#6366f1'; this.style.background='#fff'"
+                  onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'" />
+              </div>
+              <button id="toggleCustomerBtn" onclick="toggleCustomerForm()"
+                style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px; background: #4f46e5; color: #ffffff; border: none; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(79, 70, 229, 0.25); white-space: nowrap; transition: all 0.2s ease;"
+                onmouseover="this.style.background='#4338ca';"
+                onmouseout="this.style.background = (document.getElementById('customerFormCard') && document.getElementById('customerFormCard').style.display !== 'none') ? '#475569' : '#4f46e5';">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <line x1="20" y1="8" x2="20" y2="14"></line>
+                  <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                <span>Add Customer</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="ds-category-nav"
+            style="display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0;">
+            <button class="ds-group-btn active">Food</button>
+            <button class="ds-group-btn">Beverages</button>
+            <button class="ds-group-btn">Toys</button>
+            <button class="ds-group-btn">Soft Play</button>
+            <button class="ds-group-btn">Activity Tickets</button>
+          </div>
+
+          <div class="ds-items-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 120px)); gap: 10px; overflow-y: auto; padding-right: 6px; align-content: flex-start; flex: 1;">
+            <div class="ds-item-card">
+              <div class="ds-item-img"
+                style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); color: #4f46e5;"> Veg Burger</div>
+              <div class="ds-item-info"><strong>₹120</strong></div>
+            </div>
+            <div class="ds-item-card">
+              <div class="ds-item-img"
+                style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); color: #e11d48;"> Cheese Pizza
+              </div>
+              <div class="ds-item-info"><strong>₹250</strong></div>
+            </div>
+            <div class="ds-item-card">
+              <div class="ds-item-img"
+                style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); color: #16a34a;">French Fries
+              </div>
+              <div class="ds-item-info"><strong>₹90</strong></div>
+            </div>
+            <div class="ds-item-card">
+              <div class="ds-item-img"
+                style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #d97706;">White Pasta
+              </div>
+              <div class="ds-item-info"><strong>₹180</strong></div>
+            </div>
+            <div class="ds-item-card">
+              <div class="ds-item-img"
+                style="background: linear-gradient(135deg, #c7fefe 0%, #fde68a 100%); color: #069dd9;">Red Sauce Pasta
+              </div>
+              <div class="ds-item-info"><strong>₹190</strong></div>
+            </div>
+            <div class="ds-item-card">
+              <div class="ds-item-img"
+                style="background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #9333ea;">Paneer Wrap
+              </div>
+              <div class="ds-item-info"><strong>₹140</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Checkout -->
+      <div class="ds-checkout-panel"
+        style="flex: 1; min-width: 320px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+        <div
+          style="padding: 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px 12px 0 0;">
+          <h3
+            style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+              style="color: #4f46e5;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Checkout Details
+          </h3>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="ds-cart-items" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; color: #1e293b; font-size: 14px;">Veg Burger</div>
+              <div style="font-size: 12.5px; color: #64748b; margin-top: 4px;">₹120</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+              <button class="qty-btn" style="line-height: 0; padding-bottom: 2px;">-</button>
+              <span style="font-weight: 700; font-size: 15px; color: #0f172a; min-width: 14px; text-align: center;">2</span>
+              <button class="qty-btn" style="line-height: 0; padding-bottom: 2px;">+</button>
+            </div>
+            <div style="font-weight: 700; color: #0f172a; min-width: 40px; text-align: right;">₹240</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; color: #1e293b; font-size: 14px;">French Fries</div>
+              <div style="font-size: 12.5px; color: #64748b; margin-top: 4px;">₹90</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+              <button class="qty-btn" style="line-height: 0; padding-bottom: 2px;">-</button>
+              <span style="font-weight: 700; font-size: 15px; color: #0f172a; min-width: 14px; text-align: center;">1</span>
+              <button class="qty-btn" style="line-height: 0; padding-bottom: 2px;">+</button>
+            </div>
+            <div style="font-weight: 700; color: #0f172a; min-width: 40px; text-align: right;">₹90</div>
+          </div>
+        </div>
+
+        <!-- Totals & Pay -->
+        <div
+          style="background: #f8fafc; padding: 24px 20px; border-top: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">
+          <div
+            style="display: flex; justify-content: space-between; margin-bottom: 12px; color: #64748b; font-size: 14px; font-weight: 500;">
+            <span>Subtotal</span><span>₹330.00</span>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; margin-bottom: 16px; color: #64748b; font-size: 14px; font-weight: 500;">
+            <span>Tax (5%)</span><span>₹16.50</span>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; margin-bottom: 24px; font-weight: 700; font-size: 18px; color: #0f172a; border-top: 2px dashed #cbd5e1; padding-top: 16px;">
+            <span>Total Amount</span><span>₹346.50</span>
+          </div>
+          <button
+            style="width: 100%; padding: 12px; background: #4f46e5; color: #fff; border: none; border-radius: 6px; font-size: 14.5px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(79, 70, 229, 0.25); transition: all 0.2s ease;"
+            onmouseover="this.style.background='#4338ca'; this.style.boxShadow='0 4px 12px rgba(79, 70, 229, 0.35)';"
+            onmouseout="this.style.background='#4f46e5'; this.style.boxShadow='0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(79, 70, 229, 0.25)';">
+            Proceed to Pay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const btn = document.getElementById('moreCustomerBtn');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          const extraFields = document.querySelectorAll('.extra-customer-field');
+          if (extraFields.length > 0) {
+            const isHidden = extraFields[0].style.display === 'none';
+            extraFields.forEach(f => f.style.display = isHidden ? 'flex' : 'none');
+            this.textContent = isHidden ? 'Less' : 'More';
+          }
+        });
+      }
+
+      // Toggle Customer Form Logic
+      window.toggleCustomerForm = function () {
+        const card = document.getElementById('customerFormCard');
+        const btn = document.getElementById('toggleCustomerBtn');
+        if (!card) return;
+        const isHidden = (card.style.display === 'none' || card.style.display === '');
+        card.style.display = isHidden ? 'block' : 'none';
+        if (btn) {
+          const textSpan = btn.querySelector('span');
+          if (isHidden) {
+            btn.style.background = '#475569';
+            if (textSpan) textSpan.textContent = 'Hide Customer';
+          } else {
+            btn.style.background = '#4f46e5';
+            if (textSpan) textSpan.textContent = 'Add Customer';
+          }
+        }
+      };
+
+      // Realtime search filtering for direct sale items
+      window.filterDirectSaleItems = function (query) {
+        const q = (query || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.ds-item-card');
+        cards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(q) ? 'flex' : 'none';
+        });
+      };
+
+      // Quantity Stepper Logic
+      const qtyBtns = document.querySelectorAll('.qty-btn');
+      qtyBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const isPlus = this.textContent.trim() === '+';
+          const span = isPlus ? this.previousElementSibling : this.nextElementSibling;
+          if(span) {
+            let val = parseInt(span.textContent);
+            if (isPlus) {
+              val++;
+            } else {
+              if (val > 1) val--;
+            }
+            span.textContent = val;
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

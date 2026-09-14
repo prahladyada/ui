@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Details</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= PROFESSIONAL REPORT STYLES ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+      gap: 12px;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 10px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #f0f9ff;
+      border-color: #38bdf8;
+      color: #0284c7;
+    }
+
+    /* KPI Summary Cards */
+    .pr-kpi-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pr-kpi-val.sky {
+      color: #0284c7;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    /* Table Container */
+    .pr-table-card {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-table-area {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+
+    table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      padding: 10px 14px;
+      border-bottom: 2px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #f8fafc;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fcfdfe;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+
+    .pr-table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 11.5px;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1 class="pr-title" id="reportTitle">Report Details</h1>
+          <p class="pr-subtitle" id="reportSubtitle">Consolidated performance metrics, logs and detailed summary records</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="window.print()" title="Print Report">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBackToReports()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Cards Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Records</span>
+        <span class="pr-kpi-val sky">2 Entries</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Value</span>
+        <span class="pr-kpi-val green">₹24,850.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Status</span>
+        <span class="pr-kpi-val" style="color: #059669;">100% Reconciled</span>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <section class="pr-table-card">
+      <div class="pr-table-area">
+        <table id="detailTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Report Entry Description</th>
+              <th>Date & Time</th>
+              <th>Amount / Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight: 700; color: #64748b;">1</td>
+              <td style="font-weight: 600; color: #0f172a;">Sample Transaction Entry A</td>
+              <td>10 Sep 2026, 14:32</td>
+              <td style="font-weight: 600; color: #059669;">INR 12,450.00</td>
+              <td><span class="status-badge">Completed</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: #64748b;">2</td>
+              <td style="font-weight: 600; color: #0f172a;">Sample Transaction Entry B</td>
+              <td>09 Sep 2026, 18:15</td>
+              <td style="font-weight: 600; color: #059669;">INR 12,400.00</td>
+              <td><span class="status-badge">Completed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pr-table-footer">
+        <span>Showing 2 records</span>
+        <span>Detailed View • FunSquare POS System</span>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var reportName = params.get('report') || 'Report Details';
+    document.getElementById('reportTitle').textContent = reportName;
+    document.title = reportName + ' - FunSquare POS';
+
+    function goBackToReports() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+
+    function exportToExcel() {
+      var table = document.getElementById('detailTable');
+      var csv = [];
+      for (var i = 0; i < table.rows.length; i++) {
+        var row = [], cols = table.rows[i].cells;
+        for (var j = 0; j < cols.length; j++) {
+          var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/,/g, '');
+          row.push('"' + data + '"');
+        }
+        csv.push(row.join(','));
+      }
+      var csvString = '\uFEFF' + csv.join('\n');
+      var blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', (reportName.replace(/\s+/g, '_') || 'Report') + '_Details.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shift Schedule & Automation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-border: #c7d2fe;
+
+      --ink-dark: #0f172a;
+      --ink: #1e293b;
+      --ink-muted: #64748b;
+      --ink-faint: #94a3b8;
+
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --sky: #0284c7;
+      --sky-light: #f0f9ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-y: auto;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Layout Wrapper */
+    .shift-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background: var(--bg-page);
+      padding: 0;
+      gap: 20px;
+    }
+
+    /* Header Bar */
+    .shift-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .shift-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .shift-icon-badge {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .shift-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--ink-dark);
+      margin: 0;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .shift-subtitle {
+      margin: 3px 0 0;
+      color: var(--ink-muted);
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    .shift-header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Action Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 16px;
+      height: 38px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.42);
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      border-color: var(--border-dark);
+      color: var(--ink);
+    }
+
+    .btn-outline:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: var(--ink-dark);
+    }
+
+    .btn-back {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .btn-back:hover {
+      background: #1e293b;
+    }
+
+    /* ================= LIVE STATUS HERO BANNER ================= */
+    .live-status-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 16px;
+      padding: 18px 24px;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+      border: 1px solid #334155;
+    }
+
+    .hero-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-pulse-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #34d399;
+      flex-shrink: 0;
+    }
+
+    .hero-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 12px #10b981;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
+    .hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin: 0;
+    }
+
+    .hero-chip-active {
+      font-size: 11px;
+      font-weight: 700;
+      background: #10b981;
+      color: #ffffff;
+      padding: 2px 9px;
+      border-radius: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-desc {
+      font-size: 12.5px;
+      color: #94a3b8;
+      margin: 4px 0 0;
+    }
+
+    .hero-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-stat-pill {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .hero-stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hero-stat-value {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ================= 4 MASTER AUTOMATION SWITCH CARDS ================= */
+    .section-headline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin: 2px 0 0;
+    }
+
+    .auto-toggle-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+
+    .auto-toggle-card {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .auto-toggle-card:hover {
+      border-color: var(--primary-border);
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .auto-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .auto-icon-box.green {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+
+    .auto-icon-box.indigo {
+      background: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #c7d2fe;
+    }
+
+    .auto-icon-box.amber {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+
+    .auto-icon-box.purple {
+      background: #f5f3ff;
+      color: #7c3aed;
+      border: 1px solid #ddd6fe;
+    }
+
+    .auto-toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .auto-toggle-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .auto-toggle-desc {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      line-height: 1.38;
+    }
+
+    /* Switch Toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: .25s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked+.slider {
+      background-color: var(--primary);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
+    }
+
+    /* ================= SHIFT SCHEDULES LIST (CARDS & TABLE) ================= */
+    .schedule-control-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .view-toggle-wrap {
+      display: inline-flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
+    }
+
+    .view-toggle-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .view-toggle-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Grid of Visual Shift Cards */
+    .shifts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .shift-card {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .shift-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+      transform: translateY(-2px);
+    }
+
+    .shift-card.active-card {
+      border-color: #a5b4fc;
+      background: #ffffff;
+    }
+
+    .shift-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .shift-card-name-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .shift-card-name {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .shift-card-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .shift-card-status-badge.active {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .shift-card-status-badge.paused {
+      background: #f1f5f9;
+      color: var(--ink-faint);
+      border: 1px solid #e2e8f0;
+    }
+
+    .shift-card-terminals {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+    }
+
+    .shift-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Big Time Display Row */
+    .time-boxes-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      background: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .time-box {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .time-box-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .time-box-val {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--ink-dark);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .time-box-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      width: fit-content;
+    }
+
+    .badge-auto-open {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-auto-close {
+      background: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #c7d2fe;
+    }
+
+    .badge-manual {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Duration & Days */
+    .shift-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding-top: 2px;
+    }
+
+    .duration-pill {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Days Pills */
+    .days-pill-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .day-pill {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+
+    .day-pill.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .shift-card-footer {
+      border-top: 1px solid #f1f5f9;
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .float-badge {
+      font-weight: 700;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Action Buttons in Card */
+    .action-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--ink-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .action-icon-btn:hover {
+      background: #f1f5f9;
+      color: var(--primary);
+      border-color: var(--primary-border);
+    }
+
+    .action-icon-btn.delete:hover {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: #fca5a5;
+    }
+
+    /* ================= TABLE VIEW CONTAINER ================= */
+    .shifts-table-wrap {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      display: none;
+    }
+
+    .shifts-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .shifts-table th {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .shifts-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      font-size: 12.5px;
+    }
+
+    .shifts-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* ================= 2-COLUMN BOTTOM: AUTOMATION RULES & PRESETS ================= */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .panel-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    .panel-card-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    .rules-simple-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 650px) {
+      .rules-simple-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .rule-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rule-field label {
+      font-weight: 600;
+      font-size: 12.5px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rule-field .rule-help {
+      font-size: 11px;
+      color: var(--ink-muted);
+      margin-top: -2px;
+    }
+
+    .rule-field select,
+    .rule-field input {
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--ink-dark);
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .rule-field select:focus,
+    .rule-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    /* Quick Preset Buttons */
+    .preset-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .preset-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--ink-dark);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-border);
+      color: var(--primary);
+    }
+
+    .preset-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .preset-title {
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .preset-detail {
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    /* Modal Styling */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 18px;
+      width: 560px;
+      max-width: 92vw;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transform: scale(0.93);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.active .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 18px 22px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      color: #ffffff;
+    }
+
+    .modal-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .modal-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .day-selector-wrap {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .day-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: var(--ink-muted);
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .day-btn.selected {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+    }
+
+    .modal-footer {
+      padding: 16px 22px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      z-index: 99999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shift-wrapper">
+
+    <!-- Header Bar with Premium Icon -->
+    <header class="shift-header">
+      <div class="shift-title-group">
+        <div class="shift-icon-badge" title="Shift Schedule & Automation Console">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15 15"></polyline>
+            <path d="M12 3V1"></path>
+            <path d="M12 23v-2"></path>
+            <path d="M3 12H1"></path>
+            <path d="M23 12h-2"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="shift-title">Shift Schedule &amp; Automation</h1>
+          <p class="shift-subtitle">Configure automated register opening &amp; closing timings, cashier handover triggers &amp; cash float</p>
+        </div>
+      </div>
+
+      <div class="shift-header-actions">
+        <button class="btn btn-primary" onclick="openShiftModal()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          + New Shift Schedule
+        </button>
+        <button class="btn btn-outline" onclick="saveAutomationSettings()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save Automation
+        </button>
+        <button class="btn btn-back" onclick="goBack()" title="Back to Master Configurations">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path d="M9 14L4 9l5-5"></path>
+            <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v2.5"></path>
+          </svg>
+          Back to Master
+        </button>
+      </div>
+    </header>
+
+    <!-- Live Status Hero Banner -->
+    <div class="live-status-hero">
+      <div class="hero-left">
+        <div class="hero-pulse-badge">
+          <div class="hero-pulse-dot"></div>
+        </div>
+        <div>
+          <div class="hero-title-row">
+            <h3 class="hero-title" id="heroShiftName">Morning Shift is Currently Active</h3>
+            <span class="hero-chip-active">● RUNNING</span>
+          </div>
+          <p class="hero-desc" id="heroShiftDesc">08:00 AM – 03:00 PM (Mon–Sun) &bull; Assigned to All POS Counters</p>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-stat-pill">
+          <span class="hero-stat-label">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Next Automated Event
+          </span>
+          <span class="hero-stat-value" id="heroNextEvent">Auto-Close at 03:00 PM</span>
+        </div>
+        <div class="hero-stat-pill">
+          <span class="hero-stat-label">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"></circle>
+              <polyline points="12 7 12 12 15 15"></polyline>
+            </svg>
+            Active Schedules
+          </span>
+          <span class="hero-stat-value" id="heroActiveCount" style="color: #34d399;">3 Configured</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: 4 Master Automation Toggles with Premium Icons -->
+    <div>
+      <div class="section-headline">
+        <div>
+          <h2 class="section-title">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Automation Controls
+          </h2>
+          <p class="section-subtitle">Turn automated opening, closing, and cash float audit checks ON or OFF</p>
+        </div>
+      </div>
+
+      <div class="auto-toggle-bar" style="margin-top: 10px;">
+        <!-- 1. Auto-Open Shift -->
+        <div class="auto-toggle-card">
+          <div class="auto-icon-box green">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 14 10"></polyline>
+              <path d="M12 2a10 10 0 0 1 10 10"></path>
+            </svg>
+          </div>
+          <div class="auto-toggle-info">
+            <span class="auto-toggle-title">Auto-Open Shift</span>
+            <span class="auto-toggle-desc">Automatically starts shift &amp; opens register at scheduled time</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="chkAutoOpen" checked onchange="notifyToggle('Auto-Open Shift', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 2. Auto-Close Shift -->
+        <div class="auto-toggle-card">
+          <div class="auto-icon-box indigo">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="auto-toggle-info">
+            <span class="auto-toggle-title">Auto-Close Shift</span>
+            <span class="auto-toggle-desc">Automatically locks register sales at scheduled closing time</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="chkAutoClose" checked onchange="notifyToggle('Auto-Close Shift', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 3. Enforce Cash Float Count -->
+        <div class="auto-toggle-card">
+          <div class="auto-icon-box amber">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              <circle cx="12" cy="12" r="2.5"></circle>
+              <path d="M6 12h.01M18 12h.01"></path>
+            </svg>
+          </div>
+          <div class="auto-toggle-info">
+            <span class="auto-toggle-title">Enforce Float Audit</span>
+            <span class="auto-toggle-desc">Require cashier physical cash count before punching bills</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="chkFloatAudit" checked onchange="notifyToggle('Float Audit', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Configured Shifts (Cards View + Table View Toggle) -->
+    <div>
+      <div class="schedule-control-bar">
+        <div>
+          <h2 class="section-title">
+            <svg width="18" height="18" fill="none" stroke="#4f46e5" stroke-width="2.2" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Configured Shift Schedules
+          </h2>
+          <p class="section-subtitle">Manage scheduled opening and closing times, active days, and terminal assignments</p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="view-toggle-wrap">
+            <button type="button" class="view-toggle-btn active" id="btnViewCards" onclick="switchViewMode('cards')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Cards
+            </button>
+            <button type="button" class="view-toggle-btn" id="btnViewTable" onclick="switchViewMode('table')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              Table
+            </button>
+          </div>
+          <span style="font-size: 12px; font-weight: 700; color: #4f46e5; background: #eef2ff; padding: 5px 12px; border-radius: 20px;" id="shiftCountBadge">3 Active Schedules</span>
+        </div>
+      </div>
+
+      <!-- View 1: Visual Cards Grid -->
+      <div class="shifts-grid" id="shiftsGrid" style="margin-top: 14px;">
+        <!-- Dynamically rendered by renderShifts() -->
+      </div>
+
+      <!-- View 2: Compact Table View -->
+      <div class="shifts-table-wrap" id="shiftsTableWrap" style="margin-top: 14px;">
+        <table class="shifts-table" id="shiftsTable">
+          <thead>
+            <tr>
+              <th>Shift Name</th>
+              <th>Operating Days</th>
+              <th>Opening Time</th>
+              <th>Closing Time</th>
+              <th>Terminals</th>
+              <th>Float Cash</th>
+              <th>Active</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="shiftsTbody">
+            <!-- Dynamically rendered by renderShifts() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom 2-Column: Simple Automation Rules & Quick Presets -->
+    <div class="bottom-grid">
+
+      <!-- Left: Simple Automation Parameters Form -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3 class="panel-card-title">
+            <svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            Automation Parameters &amp; Cash Rules
+          </h3>
+          <span style="font-size: 11.5px; color: #059669; font-weight: 600; background: #ecfdf5; padding: 3px 8px; border-radius: 12px;">Active &amp; Guarded</span>
+        </div>
+
+        <div class="panel-body">
+          <form onsubmit="event.preventDefault(); saveAutomationSettings();">
+            <div class="rules-simple-grid">
+
+              <!-- 1. Early Opening Buffer -->
+              <div class="rule-field">
+                <label>
+                  <svg width="14" height="14" fill="none" stroke="#4f46e5" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 10"></polyline></svg>
+                  Early Opening Buffer
+                </label>
+                <span class="rule-help">Allow cashier to login before opening time</span>
+                <select id="selOpeningGrace">
+                  <option value="0">Strict On-Time (0 minutes)</option>
+                  <option value="15" selected>15 minutes early</option>
+                  <option value="30">30 minutes early</option>
+                </select>
+              </div>
+
+              <!-- 2. Closing Grace Buffer -->
+              <div class="rule-field">
+                <label>
+                  <svg width="14" height="14" fill="none" stroke="#0284c7" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  Closing Grace Buffer
+                </label>
+                <span class="rule-help">Time to finish pending bills before auto-lock</span>
+                <select id="selClosingGrace">
+                  <option value="5">5 minutes grace</option>
+                  <option value="15" selected>15 minutes grace</option>
+                  <option value="30">30 minutes grace</option>
+                </select>
+              </div>
+
+              <!-- 3. Closing Action Mode -->
+              <div class="rule-field" style="grid-column: 1 / -1;">
+                <label>
+                  <svg width="14" height="14" fill="none" stroke="#7c3aed" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  When Shift Closes
+                </label>
+                <span class="rule-help">What action to trigger at closing time</span>
+                <select id="selClosingAction">
+                  <option value="lock" selected>Lock Screen &amp; Demand Cash Count</option>
+                  <option value="logout">Immediate Cashier Logout</option>
+                  <option value="seamless">Seamless Switch to Next Cashier</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-primary" style="width: auto;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Apply Automation Rules
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right: Quick Timing Presets -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3 class="panel-card-title">
+            <svg width="18" height="18" fill="none" stroke="#7c3aed" stroke-width="2.2" viewBox="0 0 24 24">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Quick Schedule Presets
+          </h3>
+        </div>
+
+        <div class="panel-body">
+          <div class="preset-card-list">
+            <button type="button" class="preset-btn" onclick="applyPreset('standard2')">
+              <div class="preset-info">
+                <span class="preset-title">⚡ Standard 2 Shifts (8h each)</span>
+                <span class="preset-detail">Morning (8 AM – 4 PM), Evening (4 PM – 12 AM)</span>
+              </div>
+              <span style="font-weight: 700; color: #4f46e5;">Apply &rarr;</span>
+            </button>
+
+            <button type="button" class="preset-btn" onclick="applyPreset('single12')">
+              <div class="preset-info">
+                <span class="preset-title">☀️ Single All-Day Shift (12h)</span>
+                <span class="preset-detail">General Day Shift (09:00 AM – 09:00 PM)</span>
+              </div>
+              <span style="font-weight: 700; color: #4f46e5;">Apply &rarr;</span>
+            </button>
+
+            <button type="button" class="preset-btn" onclick="applyPreset('roundclock')">
+              <div class="preset-info">
+                <span class="preset-title">🌙 24x7 Round-the-Clock (3 Shifts)</span>
+                <span class="preset-detail">8 AM – 4 PM &bull; 4 PM – 12 AM &bull; 12 AM – 8 AM</span>
+              </div>
+              <span style="font-weight: 700; color: #4f46e5;">Apply &rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================= ADD / EDIT SHIFT MODAL ================= -->
+  <div class="modal-backdrop" id="shiftModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Configure Shift Schedule
+        </h3>
+        <button class="modal-close" onclick="closeShiftModal()">&times;</button>
+      </div>
+
+      <form id="shiftForm" onsubmit="event.preventDefault(); submitShiftForm();">
+        <div class="modal-body">
+          <input type="hidden" id="editShiftId" value="" />
+
+          <!-- Shift Name -->
+          <div class="rule-field">
+            <label>Shift Name</label>
+            <input type="text" id="mShiftName" placeholder="e.g. Morning Shift, Evening Rush" required />
+          </div>
+
+          <!-- Opening & Closing Times -->
+          <div class="modal-row-2">
+            <div class="rule-field">
+              <label>
+                <svg width="14" height="14" fill="none" stroke="#059669" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg>
+                Opening Time
+              </label>
+              <input type="time" id="mOpenTime" value="08:00" required onchange="calcModalDuration()" />
+            </div>
+            <div class="rule-field">
+              <label>
+                <svg width="14" height="14" fill="none" stroke="#4f46e5" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                Closing Time
+              </label>
+              <input type="time" id="mCloseTime" value="15:00" required onchange="calcModalDuration()" />
+            </div>
+          </div>
+
+          <!-- Calculated Duration Note -->
+          <div id="modalDurationNotice" style="background: #f1f5f9; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #475569; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            ⏱️ Calculated Shift Duration: 7 Hours 00 Mins
+          </div>
+
+          <!-- Automation Toggles for this shift -->
+          <div class="modal-row-2">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-weight: 700; font-size: 12px;">Auto-Open</span>
+                <span style="font-size: 11px; color: #64748b;">Start register at open time</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="mAutoOpen" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-weight: 700; font-size: 12px;">Auto-Close</span>
+                <span style="font-size: 11px; color: #64748b;">Lock billing at close time</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="mAutoClose" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Applicable Days -->
+          <div class="rule-field">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label>Operating Days</label>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" style="border: none; background: #eef2ff; color: #4f46e5; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; cursor: pointer;" onclick="quickSelectDays('all')">All 7 Days</button>
+                <button type="button" style="border: none; background: #f1f5f9; color: #475569; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; cursor: pointer;" onclick="quickSelectDays('weekdays')">Mon-Fri</button>
+              </div>
+            </div>
+            <div class="day-selector-wrap" style="margin-top: 4px;">
+              <button type="button" class="day-btn selected" data-day="Mon" onclick="toggleDay(this)">Mon</button>
+              <button type="button" class="day-btn selected" data-day="Tue" onclick="toggleDay(this)">Tue</button>
+              <button type="button" class="day-btn selected" data-day="Wed" onclick="toggleDay(this)">Wed</button>
+              <button type="button" class="day-btn selected" data-day="Thu" onclick="toggleDay(this)">Thu</button>
+              <button type="button" class="day-btn selected" data-day="Fri" onclick="toggleDay(this)">Fri</button>
+              <button type="button" class="day-btn selected" data-day="Sat" onclick="toggleDay(this)">Sat</button>
+              <button type="button" class="day-btn selected" data-day="Sun" onclick="toggleDay(this)">Sun</button>
+            </div>
+          </div>
+
+          <!-- Terminals & Float -->
+          <div class="modal-row-2">
+            <div class="rule-field">
+              <label>
+                <svg width="13" height="13" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line></svg>
+                Assigned Terminals
+              </label>
+              <select id="mTerminals">
+                <option value="All Terminals" selected>All Terminals</option>
+                <option value="Main Counter POS-1">Main Counter POS-1</option>
+                <option value="Self-Service Kiosk 1">Self-Service Kiosk 1</option>
+                <option value="Arcade Game Counter">Arcade Game Counter</option>
+                <option value="Food &amp; Beverage POS">Food &amp; Beverage POS</option>
+              </select>
+            </div>
+
+            <div class="rule-field">
+              <label>
+                <svg width="13" height="13" fill="none" stroke="#059669" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle></svg>
+                Opening Cash Float (₹)
+              </label>
+              <input type="number" id="mFloat" value="5000" min="0" step="500" placeholder="5000" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeShiftModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="modalSaveBtn">Save Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="shiftToast"></div>
+
+  <script>
+    // Shift Schedules Data Store
+    let shiftData = [
+      {
+        id: 1,
+        name: 'Morning Shift',
+        openTime: '08:00',
+        closeTime: '15:00',
+        autoOpen: true,
+        autoClose: true,
+        days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        terminals: 'All Terminals',
+        floatAmt: 5000,
+        active: true
+      },
+      {
+        id: 2,
+        name: 'Evening Rush Shift',
+        openTime: '15:00',
+        closeTime: '22:00',
+        autoOpen: true,
+        autoClose: true,
+        days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        terminals: 'All Terminals',
+        floatAmt: 5000,
+        active: true
+      },
+      {
+        id: 3,
+        name: 'Night & EOD Shift',
+        openTime: '22:00',
+        closeTime: '02:00',
+        autoOpen: true,
+        autoClose: true,
+        days: ['Fri', 'Sat', 'Sun'],
+        terminals: 'Main Counter POS-1',
+        floatAmt: 2000,
+        active: true
+      }
+    ];
+
+    let currentViewMode = 'cards'; // 'cards' or 'table'
+
+    // Format 24h string into friendly 12h AM/PM string
+    function formatTime12(time24) {
+      if (!time24) return '--';
+      let [h, m] = time24.split(':');
+      h = parseInt(h, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return (h < 10 ? '0' + h : h) + ':' + m + ' ' + ampm;
+    }
+
+    // Calculate duration between two 24h time strings
+    function calcDurationText(t1, t2) {
+      if (!t1 || !t2) return '';
+      let [h1, m1] = t1.split(':').map(Number);
+      let [h2, m2] = t2.split(':').map(Number);
+      let mins1 = h1 * 60 + m1;
+      let mins2 = h2 * 60 + m2;
+      if (mins2 <= mins1) mins2 += 24 * 60; // Next day
+      const diff = mins2 - mins1;
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
+      return `${hours}h ${minutes > 0 ? minutes + 'm' : '00m'}`;
+    }
+
+    function calcModalDuration() {
+      const t1 = document.getElementById('mOpenTime').value;
+      const t2 = document.getElementById('mCloseTime').value;
+      const note = document.getElementById('modalDurationNotice');
+      if (note && t1 && t2) {
+        note.textContent = '⏱️ Calculated Shift Duration: ' + calcDurationText(t1, t2);
+      }
+    }
+
+    // Render both Cards view and Table view
+    function renderShifts() {
+      renderCardsView();
+      renderTableView();
+
+      const activeCount = shiftData.filter(s => s.active).length;
+      const badgeText = `${activeCount} Active Schedule${activeCount !== 1 ? 's' : ''}`;
+      document.getElementById('shiftCountBadge').textContent = badgeText;
+      document.getElementById('heroActiveCount').textContent = badgeText;
+    }
+
+    // Render Cards View
+    function renderCardsView() {
+      const container = document.getElementById('shiftsGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      shiftData.forEach(shift => {
+        const card = document.createElement('div');
+        card.className = `shift-card ${shift.active ? 'active-card' : ''}`;
+
+        const dayPillsHtml = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => {
+          const isAct = shift.days.includes(d);
+          return `<span class="day-pill ${isAct ? 'active' : ''}">${d[0]}</span>`;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="shift-card-top">
+            <div class="shift-card-name-group">
+              <h3 class="shift-card-name">
+                ${shift.name}
+                <span class="shift-card-status-badge ${shift.active ? 'active' : 'paused'}">
+                  ${shift.active ? '● Active' : '⏸ Paused'}
+                </span>
+              </h3>
+              <span class="shift-card-terminals">
+                <svg width="13" height="13" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line></svg>
+                ${shift.terminals}
+              </span>
+            </div>
+
+            <div class="shift-card-actions">
+              <label class="switch" title="Activate or Pause this shift">
+                <input type="checkbox" ${shift.active ? 'checked' : ''} onchange="toggleShiftActive(${shift.id}, this.checked)">
+                <span class="slider"></span>
+              </label>
+              <button class="action-icon-btn" onclick="editShift(${shift.id})" title="Edit Shift">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <button class="action-icon-btn delete" onclick="deleteShift(${shift.id})" title="Delete Shift">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="time-boxes-row">
+            <div class="time-box">
+              <span class="time-box-label">
+                <svg width="14" height="14" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg>
+                Opens At
+              </span>
+              <span class="time-box-val">${formatTime12(shift.openTime)}</span>
+              <span class="time-box-badge ${shift.autoOpen ? 'badge-auto-open' : 'badge-manual'}">
+                ${shift.autoOpen ? '⚡ Auto-Open' : 'Manual'}
+              </span>
+            </div>
+
+            <div class="time-box">
+              <span class="time-box-label">
+                <svg width="14" height="14" fill="none" stroke="#4f46e5" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                Closes At
+              </span>
+              <span class="time-box-val">${formatTime12(shift.closeTime)}</span>
+              <span class="time-box-badge ${shift.autoClose ? 'badge-auto-close' : 'badge-manual'}">
+                ${shift.autoClose ? '🔒 Auto-Close' : 'Manual'}
+              </span>
+            </div>
+          </div>
+
+          <div class="shift-card-meta">
+            <div class="days-pill-row" title="Operating days: ${shift.days.join(', ')}">
+              ${dayPillsHtml}
+            </div>
+            <span class="duration-pill">⏱️ ${calcDurationText(shift.openTime, shift.closeTime)}</span>
+          </div>
+
+          <div class="shift-card-footer">
+            <span>Float Cash Required:</span>
+            <span class="float-badge">
+              <svg width="13" height="13" fill="none" stroke="#059669" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle></svg>
+              ₹ ${Number(shift.floatAmt).toLocaleString('en-IN')}
+            </span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Render Table View
+    function renderTableView() {
+      const tbody = document.getElementById('shiftsTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      shiftData.forEach(shift => {
+        const tr = document.createElement('tr');
+
+        const dayPillsHtml = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => {
+          const isAct = shift.days.includes(d);
+          return `<span class="day-pill ${isAct ? 'active' : ''}">${d[0]}</span>`;
+        }).join('');
+
+        tr.innerHTML = `
+          <td>
+            <strong style="color: #0f172a; font-size: 13.5px;">${shift.name}</strong>
+          </td>
+          <td>
+            <div class="days-pill-row">${dayPillsHtml}</div>
+          </td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 700; font-family: 'JetBrains Mono', monospace;">${formatTime12(shift.openTime)}</span>
+              ${shift.autoOpen ? '<span class="time-box-badge badge-auto-open">⚡ Auto</span>' : ''}
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 700; font-family: 'JetBrains Mono', monospace;">${formatTime12(shift.closeTime)}</span>
+              ${shift.autoClose ? '<span class="time-box-badge badge-auto-close">🔒 Auto</span>' : ''}
+            </div>
+          </td>
+          <td><span style="font-weight: 500; color: #334155;">${shift.terminals}</span></td>
+          <td><span class="float-badge">₹ ${Number(shift.floatAmt).toLocaleString('en-IN')}</span></td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" ${shift.active ? 'checked' : ''} onchange="toggleShiftActive(${shift.id}, this.checked)">
+              <span class="slider"></span>
+            </label>
+          </td>
+          <td style="text-align: center;">
+            <div style="display: inline-flex; gap: 6px;">
+              <button class="action-icon-btn" onclick="editShift(${shift.id})" title="Edit Shift">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <button class="action-icon-btn delete" onclick="deleteShift(${shift.id})" title="Delete Shift">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Toggle between Cards and Table mode
+    function switchViewMode(mode) {
+      currentViewMode = mode;
+      const grid = document.getElementById('shiftsGrid');
+      const tableWrap = document.getElementById('shiftsTableWrap');
+      const btnCards = document.getElementById('btnViewCards');
+      const btnTable = document.getElementById('btnViewTable');
+
+      if (mode === 'cards') {
+        grid.style.display = 'grid';
+        tableWrap.style.display = 'none';
+        btnCards.classList.add('active');
+        btnTable.classList.remove('active');
+      } else {
+        grid.style.display = 'none';
+        tableWrap.style.display = 'block';
+        btnTable.classList.add('active');
+        btnCards.classList.remove('active');
+      }
+    }
+
+    // Day button selection
+    function toggleDay(btn) {
+      btn.classList.toggle('selected');
+    }
+
+    function quickSelectDays(type) {
+      const buttons = document.querySelectorAll('.day-btn');
+      buttons.forEach(btn => {
+        const day = btn.getAttribute('data-day');
+        if (type === 'all') {
+          btn.classList.add('selected');
+        } else if (type === 'weekdays') {
+          if (['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(day)) {
+            btn.classList.add('selected');
+          } else {
+            btn.classList.remove('selected');
+          }
+        }
+      });
+    }
+
+    // Open Add/Edit Modal
+    function openShiftModal(editId = null) {
+      const modal = document.getElementById('shiftModal');
+      const title = document.getElementById('modalTitle');
+      const editInput = document.getElementById('editShiftId');
+
+      if (editId) {
+        const item = shiftData.find(s => s.id === editId);
+        if (!item) return;
+        title.innerHTML = '✏️ Edit Shift Schedule';
+        editInput.value = item.id;
+        document.getElementById('mShiftName').value = item.name;
+        document.getElementById('mOpenTime').value = item.openTime;
+        document.getElementById('mCloseTime').value = item.closeTime;
+        document.getElementById('mAutoOpen').checked = item.autoOpen;
+        document.getElementById('mAutoClose').checked = item.autoClose;
+        document.getElementById('mTerminals').value = item.terminals;
+        document.getElementById('mFloat').value = item.floatAmt;
+
+        document.querySelectorAll('.day-btn').forEach(btn => {
+          const day = btn.getAttribute('data-day');
+          if (item.days.includes(day)) {
+            btn.classList.add('selected');
+          } else {
+            btn.classList.remove('selected');
+          }
+        });
+      } else {
+        title.innerHTML = '➕ New Shift Schedule';
+        editInput.value = '';
+        document.getElementById('mShiftName').value = '';
+        document.getElementById('mOpenTime').value = '08:00';
+        document.getElementById('mCloseTime').value = '16:00';
+        document.getElementById('mAutoOpen').checked = true;
+        document.getElementById('mAutoClose').checked = true;
+        document.getElementById('mTerminals').value = 'All Terminals';
+        document.getElementById('mFloat').value = '5000';
+        document.querySelectorAll('.day-btn').forEach(btn => btn.classList.add('selected'));
+      }
+
+      calcModalDuration();
+      modal.classList.add('active');
+    }
+
+    function closeShiftModal() {
+      document.getElementById('shiftModal').classList.remove('active');
+    }
+
+    function submitShiftForm() {
+      const editId = document.getElementById('editShiftId').value;
+      const name = document.getElementById('mShiftName').value.trim();
+      const openTime = document.getElementById('mOpenTime').value;
+      const closeTime = document.getElementById('mCloseTime').value;
+      const autoOpen = document.getElementById('mAutoOpen').checked;
+      const autoClose = document.getElementById('mAutoClose').checked;
+      const terminals = document.getElementById('mTerminals').value;
+      const floatAmt = parseFloat(document.getElementById('mFloat').value) || 0;
+
+      const days = [];
+      document.querySelectorAll('.day-btn.selected').forEach(btn => {
+        days.push(btn.getAttribute('data-day'));
+      });
+
+      if (days.length === 0) {
+        showToast('⚠️ Please select at least one operating day.');
+        return;
+      }
+
+      if (editId) {
+        const idx = shiftData.findIndex(s => s.id == editId);
+        if (idx !== -1) {
+          shiftData[idx] = {
+            ...shiftData[idx],
+            name,
+            openTime,
+            closeTime,
+            autoOpen,
+            autoClose,
+            days,
+            terminals,
+            floatAmt
+          };
+          showToast('✓ Shift schedule "' + name + '" updated successfully!');
+        }
+      } else {
+        const newId = shiftData.length ? Math.max(...shiftData.map(s => s.id)) + 1 : 1;
+        shiftData.push({
+          id: newId,
+          name,
+          openTime,
+          closeTime,
+          autoOpen,
+          autoClose,
+          days,
+          terminals,
+          floatAmt,
+          active: true
+        });
+        showToast('✓ New shift schedule "' + name + '" created successfully!');
+      }
+
+      closeShiftModal();
+      renderShifts();
+    }
+
+    function editShift(id) {
+      openShiftModal(id);
+    }
+
+    function deleteShift(id) {
+      const item = shiftData.find(s => s.id === id);
+      if (!item) return;
+      if (confirm('Are you sure you want to delete shift schedule "' + item.name + '"?')) {
+        shiftData = shiftData.filter(s => s.id !== id);
+        renderShifts();
+        showToast('✓ Shift "' + item.name + '" deleted.');
+      }
+    }
+
+    function toggleShiftActive(id, isActive) {
+      const item = shiftData.find(s => s.id === id);
+      if (item) {
+        item.active = isActive;
+        showToast((isActive ? '✓ Activated ' : '⏸ Paused ') + item.name);
+        renderShifts();
+      }
+    }
+
+    function notifyToggle(label, isChecked) {
+      showToast((isChecked ? '✓ Enabled: ' : '✕ Disabled: ') + label);
+    }
+
+    function saveAutomationSettings() {
+      showToast('✓ Shift automation rules & cash parameters saved successfully!');
+    }
+
+    // Quick presets
+    function applyPreset(type) {
+      if (type === 'standard2') {
+        shiftData = [
+          {
+            id: 1,
+            name: 'Morning Shift',
+            openTime: '08:00',
+            closeTime: '16:00',
+            autoOpen: true,
+            autoClose: true,
+            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            terminals: 'All Terminals',
+            floatAmt: 5000,
+            active: true
+          },
+          {
+            id: 2,
+            name: 'Evening Shift',
+            openTime: '16:00',
+            closeTime: '00:00',
+            autoOpen: true,
+            autoClose: true,
+            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            terminals: 'All Terminals',
+            floatAmt: 5000,
+            active: true
+          }
+        ];
+        showToast('✓ Standard 2 Shifts preset applied!');
+      } else if (type === 'single12') {
+        shiftData = [
+          {
+            id: 1,
+            name: 'General Day Shift',
+            openTime: '09:00',
+            closeTime: '21:00',
+            autoOpen: true,
+            autoClose: true,
+            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            terminals: 'All Terminals',
+            floatAmt: 5000,
+            active: true
+          }
+        ];
+        showToast('✓ Single 12-Hour Day Shift preset applied!');
+      } else if (type === 'roundclock') {
+        shiftData = [
+          {
+            id: 1,
+            name: 'Morning Shift',
+            openTime: '08:00',
+            closeTime: '16:00',
+            autoOpen: true,
+            autoClose: true,
+            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            terminals: 'All Terminals',
+            floatAmt: 5000,
+            active: true
+          },
+          {
+            id: 2,
+            name: 'Evening Shift',
+            openTime: '16:00',
+            closeTime: '00:00',
+            autoOpen: true,
+            autoClose: true,
+            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            terminals: 'All Terminals',
+            floatAmt: 5000,
+            active: true
+          },
+          {
+            id: 3,
+            name: 'Night Shift',
+            openTime: '00:00',
+            closeTime: '08:00',
+            autoOpen: true,
+            autoClose: true,
+            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            terminals: 'All Terminals',
+            floatAmt: 3000,
+            active: true
+          }
+        ];
+        showToast('✓ 24x7 Round-the-Clock (3 Shifts) preset applied!');
+      }
+      renderShifts();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('shiftToast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => {
+        t.classList.remove('show');
+      }, 3000);
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-master' }, '*');
+      } else {
+        history.back();
+      }
+    }
+
+    // Forward Ctrl+Shift+R shortcut to parent window if iframe has focus
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'r' || e.key === 'R' || e.keyCode === 82)) {
+        e.preventDefault();
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'trigger-reconcile-modal' }, '*');
+        }
+      }
+    });
+
+    // Initialize
+    renderShifts();
+  </script>
+</body>
+
+</html>

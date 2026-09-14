@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-y: auto;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= REPORT CONTAINER ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      gap: 14px;
+    }
+
+    /* Header Bar */
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1e40af;
+    }
+
+    /* ===== Hero Financial KPI Cards (Top Row - 1 Single Line) ===== */
+    .hero-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 9px;
+      margin-bottom: 4px;
+      width: 100%;
+    }
+
+    @media (max-width: 992px) {
+      .hero-kpi-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        gap: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .hero-kpi-grid::-webkit-scrollbar {
+        height: 4px;
+      }
+      .hero-kpi-grid::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .hero-kpi-card {
+        min-width: 155px;
+        flex: 1 0 155px;
+      }
+    }
+
+    .hero-kpi-card {
+      position: relative;
+      border-radius: 12px;
+      padding: 10px 12px 9px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      min-width: 0;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .hero-kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      transition: height 0.2s ease;
+    }
+
+    .hero-kpi-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .hero-kpi-card:hover::before {
+      height: 4px;
+    }
+
+    .hero-kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .hero-kpi-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .hero-kpi-num-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      padding: 1px 4.5px;
+      border-radius: 4px;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .hero-kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+      min-width: 0;
+    }
+
+    .hero-kpi-icon-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.22s ease;
+    }
+
+    .hero-kpi-card:hover .hero-kpi-icon-box {
+      transform: scale(1.1) rotate(3deg);
+    }
+
+    .hero-kpi-val-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-start;
+      gap: 4px;
+      min-width: 0;
+      margin: 1px 0;
+    }
+
+    .hero-kpi-amount {
+      font-size: clamp(15px, 1.15vw, 18px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hero-kpi-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 5px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      min-width: 0;
+    }
+
+    .hero-kpi-tag {
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 1.5px 6px;
+      border-radius: 8px;
+      line-height: 1.2;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* 1. Opening Cash Theme (Sapphire Blue) */
+    .hero-card-opening {
+      background: linear-gradient(145deg, #ffffff 0%, #eff6ff 100%);
+      border-color: rgba(59, 130, 246, 0.28);
+    }
+    .hero-card-opening::before {
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+    .hero-card-opening:hover {
+      box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.2), 0 0 0 1px #93c5fd;
+    }
+    .hero-card-opening .hero-kpi-num-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .hero-card-opening .hero-kpi-icon-box {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+    }
+    .hero-card-opening .hero-kpi-amount {
+      color: #1e3a8a;
+    }
+    .hero-card-opening .hero-kpi-tag {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #dbeafe;
+    }
+
+    /* 2. Card Collection Theme (Emerald Green) */
+    .hero-card-card-col {
+      background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%);
+      border-color: rgba(16, 185, 129, 0.28);
+    }
+    .hero-card-card-col::before {
+      background: linear-gradient(90deg, #059669, #34d399);
+    }
+    .hero-card-card-col:hover {
+      box-shadow: 0 12px 24px -4px rgba(16, 185, 129, 0.2), 0 0 0 1px #86efac;
+    }
+    .hero-card-card-col .hero-kpi-num-badge {
+      background: #dcfce7;
+      color: #047857;
+      border: 1px solid #bbf7d0;
+    }
+    .hero-card-card-col .hero-kpi-icon-box {
+      background: #f0fdf4;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.12);
+    }
+    .hero-card-card-col .hero-kpi-amount {
+      color: #065f46;
+    }
+    .hero-card-card-col .hero-kpi-tag {
+      background: #f0fdf4;
+      color: #047857;
+      border: 1px solid #dcfce7;
+    }
+
+    /* 3. Direct Sale Theme (Purple / Violet) */
+    .hero-card-direct-sale {
+      background: linear-gradient(145deg, #ffffff 0%, #faf5ff 100%);
+      border-color: rgba(124, 58, 237, 0.28);
+    }
+    .hero-card-direct-sale::before {
+      background: linear-gradient(90deg, #7c3aed, #a78bfa);
+    }
+    .hero-card-direct-sale:hover {
+      box-shadow: 0 12px 24px -4px rgba(124, 58, 237, 0.2), 0 0 0 1px #c4b5fd;
+    }
+    .hero-card-direct-sale .hero-kpi-num-badge {
+      background: #f3e8ff;
+      color: #6d28d9;
+      border: 1px solid #ddd6fe;
+    }
+    .hero-card-direct-sale .hero-kpi-icon-box {
+      background: #faf5ff;
+      color: #7c3aed;
+      border: 1px solid #ddd6fe;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.12);
+    }
+    .hero-card-direct-sale .hero-kpi-amount {
+      color: #4c1d95;
+    }
+    .hero-card-direct-sale .hero-kpi-tag {
+      background: #faf5ff;
+      color: #6d28d9;
+      border: 1px solid #f3e8ff;
+    }
+
+    /* 4. Change Card Theme (Ocean Cyan / Sky) */
+    .hero-card-change-card {
+      background: linear-gradient(145deg, #ffffff 0%, #ecfeff 100%);
+      border-color: rgba(6, 182, 212, 0.28);
+    }
+    .hero-card-change-card::before {
+      background: linear-gradient(90deg, #0284c7, #38bdf8);
+    }
+    .hero-card-change-card:hover {
+      box-shadow: 0 12px 24px -4px rgba(2, 132, 199, 0.2), 0 0 0 1px #7dd3fc;
+    }
+    .hero-card-change-card .hero-kpi-num-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+    .hero-card-change-card .hero-kpi-icon-box {
+      background: #f0f9ff;
+      color: #0284c7;
+      border: 1px solid #bae6fd;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.12);
+    }
+    .hero-card-change-card .hero-kpi-amount {
+      color: #075985;
+    }
+    .hero-card-change-card .hero-kpi-tag {
+      background: #f0f9ff;
+      color: #0369a1;
+      border: 1px solid #e0f2fe;
+    }
+
+    /* 5. Returns Theme (Sunset Rose Red) */
+    .hero-card-returns {
+      background: linear-gradient(145deg, #ffffff 0%, #fff1f2 100%);
+      border-color: rgba(225, 29, 72, 0.28);
+    }
+    .hero-card-returns::before {
+      background: linear-gradient(90deg, #e11d48, #fb7185);
+    }
+    .hero-card-returns:hover {
+      box-shadow: 0 12px 24px -4px rgba(225, 29, 72, 0.2), 0 0 0 1px #fda4af;
+    }
+    .hero-card-returns .hero-kpi-num-badge {
+      background: #ffe4e6;
+      color: #be123c;
+      border: 1px solid #fecdd3;
+    }
+    .hero-card-returns .hero-kpi-icon-box {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #fecdd3;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.12);
+    }
+    .hero-card-returns .hero-kpi-amount {
+      color: #9f1239;
+    }
+    .hero-card-returns .hero-kpi-tag {
+      background: #fff1f2;
+      color: #be123c;
+      border: 1px solid #ffe4e6;
+    }
+
+    /* 6. Grand Total Theme (Executive Dark Hero Flagship) */
+    .hero-card-grand-total {
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+      border-color: #334155;
+    }
+    .hero-card-grand-total::before {
+      background: linear-gradient(90deg, #10b981, #06b6d4, #818cf8);
+    }
+    .hero-card-grand-total:hover {
+      box-shadow: 0 14px 28px -4px rgba(15, 23, 42, 0.45), 0 0 16px rgba(16, 185, 129, 0.25);
+      border-color: #475569;
+    }
+    .hero-card-grand-total .hero-kpi-num-badge {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .hero-card-grand-total .hero-kpi-label {
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+    .hero-card-grand-total .hero-kpi-icon-box {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+    }
+    .hero-card-grand-total .hero-kpi-amount {
+      color: #34d399;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+    .hero-card-grand-total .hero-kpi-footer {
+      border-top-color: rgba(255, 255, 255, 0.08);
+    }
+    .hero-card-grand-total .hero-kpi-tag {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Polished Row 2 KPI Cards (10 Operational Metrics in 5x2 Grid) */
+    .pr-kpi-bar {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 9px;
+      width: 100%;
+      margin-top: 3px;
+    }
+
+    @media (max-width: 1150px) {
+      .pr-kpi-bar {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 850px) {
+      .pr-kpi-bar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 550px) {
+      .pr-kpi-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 11px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .pr-kpi-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3.5px;
+      border-top-left-radius: 11px;
+      border-bottom-left-radius: 11px;
+      transition: width 0.2s ease;
+    }
+
+    .pr-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px -3px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .pr-kpi-card:hover::before {
+      width: 5px;
+    }
+
+    .pr-kpi-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .pr-kpi-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .pr-kpi-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .pr-kpi-mini-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .pr-kpi-card:hover .pr-kpi-mini-icon {
+      transform: scale(1.12);
+    }
+
+    /* 10 Operational Card Palette Themes */
+    /* 1. New Recharge (Emerald) */
+    .kpi-op-new-recharge::before { background: #059669; }
+    .kpi-op-new-recharge .pr-kpi-mini-icon {
+      background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;
+    }
+    .kpi-op-new-recharge .pr-kpi-val { color: #065f46; }
+
+    /* 2. Old Recharge (Teal) */
+    .kpi-op-old-recharge::before { background: #0d9488; }
+    .kpi-op-old-recharge .pr-kpi-mini-icon {
+      background: #f0fdfa; color: #0d9488; border: 1px solid #99f6e4;
+    }
+    .kpi-op-old-recharge .pr-kpi-val { color: #115e59; }
+
+    /* 3. Techcard Punch (Amber) */
+    .kpi-op-tech-punch::before { background: #d97706; }
+    .kpi-op-tech-punch .pr-kpi-mini-icon {
+      background: #fffbeb; color: #d97706; border: 1px solid #fde68a;
+    }
+    .kpi-op-tech-punch .pr-kpi-val { color: #92400e; }
+
+    /* 4. Zero Card (Cool Slate) */
+    .kpi-op-zero-card::before { background: #64748b; }
+    .kpi-op-zero-card .pr-kpi-mini-icon {
+      background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0;
+    }
+    .kpi-op-zero-card .pr-kpi-val { color: #334155; }
+
+    /* 5. Walking Customer (Blue) */
+    .kpi-op-walking-cust::before { background: #2563eb; }
+    .kpi-op-walking-cust .pr-kpi-mini-icon {
+      background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;
+    }
+    .kpi-op-walking-cust .pr-kpi-val { color: #1e40af; }
+
+    /* 6. Generated QR (Indigo) */
+    .kpi-op-gen-qr::before { background: #6366f1; }
+    .kpi-op-gen-qr .pr-kpi-mini-icon {
+      background: #eef2ff; color: #6366f1; border: 1px solid #c7d2fe;
+    }
+    .kpi-op-gen-qr .pr-kpi-val { color: #4338ca; }
+
+    /* 7. Clear Card (Rose) */
+    .kpi-op-clear-card::before { background: #e11d48; }
+    .kpi-op-clear-card .pr-kpi-mini-icon {
+      background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3;
+    }
+    .kpi-op-clear-card .pr-kpi-val { color: #9f1239; }
+
+    /* 8. Redeem Gifts (Gold) */
+    .kpi-op-redeem-gifts::before { background: #f59e0b; }
+    .kpi-op-redeem-gifts .pr-kpi-mini-icon {
+      background: #fffdf0; color: #d97706; border: 1px solid #fde68a;
+    }
+    .kpi-op-redeem-gifts .pr-kpi-val { color: #b45309; }
+
+    /* 9. Item Sell (Sky Cyan) */
+    .kpi-op-item-sell::before { background: #0284c7; }
+    .kpi-op-item-sell .pr-kpi-mini-icon {
+      background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;
+    }
+    .kpi-op-item-sell .pr-kpi-val { color: #0369a1; }
+
+    /* 10. Game Play Amount (Purple) */
+    .kpi-op-game-amount::before { background: #7c3aed; }
+    .kpi-op-game-amount .pr-kpi-mini-icon {
+      background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe;
+    }
+    .kpi-op-game-amount .pr-kpi-val { color: #5b21b6; }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: none;
+      align-items: flex-end;
+      gap: 14px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
+      margin-top: 4px;
+      margin-bottom: 14px;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #1e293b;
+      background: #ffffff;
+      outline: none;
+      min-width: 140px;
+      font-family: inherit;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Card Container */
+    .report-card-container {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
+      margin-bottom: 16px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .report-card-container:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px -3px rgba(15, 23, 42, 0.09);
+    }
+
+    /* Thematic Top Accent Borders */
+    .card-blue { border-top: 3.5px solid #2563eb; }
+    .card-purple { border-top: 3.5px solid #7c3aed; }
+    .card-emerald { border-top: 3.5px solid #059669; }
+    .card-amber { border-top: 3.5px solid #d97706; }
+    .card-cyan { border-top: 3.5px solid #0891b2; }
+    .card-rose { border-top: 3.5px solid #e11d48; }
+    .card-sky { border-top: 3.5px solid #0284c7; }
+    .card-indigo { border-top: 3.5px solid #4f46e5; }
+    .card-red { border-top: 3.5px solid #dc2626; }
+    .card-orange { border-top: 3.5px solid #ea580c; }
+    .card-teal { border-top: 3.5px solid #0d9488; }
+    .card-slate { border-top: 3.5px solid #334155; }
+
+    /* Section Banner Header matching user's legacy table_head with rich modern aesthetics */
+    .table_head {
+      font-weight: 700;
+      background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+      color: #ffffff !important;
+      text-align: center;
+      font-size: 13.5px;
+      padding: 10.5px 14px !important;
+      letter-spacing: 0.025em;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+
+    /* Distinct Coordinated Card Header Gradients */
+    .th-card-collection {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
+      color: #ffffff !important;
+    }
+    .th-direct-billing {
+      background: linear-gradient(135deg, #4c1d95, #7c3aed) !important;
+      color: #ffffff !important;
+    }
+    .th-total-collection {
+      background: linear-gradient(135deg, #064e3b, #059669) !important;
+      color: #ffffff !important;
+    }
+    .th-quick-payment {
+      background: linear-gradient(135deg, #78350f, #d97706) !important;
+      color: #ffffff !important;
+    }
+    .th-old-new-card {
+      background: linear-gradient(135deg, #164e63, #0891b2) !important;
+      color: #ffffff !important;
+    }
+    .th-game-report {
+      background: linear-gradient(135deg, #312e81, #4f46e5) !important;
+      color: #ffffff !important;
+    }
+    .th-direct-items {
+      background: linear-gradient(135deg, #881337, #e11d48) !important;
+      color: #ffffff !important;
+    }
+    .th-points-consumption {
+      background: linear-gradient(135deg, #581c87, #7c3aed) !important;
+      color: #ffffff !important;
+    }
+    .th-card-billing {
+      background: linear-gradient(135deg, #075985, #0284c7) !important;
+      color: #ffffff !important;
+    }
+    .th-direct-return {
+      background: linear-gradient(135deg, #7f1d1d, #dc2626) !important;
+      color: #ffffff !important;
+    }
+    .th-quick-return {
+      background: linear-gradient(135deg, #7c2d12, #ea580c) !important;
+      color: #ffffff !important;
+    }
+    .th-tech-card {
+      background: linear-gradient(135deg, #134e4a, #0d9488) !important;
+      color: #ffffff !important;
+    }
+    .th-tech-game {
+      background: linear-gradient(135deg, #3730a3, #6366f1) !important;
+      color: #ffffff !important;
+    }
+
+    .table_blank_col {
+      width: 12px;
+      background: #f1f5f9;
+      padding: 0 !important;
+      border-top: none !important;
+      border-bottom: none !important;
+    }
+
+    /* Grid Tables */
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table.pos-report-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    /* Clean, modern column subheader row */
+    table.pos-report-table thead th:not(.table_head) {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-bottom: 2px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
+      white-space: nowrap;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    table.pos-report-table thead th:not(.table_head):last-child {
+      border-right: none;
+    }
+
+    table.pos-report-table td {
+      padding: 9.5px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #fafafa;
+      white-space: nowrap;
+      color: #1e293b;
+      background: #ffffff;
+      font-size: 12.5px;
+      vertical-align: middle;
+    }
+
+    table.pos-report-table td:last-child {
+      border-right: none;
+    }
+
+    .text-right {
+      text-align: right !important;
+    }
+
+    .text-center {
+      text-align: center !important;
+    }
+
+    /* Standard Report Hover Effect */
+    table.pos-report-table tbody tr:hover td {
+      background: #f8fafc !important;
+      color: #0f172a;
+    }
+
+    /* Count Badge Pill */
+    .badge-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      min-width: 26px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+      line-height: 1.2;
+    }
+    .badge-count.count-blue { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+    .badge-count.count-purple { background: #faf5ff; color: #6d28d9; border-color: #ddd6fe; }
+    .badge-count.count-emerald { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .badge-count.count-amber { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+    .badge-count.count-rose { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+    .badge-count.count-cyan { background: #ecfeff; color: #0e7490; border-color: #a5f3fc; }
+    .badge-count.count-indigo { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
+
+    /* Payment Mode Dot */
+    .pm-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 7px;
+      vertical-align: middle;
+    }
+    .pm-dot.cash { background: #10b981; }
+    .pm-dot.upi { background: #8b5cf6; }
+    .pm-dot.card { background: #3b82f6; }
+    .pm-dot.bundle { background: #94a3b8; }
+
+    /* Total Row matching standard report theme */
+    table.pos-report-table tfoot td,
+    table.pos-report-table tr.total-row td {
+      background: #f8fafc !important;
+      font-weight: 700;
+      color: #0f172a;
+      border-top: 2px solid #e2e8f0;
+      border-bottom: none;
+      font-size: 12.5px;
+      padding: 10px 12px;
+      vertical-align: middle;
+    }
+
+    /* Themed Total Rows */
+    .tfoot-blue td {
+      background: #eff6ff !important;
+      color: #1e40af !important;
+      border-top: 2px solid #bfdbfe !important;
+    }
+    .tfoot-purple td {
+      background: #faf5ff !important;
+      color: #6d28d9 !important;
+      border-top: 2px solid #ddd6fe !important;
+    }
+    .tfoot-emerald td {
+      background: #ecfdf5 !important;
+      color: #047857 !important;
+      border-top: 2px solid #a7f3d0 !important;
+      font-size: 13px !important;
+    }
+    .tfoot-amber td {
+      background: #fffbeb !important;
+      color: #b45309 !important;
+      border-top: 2px solid #fde68a !important;
+    }
+    .tfoot-cyan td {
+      background: #ecfeff !important;
+      color: #0e7490 !important;
+      border-top: 2px solid #a5f3fc !important;
+    }
+    .tfoot-indigo td {
+      background: #eef2ff !important;
+      color: #3730a3 !important;
+      border-top: 2px solid #c7d2fe !important;
+    }
+    .tfoot-rose td {
+      background: #fff1f2 !important;
+      color: #be123c !important;
+      border-top: 2px solid #fecdd3 !important;
+    }
+    .tfoot-red td {
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+      border-top: 2px solid #fecaca !important;
+    }
+    .tfoot-teal td {
+      background: #f0fdfa !important;
+      color: #0f766e !important;
+      border-top: 2px solid #99f6e4 !important;
+    }
+    .tfoot-sky td {
+      background: #f0f9ff !important;
+      color: #0369a1 !important;
+      border-top: 2px solid #bae6fd !important;
+    }
+    .tfoot-orange td {
+      background: #fff7ed !important;
+      color: #c2410c !important;
+      border-top: 2px solid #fed7aa !important;
+    }
+
+    /* Sub Tables Layout */
+    .grid-3-col {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 992px) {
+      .grid-3-col {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 12px;
+        padding-bottom: 6px;
+      }
+      .grid-3-col > .report-card-container {
+        min-width: 270px;
+        flex: 1 0 270px;
+      }
+    }
+
+    .grid-2-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Top Inventory Summary Table */
+    .card-qty-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: center;
+    }
+
+    .card-qty-table th {
+      padding: 10px 12px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-qty-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-qty-table tbody tr:hover td {
+      background: #f1f5f9 !important;
+    }
+
+    .badge-qty {
+      font-weight: 700;
+      color: #0d9488;
+      font-size: 15px;
+      display: inline-block;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        font-size: 9pt;
+      }
+
+      .pr-wrapper {
+        padding: 0;
+      }
+
+      .pr-header-actions,
+      .pr-filter-panel,
+      .pr-btn-back {
+        display: none !important;
+      }
+
+      .report-card-container {
+        border: none;
+        box-shadow: none;
+        margin-bottom: 15px;
+      }
+
+      .hero-kpi-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+        gap: 6px !important;
+      }
+
+      .hero-kpi-card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 6px 8px !important;
+        min-height: auto !important;
+        page-break-inside: avoid;
+      }
+
+      .hero-card-grand-total {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 2px solid #0f172a !important;
+      }
+
+      .hero-card-grand-total .hero-kpi-label,
+      .hero-card-grand-total .hero-kpi-amount {
+        color: #0f172a !important;
+        text-shadow: none !important;
+      }
+
+      table {
+        page-break-inside: auto;
+      }
+
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+
+      .grid-3-col {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header Bar -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">▥</div>
+        <div>
+          <h1 class="pr-title">Daily Report</h1>
+          <p class="pr-subtitle">Consolidated daily revenue, collections, returns, games, and techcard activity</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="toggleFilterBtn" onclick="toggleFilter()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportConsolidated()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="printReport()" title="Print or Save PDF">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- Filter Panel (Positioned Above Hero KPI Grid) -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div class="pr-filter-field">
+        <label>From Date</label>
+        <input type="date" id="filterFromDate" value="2026-09-10" onclick="try{this.showPicker()}catch(e){}" onchange="applyFilter()" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>To Date</label>
+        <input type="date" id="filterToDate" value="2026-09-10" onclick="try{this.showPicker()}catch(e){}" onchange="applyFilter()" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>POS Selection</label>
+        <select id="filterPOS" onchange="applyFilter()">
+          <option value="">All POS</option>
+          <option value="DESKTOP-965BADE">DESKTOP-965BADE</option>
+          <option value="KIOSK 1">KIOSK 1</option>
+          <option value="POSE">POSE</option>
+          <option value="Server">Server</option>
+        </select>
+      </div>
+      <div class="pr-filter-field">
+        <label>User Base</label>
+        <select id="filterUserBase" onchange="applyFilter()">
+          <option value="">All Users</option>
+          <option value="Admin">Admin</option>
+          <option value="Cashier 1">Cashier 1 (Rahul)</option>
+          <option value="Cashier 2">Cashier 2 (Amit)</option>
+          <option value="Manager">Manager</option>
+          <option value="Operator">Operator</option>
+        </select>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <button class="pr-btn pr-btn-filter" type="button" onclick="resetFilter()">Reset</button>
+        <button class="pr-btn" type="button" style="background:#2563eb; color:#fff; border-color:#2563eb;" onclick="applyFilter()">Apply Filter</button>
+      </div>
+    </div>
+
+    <!-- Top KPI Summary Cards -->
+    <!-- Row 1: Primary Financial KPIs (Reordered & Redesigned - 1 Line) -->
+    <div class="hero-kpi-grid">
+      <!-- 1. Opening Cash -->
+      <div class="hero-kpi-card hero-card-opening" data-card-key="hero-opening-cash">
+        <div class="hero-kpi-top">
+          <div class="hero-kpi-meta">
+            <span class="hero-kpi-num-badge">01</span>
+            <span class="hero-kpi-label">Opening Cash</span>
+          </div>
+          <div class="hero-kpi-icon-box" title="Opening Cash">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              <circle cx="12" cy="12" r="2.5"></circle>
+              <path d="M6 12h.01M18 12h.01"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-kpi-val-row">
+          <span class="hero-kpi-amount" id="kpiOpeningCash">₹5,000.00</span>
+        </div>
+        <div class="hero-kpi-footer">
+          <span class="hero-kpi-tag">Drawer Starting Float</span>
+        </div>
+      </div>
+
+      <!-- 2. Card Collection -->
+      <div class="hero-kpi-card hero-card-card-col" data-card-key="hero-card-collection">
+        <div class="hero-kpi-top">
+          <div class="hero-kpi-meta">
+            <span class="hero-kpi-num-badge">02</span>
+            <span class="hero-kpi-label">Card Collection</span>
+          </div>
+          <div class="hero-kpi-icon-box" title="Card Collection">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+              <circle cx="6" cy="15" r="1"></circle>
+              <path d="M14 15h4"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-kpi-val-row">
+          <span class="hero-kpi-amount" id="kpiCardCollection">₹45,500.00</span>
+        </div>
+        <div class="hero-kpi-footer">
+          <span class="hero-kpi-tag">RFID & Recharges</span>
+        </div>
+      </div>
+
+      <!-- 3. Direct Sale -->
+      <div class="hero-kpi-card hero-card-direct-sale" data-card-key="hero-direct-sale">
+        <div class="hero-kpi-top">
+          <div class="hero-kpi-meta">
+            <span class="hero-kpi-num-badge">03</span>
+            <span class="hero-kpi-label">Direct Sale</span>
+          </div>
+          <div class="hero-kpi-icon-box" title="Direct Sale">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-kpi-val-row">
+          <span class="hero-kpi-amount" id="kpiDirectSale">₹9,000.00</span>
+        </div>
+        <div class="hero-kpi-footer">
+          <span class="hero-kpi-tag">F&B & Counter Sales</span>
+        </div>
+      </div>
+
+      <!-- 4. Change Card -->
+      <div class="hero-kpi-card hero-card-change-card" data-card-key="hero-change-card">
+        <div class="hero-kpi-top">
+          <div class="hero-kpi-meta">
+            <span class="hero-kpi-num-badge">04</span>
+            <span class="hero-kpi-label">Change Card</span>
+          </div>
+          <div class="hero-kpi-icon-box" title="Change Card">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="13" height="9" rx="2"></rect>
+              <path d="M9 14v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-3"></path>
+              <path d="M5 8h4"></path>
+              <polyline points="15 17 18 17 18 14"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-kpi-val-row">
+          <span class="hero-kpi-amount" id="kpiChangeCard">₹500.00</span>
+        </div>
+        <div class="hero-kpi-footer">
+          <span class="hero-kpi-tag">6 Cards Replaced</span>
+        </div>
+      </div>
+
+      <!-- 5. Returns -->
+      <div class="hero-kpi-card hero-card-returns" data-card-key="hero-returns">
+        <div class="hero-kpi-top">
+          <div class="hero-kpi-meta">
+            <span class="hero-kpi-num-badge">05</span>
+            <span class="hero-kpi-label">Returns</span>
+          </div>
+          <div class="hero-kpi-icon-box" title="Returns">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7v6h6"></path>
+              <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-kpi-val-row">
+          <span class="hero-kpi-amount" id="kpiTotalReturns">₹1,500.00</span>
+        </div>
+        <div class="hero-kpi-footer">
+          <span class="hero-kpi-tag">Refund Deductions</span>
+        </div>
+      </div>
+
+      <!-- 6. Grand Total -->
+      <div class="hero-kpi-card hero-card-grand-total" data-card-key="hero-grand-total">
+        <div class="hero-kpi-top">
+          <div class="hero-kpi-meta">
+            <span class="hero-kpi-num-badge">06</span>
+            <span class="hero-kpi-label">Grand Total</span>
+          </div>
+          <div class="hero-kpi-icon-box" title="Grand Total Collection">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-kpi-val-row">
+          <span class="hero-kpi-amount" id="kpiGrandTotal">₹54,500.00</span>
+        </div>
+        <div class="hero-kpi-footer">
+          <span class="hero-kpi-tag">Net Total Collection</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Operational Metrics (10 Cards Only) -->
+    <div class="pr-kpi-bar">
+      <!-- 1. New Recharge -->
+      <div class="pr-kpi-card kpi-op-new-recharge" data-card-key="kpi-new-recharge">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">New Recharge</span>
+          <span class="pr-kpi-val" id="kpiNewRecharge">24</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="New Recharge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+            <circle cx="12" cy="15" r="1.5"></circle>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 2. Old Recharge -->
+      <div class="pr-kpi-card kpi-op-old-recharge" data-card-key="kpi-old-recharge">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Old Recharge</span>
+          <span class="pr-kpi-val" id="kpiOldRecharge">62</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Old Recharge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6"></path>
+            <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-1.19"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 3. Techcard Punch -->
+      <div class="pr-kpi-card kpi-op-tech-punch" data-card-key="kpi-techcard-punch">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Techcard Punch</span>
+          <span class="pr-kpi-val" id="kpiTechcardPunch">20</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Techcard Punch">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            <line x1="9" y1="6" x2="15" y2="6"></line>
+            <line x1="9" y1="10" x2="15" y2="10"></line>
+            <line x1="9" y1="14" x2="15" y2="14"></line>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 4. Zero Card -->
+      <div class="pr-kpi-card kpi-op-zero-card" data-card-key="kpi-zero-card">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Zero Card</span>
+          <span class="pr-kpi-val" id="kpiZeroCard">8</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Zero Card">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <ellipse cx="12" cy="12" rx="3" ry="4"></ellipse>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 5. Walking Customer -->
+      <div class="pr-kpi-card kpi-op-walking-cust" data-card-key="kpi-walking-customer">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Walking Customer</span>
+          <span class="pr-kpi-val" id="kpiWalkingCustomer">54</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Walking Customer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 6. Generated QR -->
+      <div class="pr-kpi-card kpi-op-gen-qr" data-card-key="kpi-generated-qr">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Generated QR</span>
+          <span class="pr-kpi-val" id="kpiGeneratedQR">38</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Generated QR">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <rect x="14" y="14" width="3" height="3"></rect>
+            <line x1="21" y1="14" x2="21" y2="14.01"></line>
+            <line x1="21" y1="21" x2="18" y2="21"></line>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 7. Clear Card -->
+      <div class="pr-kpi-card kpi-op-clear-card" data-card-key="kpi-clear-card">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Clear Card</span>
+          <span class="pr-kpi-val" id="kpiClearCard">4</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Clear Card">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 8. Redeem Gifts -->
+      <div class="pr-kpi-card kpi-op-redeem-gifts" data-card-key="kpi-redeem-gifts">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Redeem Gifts</span>
+          <span class="pr-kpi-val" id="kpiRedeemGifts">15</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Redeem Gifts">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+            <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+            <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 9. Item Sell -->
+      <div class="pr-kpi-card kpi-op-item-sell" data-card-key="kpi-item-sell">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Item Sell</span>
+          <span class="pr-kpi-val" id="kpiItemSell">64</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Item Sell">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 10. Game Play Amount -->
+      <div class="pr-kpi-card kpi-op-game-amount" data-card-key="kpi-game-play-amount">
+        <div class="pr-kpi-info">
+          <span class="pr-kpi-title">Game Play Amount</span>
+          <span class="pr-kpi-val" id="kpiGamePlayAmount">₹13,140.00</span>
+        </div>
+        <div class="pr-kpi-mini-icon" title="Game Play Amount">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="6"></rect>
+            <line x1="6" y1="12" x2="10" y2="12"></line>
+            <line x1="8" y1="10" x2="8" y2="14"></line>
+            <circle cx="15" cy="13" r="1"></circle>
+            <circle cx="18" cy="11" r="1"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. Card Inventory Summary -->
+    <div class="report-card-container" data-card-key="report-card-inventory">
+      <div class="table-responsive">
+        <table class="card-qty-table" style="width: 100%;">
+          <thead>
+            <tr>
+              <th colspan="5" class="table_head">Card Inventory Summary</th>
+            </tr>
+            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+              <th style="text-align: center; width: 20%; padding: 10px; font-size: 11.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.03em;">Opening Card</th>
+              <th style="text-align: center; width: 20%; padding: 10px; font-size: 11.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.03em;">Issue Card</th>
+              <th style="text-align: center; width: 20%; padding: 10px; font-size: 11.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.03em;">Changed Card</th>
+              <th style="text-align: center; width: 20%; padding: 10px; font-size: 11.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.03em;">Return Card</th>
+              <th style="text-align: center; width: 20%; padding: 10px; font-size: 11.5px; font-weight: 700; color: #047857; background: #ecfdf5; text-transform: uppercase; letter-spacing: 0.03em; border-left: 1px solid #bbf7d0;">Remaining Card</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: center; padding: 12px 10px;"><span class="badge-qty" style="color: #1e40af;" id="invOpeningCard">100</span></td>
+              <td style="text-align: center; padding: 12px 10px;"><span class="badge-qty" style="color: #059669;" id="invIssueCard">24</span></td>
+              <td style="text-align: center; padding: 12px 10px;"><span class="badge-qty" style="color: #0284c7;" id="invChangedCard">6</span></td>
+              <td style="text-align: center; padding: 12px 10px;"><span class="badge-qty" style="color: #e11d48;" id="invReturnCard">5</span></td>
+              <td style="text-align: center; background: #f0fdf4; padding: 12px 10px; border-left: 1px solid #bbf7d0;"><span class="badge-qty" style="color: #047857; font-size: 17px; font-weight: 800;" id="invRemainingCard">75</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. Card Collection, Direct Billing & Total Collection (3 Separate Cards in 1 Line) -->
+    <div class="grid-3-col">
+      <!-- 1. Card Collection Report -->
+      <div class="report-card-container card-blue" data-card-key="report-card-collection">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableCardCollection">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-card-collection">Card Collection Report</th>
+              </tr>
+              <tr>
+                <th style="width: 45%;">Payment Mode</th>
+                <th class="text-center" style="width: 22%;">Count</th>
+                <th class="text-right" style="width: 33%;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pm-dot bundle"></span>Bundle</td>
+                <td class="text-center"><span class="badge-count" style="color:#94a3b8;">0</span></td>
+                <td class="text-right" style="color: #64748b;">₹ 0.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot cash"></span>Cash</td>
+                <td class="text-center"><span class="badge-count">22</span></td>
+                <td class="text-right" style="font-weight: 700; color: #059669;">₹ 8,500.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot upi"></span>UPI</td>
+                <td class="text-center"><span class="badge-count">38</span></td>
+                <td class="text-right" style="font-weight: 700; color: #059669;">₹ 26,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot card"></span>Card</td>
+                <td class="text-center"><span class="badge-count">10</span></td>
+                <td class="text-right" style="font-weight: 700; color: #059669;">₹ 11,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-blue">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#dbeafe; color:#1e40af; border-color:#bfdbfe;">70</span></td>
+                <td class="text-right"><strong>₹ 45,500.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. Direct Billing Report -->
+      <div class="report-card-container card-purple" data-card-key="report-direct-billing">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableDirectBilling">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-direct-billing">Direct Billing Report</th>
+              </tr>
+              <tr>
+                <th style="width: 45%;">Payment Mode</th>
+                <th class="text-center" style="width: 22%;">Count</th>
+                <th class="text-right" style="width: 33%;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pm-dot bundle"></span>Bundle</td>
+                <td class="text-center"><span class="badge-count" style="color:#94a3b8;">0</span></td>
+                <td class="text-right" style="color: #64748b;">₹ 0.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot cash"></span>Cash</td>
+                <td class="text-center"><span class="badge-count">6</span></td>
+                <td class="text-right" style="font-weight: 700; color: #6d28d9;">₹ 2,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot upi"></span>UPI</td>
+                <td class="text-center"><span class="badge-count">8</span></td>
+                <td class="text-right" style="font-weight: 700; color: #6d28d9;">₹ 5,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot card"></span>Card</td>
+                <td class="text-center"><span class="badge-count">2</span></td>
+                <td class="text-right" style="font-weight: 700; color: #6d28d9;">₹ 2,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-purple">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#ede9fe; color:#6d28d9; border-color:#ddd6fe;">16</span></td>
+                <td class="text-right"><strong>₹ 9,000.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Total Collection Report -->
+      <div class="report-card-container card-emerald" data-card-key="report-total-collection">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableTotalCollection">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-total-collection">Total Collection Report</th>
+              </tr>
+              <tr>
+                <th style="width: 45%;">Payment Mode</th>
+                <th class="text-center" style="width: 22%;">Count</th>
+                <th class="text-right" style="width: 33%;">Collection</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pm-dot bundle"></span>Bundle</td>
+                <td class="text-center"><span class="badge-count" style="color:#94a3b8;">0</span></td>
+                <td class="text-right" style="color: #64748b;">₹ 0.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot cash"></span>Cash</td>
+                <td class="text-center"><span class="badge-count">28</span></td>
+                <td class="text-right" style="font-weight: 700; color: #047857;">₹ 10,500.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot upi"></span>UPI</td>
+                <td class="text-center"><span class="badge-count">46</span></td>
+                <td class="text-right" style="font-weight: 700; color: #047857;">₹ 31,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;"><span class="pm-dot card"></span>Card</td>
+                <td class="text-center"><span class="badge-count">12</span></td>
+                <td class="text-right" style="font-weight: 700; color: #047857;">₹ 13,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-emerald">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#bbf7d0; color:#047857; border-color:#86efac;">86</span></td>
+                <td class="text-right" style="font-size: 13.5px;"><strong>₹ 54,500.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Quick Payment Report & Old/New Card Payment Report -->
+    <div class="grid-2-col">
+      <!-- Quick Payment Report -->
+      <div class="report-card-container card-amber" data-card-key="report-quick-payment">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableQuickPayment">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-quick-payment">Quick Payment Report</th>
+              </tr>
+              <tr>
+                <th>Denomination</th>
+                <th class="text-center" style="width: 25%;">Count</th>
+                <th class="text-right" style="width: 35%;">Total Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 600; color: #1e293b;">₹ 500.00</td>
+                <td class="text-center"><span class="badge-count">18</span></td>
+                <td class="text-right" style="font-weight: 600; color: #059669;">₹ 9,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600; color: #1e293b;">₹ 1,000.00</td>
+                <td class="text-center"><span class="badge-count">25</span></td>
+                <td class="text-right" style="font-weight: 600; color: #059669;">₹ 25,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600; color: #1e293b;">₹ 2,000.00</td>
+                <td class="text-center"><span class="badge-count">8</span></td>
+                <td class="text-right" style="font-weight: 600; color: #059669;">₹ 16,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-amber">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">51</span></td>
+                <td class="text-right"><strong>₹ 50,000.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Old/New Card Payment Report -->
+      <div class="report-card-container card-cyan" data-card-key="report-old-new-card">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableOldNewCard">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-old-new-card">Old / New Card Payment Report</th>
+              </tr>
+              <tr>
+                <th>Card Type</th>
+                <th class="text-center" style="width: 25%;">Count</th>
+                <th class="text-right" style="width: 35%;">Total Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 600; color: #1e293b;"><span class="badge-count count-cyan" style="margin-right: 6px;">New</span>New Card</td>
+                <td class="text-center"><span class="badge-count">24</span></td>
+                <td class="text-right" style="font-weight: 600; color: #0891b2;">₹ 12,000.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600; color: #1e293b;"><span class="badge-count count-blue" style="margin-right: 6px;">Old</span>Old / Recharge Card</td>
+                <td class="text-center"><span class="badge-count">62</span></td>
+                <td class="text-right" style="font-weight: 600; color: #0891b2;">₹ 38,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-cyan">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#cffafe; color:#0e7490; border-color:#a5f3fc;">86</span></td>
+                <td class="text-right"><strong>₹ 50,000.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Game Report & Direct Items Report -->
+    <div class="grid-2-col">
+      <!-- Game Report -->
+      <div class="report-card-container card-indigo" data-card-key="report-game-report">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableGameReport">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-game-report">Game Report</th>
+              </tr>
+              <tr>
+                <th>Game Name</th>
+                <th class="text-center" style="width: 25%;">Play Count</th>
+                <th class="text-right" style="width: 35%;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Super Bikes 3</td>
+                <td class="text-center"><span class="badge-count">42</span></td>
+                <td class="text-right" style="font-weight:600; color: #4338ca;">₹ 4,200.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Tekken 7 Arcade</td>
+                <td class="text-center"><span class="badge-count">38</span></td>
+                <td class="text-right" style="font-weight:600; color: #4338ca;">₹ 3,040.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Air Hockey Pro</td>
+                <td class="text-center"><span class="badge-count">29</span></td>
+                <td class="text-right" style="font-weight:600; color: #4338ca;">₹ 2,900.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">VR Roller Coaster</td>
+                <td class="text-center"><span class="badge-count">15</span></td>
+                <td class="text-right" style="font-weight:600; color: #4338ca;">₹ 3,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-indigo">
+                <td><strong>Total Plays</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#e0e7ff; color:#3730a3; border-color:#c7d2fe;">124</span></td>
+                <td class="text-right"><strong>₹ 13,140.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Direct Items Report -->
+      <div class="report-card-container card-rose" data-card-key="report-direct-items">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableDirectItems">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-direct-items">Direct Items Report</th>
+              </tr>
+              <tr>
+                <th>Items Name</th>
+                <th class="text-center" style="width: 25%;">Qty</th>
+                <th class="text-right" style="width: 35%;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Butter Popcorn (Large)</td>
+                <td class="text-center"><span class="badge-count">18</span></td>
+                <td class="text-right" style="font-weight:600; color: #be123c;">₹ 2,700.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Cold Beverage 500ml</td>
+                <td class="text-center"><span class="badge-count">32</span></td>
+                <td class="text-right" style="font-weight:600; color: #be123c;">₹ 1,920.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Loaded Nachos Combo</td>
+                <td class="text-center"><span class="badge-count">14</span></td>
+                <td class="text-right" style="font-weight:600; color: #be123c;">₹ 2,380.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-rose">
+                <td><strong>Total Items</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#ffe4e6; color:#9f1239; border-color:#fecdd3;">64</span></td>
+                <td class="text-right"><strong>₹ 7,000.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Points Consumption & Card Quick Billing -->
+    <div class="grid-2-col">
+      <!-- Points Consumption Summary -->
+      <div class="report-card-container card-purple" data-card-key="report-points-consumption">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tablePointsConsumption">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-points-consumption">Points Consumption Summary</th>
+              </tr>
+              <tr>
+                <th>Game Name</th>
+                <th class="text-center" style="width: 25%;">Play Count</th>
+                <th class="text-right" style="width: 35%;">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Super Bikes 3</td>
+                <td class="text-center"><span class="badge-count">42</span></td>
+                <td class="text-right" style="font-weight:700; color: #6d28d9;">420</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Tekken 7 Arcade</td>
+                <td class="text-center"><span class="badge-count">38</span></td>
+                <td class="text-right" style="font-weight:700; color: #6d28d9;">304</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Air Hockey Pro</td>
+                <td class="text-center"><span class="badge-count">29</span></td>
+                <td class="text-right" style="font-weight:700; color: #6d28d9;">290</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">VR Roller Coaster</td>
+                <td class="text-center"><span class="badge-count">15</span></td>
+                <td class="text-right" style="font-weight:700; color: #6d28d9;">300</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-purple">
+                <td><strong>Total Points</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#ede9fe; color:#6d28d9; border-color:#ddd6fe;">124</span></td>
+                <td class="text-right" style="font-weight:700; color: #6d28d9;"><strong>1,314</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Card Quick Billing Summary -->
+      <div class="report-card-container card-sky" data-card-key="report-card-billing">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableCardBilling">
+            <thead>
+              <tr>
+                <th colspan="2" class="table_head th-card-billing">Card Quick Billing Summary</th>
+              </tr>
+              <tr>
+                <th>POS Terminal</th>
+                <th class="text-right" style="width: 40%;">Total Amount</th>
+              </tr>
+            </thead>
+            <tbody id="bodyCardBilling">
+              <tr data-pos="DESKTOP-965BADE">
+                <td style="font-weight:600;">DESKTOP-965BADE</td>
+                <td class="text-right" style="font-weight:700; color: #0284c7;">27000.00</td>
+              </tr>
+              <tr data-pos="KIOSK 1">
+                <td style="font-weight:600;">KIOSK 1</td>
+                <td class="text-right" style="font-weight:700; color: #0284c7;">13000.00</td>
+              </tr>
+              <tr data-pos="POSE">
+                <td style="font-weight:600;">POSE</td>
+                <td class="text-right" style="font-weight:700; color: #0284c7;">10000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-sky">
+                <td><strong>Total</strong></td>
+                <td class="text-right"><strong id="sumCardBilling">50000.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Direct Sale Return Summary & Quick Sale Return Summary -->
+    <div class="grid-2-col">
+      <!-- Direct Sale Return Summary -->
+      <div class="report-card-container card-red" data-card-key="report-direct-return">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableDirectReturn">
+            <thead>
+              <tr>
+                <th colspan="4" class="table_head th-direct-return">Direct Sale Return Summary</th>
+              </tr>
+              <tr>
+                <th>Refund Mode</th>
+                <th class="text-center" style="width: 20%;">Bills</th>
+                <th class="text-center" style="width: 22%;">Items Qty</th>
+                <th class="text-right" style="width: 32%;">Refund Amt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Cash</td>
+                <td class="text-center"><span class="badge-count">2</span></td>
+                <td class="text-center"><span class="badge-count">3</span></td>
+                <td class="text-right" style="font-weight:700; color: #dc2626;">₹ 450.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">UPI</td>
+                <td class="text-center"><span class="badge-count">1</span></td>
+                <td class="text-center"><span class="badge-count">2</span></td>
+                <td class="text-right" style="font-weight:700; color: #dc2626;">₹ 300.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-red">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#fecaca; color:#991b1b; border-color:#fca5a5;">3</span></td>
+                <td class="text-center"><span class="badge-count" style="background:#fecaca; color:#991b1b; border-color:#fca5a5;">5</span></td>
+                <td class="text-right"><strong>₹ 750.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick Sale Return Summary -->
+      <div class="report-card-container card-orange" data-card-key="report-quick-return">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableQuickReturn">
+            <thead>
+              <tr>
+                <th colspan="4" class="table_head th-quick-return">Quick Sale Return Summary</th>
+              </tr>
+              <tr>
+                <th>POS Terminal</th>
+                <th class="text-center" style="width: 20%;">Returns</th>
+                <th class="text-center" style="width: 22%;">Items Qty</th>
+                <th class="text-right" style="width: 32%;">Refund Amt</th>
+              </tr>
+            </thead>
+            <tbody id="bodyQuickReturn">
+              <tr data-pos="DESKTOP-965BADE">
+                <td style="font-weight:600;">DESKTOP-965BADE</td>
+                <td class="text-center"><span class="badge-count">2</span></td>
+                <td class="text-center"><span class="badge-count">3</span></td>
+                <td class="text-right" style="font-weight:700; color: #dc2626;">₹ 500.00</td>
+              </tr>
+              <tr data-pos="POSE">
+                <td style="font-weight:600;">POSE</td>
+                <td class="text-center"><span class="badge-count">1</span></td>
+                <td class="text-center"><span class="badge-count">1</span></td>
+                <td class="text-right" style="font-weight:700; color: #dc2626;">₹ 250.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-orange">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#fed7aa; color:#9a3412; border-color:#fdba74;">3</span></td>
+                <td class="text-center"><span class="badge-count" style="background:#fed7aa; color:#9a3412; border-color:#fdba74;">4</span></td>
+                <td class="text-right"><strong>₹ 750.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. TechCard By Card Summary & TechCard By Game Summary -->
+    <div class="grid-2-col">
+      <!-- TechCard By Card Summary -->
+      <div class="report-card-container card-teal" data-card-key="report-tech-by-card">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableTechByCard">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-tech-card">TechCard By Card Summary</th>
+              </tr>
+              <tr>
+                <th>Card Name</th>
+                <th>RFID Code</th>
+                <th class="text-center" style="width: 25%;">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Staff Tech Card A</td>
+                <td><span style="font-family: monospace; font-size: 11.5px; background: #f1f5f9; padding: 2px 7px; border-radius: 4px; border: 1px solid #e2e8f0; color: #475569;">0948215032</span></td>
+                <td class="text-center"><span class="badge-count">12</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Maintenance Card 1</td>
+                <td><span style="font-family: monospace; font-size: 11.5px; background: #f1f5f9; padding: 2px 7px; border-radius: 4px; border: 1px solid #e2e8f0; color: #475569;">0984210394</span></td>
+                <td class="text-center"><span class="badge-count">8</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-teal">
+                <td><strong>Total</strong></td>
+                <td>&nbsp;</td>
+                <td class="text-center"><span class="badge-count" style="background:#ccfbf1; color:#0f766e; border-color:#99f6e4;">20</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- TechCard By Game Summary -->
+      <div class="report-card-container card-slate" data-card-key="report-tech-by-game">
+        <div class="table-responsive">
+          <table class="pos-report-table" id="tableTechByGame">
+            <thead>
+              <tr>
+                <th colspan="3" class="table_head th-tech-game">TechCard By Game Summary</th>
+              </tr>
+              <tr>
+                <th>Game Name</th>
+                <th class="text-center" style="width: 25%;">Punch Count</th>
+                <th class="text-right" style="width: 35%;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Super Bikes 3</td>
+                <td class="text-center"><span class="badge-count">8</span></td>
+                <td class="text-right" style="font-weight:600; color: #059669;">₹ 800.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Tekken 7 Arcade</td>
+                <td class="text-center"><span class="badge-count">7</span></td>
+                <td class="text-right" style="font-weight:600; color: #059669;">₹ 560.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">VR Roller Coaster</td>
+                <td class="text-center"><span class="badge-count">5</span></td>
+                <td class="text-right" style="font-weight:600; color: #059669;">₹ 1,000.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row tfoot-slate">
+                <td><strong>Total</strong></td>
+                <td class="text-center"><span class="badge-count" style="background:#e2e8f0; color:#1e293b; border-color:#cbd5e1;">20</span></td>
+                <td class="text-right"><strong>₹ 2,360.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleFilter() {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('toggleFilterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function resetFilter() {
+      document.getElementById('filterPOS').value = '';
+      const userEl = document.getElementById('filterUserBase');
+      if (userEl) userEl.value = '';
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const selectedPOS = document.getElementById('filterPOS').value;
+      const userEl = document.getElementById('filterUserBase');
+      const selectedUser = userEl ? userEl.value : '';
+
+      // Determine effective profile key (POS takes priority, or maps to User Base selection)
+      let effectiveKey = selectedPOS;
+      if (!effectiveKey && selectedUser) {
+        if (selectedUser === 'Cashier 1') effectiveKey = 'DESKTOP-965BADE';
+        else if (selectedUser === 'Cashier 2') effectiveKey = 'POSE';
+        else if (selectedUser === 'Operator') effectiveKey = 'KIOSK 1';
+        else if (selectedUser === 'Admin') effectiveKey = '';
+      }
+
+      // 1. Filter Card Quick Billing table
+      const billingRows = document.querySelectorAll('#bodyCardBilling tr');
+      let totalBilling = 0;
+      billingRows.forEach(row => {
+        const pos = row.getAttribute('data-pos');
+        if (!effectiveKey || pos === effectiveKey) {
+          row.style.display = '';
+          const amt = parseFloat(row.cells[1].innerText.replace(/[^0-9.-]+/g, "")) || 0;
+          totalBilling += amt;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      document.getElementById('sumCardBilling').textContent = totalBilling.toFixed(2);
+
+      // 2. Filter Quick Sale Return table
+      const returnRows = document.querySelectorAll('#bodyQuickReturn tr');
+      returnRows.forEach(row => {
+        const pos = row.getAttribute('data-pos');
+        if (!effectiveKey || pos === effectiveKey) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // 3. Update KPI Totals
+      const setKpi = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+
+      if (!effectiveKey) {
+        setKpi('kpiOpeningCash', '₹5,000.00');
+        setKpi('kpiCardCollection', '₹45,500.00');
+        setKpi('kpiDirectSale', '₹9,000.00');
+        setKpi('kpiChangeCard', '₹500.00');
+        setKpi('kpiTotalReturns', '₹1,500.00');
+        setKpi('kpiGrandTotal', '₹54,500.00');
+
+        setKpi('kpiNewRecharge', '24');
+        setKpi('kpiOldRecharge', '62');
+        setKpi('kpiTechcardPunch', '20');
+        setKpi('kpiZeroCard', '8');
+        setKpi('kpiWalkingCustomer', '54');
+        setKpi('kpiGeneratedQR', '38');
+        setKpi('kpiClearCard', '4');
+        setKpi('kpiRedeemGifts', '15');
+        setKpi('kpiItemSell', '64');
+        setKpi('kpiGamePlayAmount', '₹13,140.00');
+
+        setKpi('invOpeningCard', '100');
+        setKpi('invIssueCard', '24');
+        setKpi('invChangedCard', '6');
+        setKpi('invReturnCard', '5');
+        setKpi('invRemainingCard', '75');
+      } else if (effectiveKey === 'DESKTOP-965BADE') {
+        setKpi('kpiOpeningCash', '₹2,000.00');
+        setKpi('kpiCardCollection', '₹27,000.00');
+        setKpi('kpiDirectSale', '₹2,200.00');
+        setKpi('kpiChangeCard', '₹300.00');
+        setKpi('kpiTotalReturns', '₹950.00');
+        setKpi('kpiGrandTotal', '₹29,200.00');
+
+        setKpi('kpiNewRecharge', '14');
+        setKpi('kpiOldRecharge', '36');
+        setKpi('kpiTechcardPunch', '12');
+        setKpi('kpiZeroCard', '5');
+        setKpi('kpiWalkingCustomer', '30');
+        setKpi('kpiGeneratedQR', '22');
+        setKpi('kpiClearCard', '2');
+        setKpi('kpiRedeemGifts', '8');
+        setKpi('kpiItemSell', '22');
+        setKpi('kpiGamePlayAmount', '₹7,200.00');
+
+        setKpi('invOpeningCard', '60');
+        setKpi('invIssueCard', '14');
+        setKpi('invChangedCard', '3');
+        setKpi('invReturnCard', '2');
+        setKpi('invRemainingCard', '45');
+      } else if (effectiveKey === 'KIOSK 1') {
+        setKpi('kpiOpeningCash', '₹1,000.00');
+        setKpi('kpiCardCollection', '₹13,000.00');
+        setKpi('kpiDirectSale', '₹0.00');
+        setKpi('kpiChangeCard', '₹0.00');
+        setKpi('kpiTotalReturns', '₹0.00');
+        setKpi('kpiGrandTotal', '₹13,000.00');
+
+        setKpi('kpiNewRecharge', '6');
+        setKpi('kpiOldRecharge', '18');
+        setKpi('kpiTechcardPunch', '4');
+        setKpi('kpiZeroCard', '2');
+        setKpi('kpiWalkingCustomer', '14');
+        setKpi('kpiGeneratedQR', '10');
+        setKpi('kpiClearCard', '1');
+        setKpi('kpiRedeemGifts', '4');
+        setKpi('kpiItemSell', '0');
+        setKpi('kpiGamePlayAmount', '₹3,500.00');
+
+        setKpi('invOpeningCard', '20');
+        setKpi('invIssueCard', '6');
+        setKpi('invChangedCard', '0');
+        setKpi('invReturnCard', '0');
+        setKpi('invRemainingCard', '14');
+      } else if (effectiveKey === 'POSE') {
+        setKpi('kpiOpeningCash', '₹2,000.00');
+        setKpi('kpiCardCollection', '₹5,500.00');
+        setKpi('kpiDirectSale', '₹6,800.00');
+        setKpi('kpiChangeCard', '₹200.00');
+        setKpi('kpiTotalReturns', '₹550.00');
+        setKpi('kpiGrandTotal', '₹12,300.00');
+
+        setKpi('kpiNewRecharge', '4');
+        setKpi('kpiOldRecharge', '8');
+        setKpi('kpiTechcardPunch', '4');
+        setKpi('kpiZeroCard', '1');
+        setKpi('kpiWalkingCustomer', '10');
+        setKpi('kpiGeneratedQR', '6');
+        setKpi('kpiClearCard', '1');
+        setKpi('kpiRedeemGifts', '3');
+        setKpi('kpiItemSell', '42');
+        setKpi('kpiGamePlayAmount', '₹2,440.00');
+
+        setKpi('invOpeningCard', '20');
+        setKpi('invIssueCard', '4');
+        setKpi('invChangedCard', '3');
+        setKpi('invReturnCard', '3');
+        setKpi('invRemainingCard', '16');
+      } else {
+        setKpi('kpiOpeningCash', '₹0.00');
+        setKpi('kpiCardCollection', '₹0.00');
+        setKpi('kpiDirectSale', '₹0.00');
+        setKpi('kpiChangeCard', '₹0.00');
+        setKpi('kpiTotalReturns', '₹0.00');
+        setKpi('kpiGrandTotal', '₹0.00');
+
+        setKpi('kpiNewRecharge', '0');
+        setKpi('kpiOldRecharge', '0');
+        setKpi('kpiTechcardPunch', '0');
+        setKpi('kpiZeroCard', '0');
+        setKpi('kpiWalkingCustomer', '0');
+        setKpi('kpiGeneratedQR', '0');
+        setKpi('kpiClearCard', '0');
+        setKpi('kpiRedeemGifts', '0');
+        setKpi('kpiItemSell', '0');
+        setKpi('kpiGamePlayAmount', '₹0.00');
+
+        setKpi('invOpeningCard', '0');
+        setKpi('invIssueCard', '0');
+        setKpi('invChangedCard', '0');
+        setKpi('invReturnCard', '0');
+        setKpi('invRemainingCard', '0');
+      }
+
+      // Apply card visibility based on Manage Permissions
+      applyCardPermissions();
+    }
+
+    function getEffectiveReportUser() {
+      const userEl = document.getElementById('filterUserBase');
+      const val = userEl ? userEl.value.trim() : '';
+      if (val === 'Admin') return 'admin';
+      if (val === 'Cashier 1' || val === 'Cashier 2') return 'cashier';
+      if (val === 'Manager') return 'manager';
+      if (val === 'Operator') return 'staff';
+
+      const storedUser = localStorage.getItem('pos_current_user') || localStorage.getItem('pos_user') || localStorage.getItem('pos_active_user');
+      if (storedUser) {
+        return storedUser.toLowerCase();
+      }
+      return 'admin';
+    }
+
+    function applyCardPermissions() {
+      const targetUser = getEffectiveReportUser();
+      const rawPerms = localStorage.getItem('pos_dailyreport_perms_' + targetUser);
+      let cardPerms = null;
+      if (rawPerms) {
+        try {
+          cardPerms = JSON.parse(rawPerms);
+        } catch (e) {
+          console.error('Error parsing pos_dailyreport_perms_', e);
+        }
+      }
+
+      // Toggle individual cards
+      const allCards = document.querySelectorAll('[data-card-key]');
+      allCards.forEach(card => {
+        const key = card.getAttribute('data-card-key');
+        if (cardPerms && cardPerms.hasOwnProperty(key)) {
+          card.style.display = cardPerms[key] === false ? 'none' : '';
+        } else {
+          card.style.display = '';
+        }
+      });
+
+      // Auto-collapse grid rows/containers if all child cards inside are hidden
+      const gridContainers = document.querySelectorAll('.hero-kpi-grid, .kpi-grid, .grid-2-col, .grid-3-col');
+      gridContainers.forEach(container => {
+        const cards = container.querySelectorAll('[data-card-key]');
+        if (cards.length > 0) {
+          const hasVisible = Array.from(cards).some(c => c.style.display !== 'none');
+          container.style.display = hasVisible ? '' : 'none';
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', applyCardPermissions);
+    window.addEventListener('storage', function (e) {
+      if (e.key && e.key.startsWith('pos_dailyreport_perms_')) {
+        applyCardPermissions();
+      }
+    });
+    // Run on script execution
+    applyCardPermissions();
+
+    function exportConsolidated() {
+      const tables = document.querySelectorAll('table.pos-report-table, table.card-qty-table');
+      let csv = [];
+      csv.push('"DAILY REPORT - ' + new Date().toLocaleDateString() + '"');
+      csv.push('');
+
+      tables.forEach((table, idx) => {
+        for (let r = 0; r < table.rows.length; r++) {
+          let row = [];
+          let cols = table.rows[r].querySelectorAll('td, th');
+          for (let c = 0; c < cols.length; c++) {
+            let text = cols[c].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+            text = text.replace(/"/g, '""');
+            row.push('"' + text + '"');
+          }
+          csv.push(row.join(','));
+        }
+        csv.push('');
+      });
+
+      const csvString = csv.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', "Daily_Report_" + new Date().toISOString().slice(0, 10) + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+  </script>
+</body>
+
+</html>

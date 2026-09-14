@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCardPayment Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= PROFESSIONAL REPORT STYLES ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+      gap: 10px;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 8px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #eef2ff;
+      border-color: #818cf8;
+      color: #4338ca;
+    }
+
+    /* KPI Summary Cards */
+    .pr-kpi-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pr-kpi-val.indigo {
+      color: #4f46e5;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    .pr-kpi-val.blue {
+      color: #0284c7;
+    }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      display: none;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      flex-shrink: 0;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1 1 140px;
+      min-width: 120px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      height: 32px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0 10px;
+      font-size: 12px;
+      color: #1e293b;
+      background: #fff;
+      font-family: inherit;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Table Container */
+    .pr-table-card {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-table-area {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1250px;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      text-align: left;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      padding: 10px 8px;
+      border-bottom: 2px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
+      text-align: center;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    tbody td {
+      padding: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #f8fafc;
+      color: #334155;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fcfdfe;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    .text-right {
+      text-align: right !important;
+    }
+
+    .total-row td {
+      background: #ecfdf5 !important;
+      color: #047857 !important;
+      font-weight: 700;
+      border-top: 2px solid #10b981;
+      border-bottom: 2px solid #10b981;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .tag-upi {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+
+    .tag-card {
+      background: #e0e7ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+
+    .tag-cash {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .btn-reprint {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      color: #475569;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-reprint:hover {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+    }
+
+    /* Table Footer */
+    .pr-table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 11.5px;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .pr-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .pr-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+        </div>
+        <div>
+          <h1 class="pr-title">MCard Payment Report</h1>
+          <p class="pr-subtitle">Real-time payment logs, recharge breakdown & GST analytics for MCard transactions</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="filterBtn" onclick="toggleFilter()" title="Toggle Filters">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="window.print()" title="Print Report">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Summary Cards Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Transactions</span>
+        <span class="pr-kpi-val indigo" id="kpiCount">2 Records</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Recharge</span>
+        <span class="pr-kpi-val green" id="kpiRecharge">₹1,500.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Collected</span>
+        <span class="pr-kpi-val blue" id="kpiCollected">₹1,400.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Taxable</span>
+        <span class="pr-kpi-val" id="kpiTaxable">₹1,186.44</span>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <section class="pr-filter-panel" id="filterPanel">
+      <div class="pr-filter-field">
+        <label>From Date</label>
+        <input type="date" id="filterFromDate" value="2026-08-29" onclick="try{this.showPicker()}catch(e){}" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>To Date</label>
+        <input type="date" id="filterToDate" value="2026-08-29" onclick="try{this.showPicker()}catch(e){}" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Card Number</label>
+        <input type="text" id="filterCard" placeholder="MCard / RFID" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Customer</label>
+        <input type="text" id="filterCustomer" placeholder="Customer name" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Payment Mode</label>
+        <select id="filterMode">
+          <option value="">All Modes</option>
+          <option value="UPI">UPI</option>
+          <option value="Card">Card</option>
+          <option value="Cash">Cash</option>
+        </select>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <button class="pr-btn pr-btn-filter" type="button" onclick="resetFilter()">Reset</button>
+        <button class="pr-btn" type="button" style="background:#4f46e5; color:#fff; border-color:#4f46e5;" onclick="applyFilter()">Apply Filter</button>
+      </div>
+    </section>
+
+    <!-- Table Card -->
+    <section class="pr-table-card">
+      <div class="pr-table-area">
+        <table id="mcardTable">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>MCard Payment ID</th>
+              <th>MCard No.</th>
+              <th>RFID</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Payment Mode</th>
+              <th>Payment For</th>
+              <th class="text-right">Pre Amount</th>
+              <th class="text-right">Recharge Amount</th>
+              <th class="text-right">Discount Amount</th>
+              <th class="text-right">Collect Amount</th>
+              <th class="text-right">Taxable Amount</th>
+              <th class="text-right">CGST Amount</th>
+              <th class="text-right">SGST Amount</th>
+              <th>User</th>
+              <th>Date</th>
+              <th>POS Name</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td><button type="button" class="btn-reprint" onclick="reprintReceipt('MCP-1001')">Re-Print</button></td>
+              <td style="color:#4f46e5; font-weight:700;">MCP-1001</td>
+              <td>MC-1042</td>
+              <td>RF-84291</td>
+              <td style="font-weight:600; color:#0f172a;">Mohit Sharma</td>
+              <td>9876543210</td>
+              <td><span class="tag tag-upi">UPI</span></td>
+              <td>Card Recharge</td>
+              <td class="text-right">50.00</td>
+              <td class="text-right" style="font-weight:600; color:#059669;">500.00</td>
+              <td class="text-right">0.00</td>
+              <td class="text-right" style="font-weight:700; color:#0f172a;">500.00</td>
+              <td class="text-right">423.73</td>
+              <td class="text-right">38.14</td>
+              <td class="text-right">38.14</td>
+              <td>Admin</td>
+              <td>29-Aug-2026</td>
+              <td>POS-01</td>
+            </tr>
+            <tr>
+              <td><button type="button" class="btn-reprint" onclick="reprintReceipt('MCP-1002')">Re-Print</button></td>
+              <td style="color:#4f46e5; font-weight:700;">MCP-1002</td>
+              <td>MC-1088</td>
+              <td>RF-84292</td>
+              <td style="font-weight:600; color:#0f172a;">Amit Singh</td>
+              <td>9812345678</td>
+              <td><span class="tag tag-card">Card</span></td>
+              <td>Card Recharge</td>
+              <td class="text-right">20.00</td>
+              <td class="text-right" style="font-weight:600; color:#059669;">1000.00</td>
+              <td class="text-right">100.00</td>
+              <td class="text-right" style="font-weight:700; color:#0f172a;">900.00</td>
+              <td class="text-right">762.71</td>
+              <td class="text-right">68.64</td>
+              <td class="text-right">68.64</td>
+              <td>Cashier1</td>
+              <td>29-Aug-2026</td>
+              <td>POS-02</td>
+            </tr>
+            <tr class="total-row">
+              <td></td>
+              <td>TOTAL</td>
+              <td colspan="6"></td>
+              <td class="text-right">70.00</td>
+              <td class="text-right">1,500.00</td>
+              <td class="text-right">100.00</td>
+              <td class="text-right">1,400.00</td>
+              <td class="text-right">1,186.44</td>
+              <td class="text-right">106.78</td>
+              <td class="text-right">106.78</td>
+              <td colspan="3"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pr-table-footer">
+        <span id="footerCount">Showing 2 records</span>
+        <span>MCard Transactions • FunSquare POS System</span>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function toggleFilter() {
+      var panel = document.getElementById('filterPanel');
+      var btn = document.getElementById('filterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+
+    function reprintReceipt(id) {
+      alert('Printing duplicate receipt for payment ID: ' + id);
+    }
+
+    function applyFilter() {
+      var cardQ = (document.getElementById('filterCard').value || '').trim().toLowerCase();
+      var custQ = (document.getElementById('filterCustomer').value || '').trim().toLowerCase();
+      var modeQ = (document.getElementById('filterMode').value || '').trim().toLowerCase();
+
+      var rows = document.querySelectorAll('#tableBody tr:not(.total-row)');
+      var matchCount = 0;
+
+      rows.forEach(function (tr) {
+        var card = tr.children[2]?.textContent.toLowerCase() || '';
+        var rfid = tr.children[3]?.textContent.toLowerCase() || '';
+        var cust = tr.children[4]?.textContent.toLowerCase() || '';
+        var mode = tr.children[6]?.textContent.toLowerCase() || '';
+
+        var matchCard = !cardQ || card.includes(cardQ) || rfid.includes(cardQ);
+        var matchCust = !custQ || cust.includes(custQ);
+        var matchMode = !modeQ || mode.includes(modeQ);
+
+        if (matchCard && matchCust && matchMode) {
+          tr.style.display = '';
+          matchCount++;
+        } else {
+          tr.style.display = 'none';
+        }
+      });
+
+      document.getElementById('footerCount').textContent = 'Showing ' + matchCount + ' records';
+    }
+
+    function resetFilter() {
+      document.getElementById('filterCard').value = '';
+      document.getElementById('filterCustomer').value = '';
+      document.getElementById('filterMode').value = '';
+      applyFilter();
+    }
+
+    function exportToExcel() {
+      var table = document.getElementById('mcardTable');
+      var csv = [];
+      for (var i = 0; i < table.rows.length; i++) {
+        var row = [], cols = table.rows[i].cells;
+        for (var j = 1; j < cols.length; j++) {
+          var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/,/g, '');
+          row.push('"' + data + '"');
+        }
+        csv.push(row.join(','));
+      }
+      var csvString = '\uFEFF' + csv.join('\n');
+      var blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'MCard_Payment_Report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+
+</html>

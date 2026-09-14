@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recharge Amount Rules</title>
+<style>
+  :root {
+    /* Premium Color Palette */
+    --indigo-50: #eef2ff;
+    --indigo-100: #e0e7ff;
+    --indigo-500: #6366f1;
+    --indigo-600: #4f46e5;
+    --indigo-700: #4338ca;
+    --indigo-900: #312e81;
+
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --ink-faint: #64748b;
+
+    --line: #e2e8f0;
+    --line-strong: #cbd5e1;
+
+    --bg: #f8fafc;
+    --danger: #ef4444;
+    --danger-dark: #dc2626;
+    --ok: #10b981;
+
+    --radius: 12px;
+    --radius-sm: 8px;
+
+    /* Smooth Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    letter-spacing: -0.01em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 0;
+    gap: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* ===== Standardized Page Header ===== */
+  .pr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 8px 0;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pr-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .pr-title svg {
+    width: 24px;
+    height: 24px;
+    color: #4f46e5;
+    background: #e0e7ff;
+    padding: 4px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .panel {
+    background: #fff;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .panel:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* ===== Form ===== */
+  .form-panel { flex: 0 0 auto; }
+  .form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .field label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+  }
+  .field-badge {
+    font-size: 9.5px;
+    color: #4f46e5;
+    font-weight: 600;
+    background: #eef2ff;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+    border: 1px solid #e0e7ff;
+  }
+  .field input[type="text"], .field input[type="number"] {
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    width: 140px;
+    background: #fff;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .field input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--indigo-500);
+    box-shadow: 0 0 0 3px var(--indigo-100);
+  }
+  .field input.auto-calc[readonly] {
+    background: #f1f5f9;
+    color: #475569;
+    cursor: not-allowed;
+    user-select: none;
+    border-color: #e2e8f0;
+  }
+  .field input.auto-calc[readonly]:focus {
+    border-color: #e2e8f0;
+    box-shadow: none;
+  }
+  .field input.negative-val {
+    color: #ef4444 !important;
+    font-weight: 700;
+  }
+  .field input.final-highlight {
+    background: #f5f3ff;
+    border-color: #c4b5fd;
+    color: #4338ca;
+    font-weight: 700;
+  }
+  .vip-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+  }
+  .vip-check input {
+    width: 16px; height: 16px;
+    accent-color: var(--indigo-600);
+    cursor: pointer;
+  }
+  .vip-check label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .btn-add {
+    height: 32px;
+    margin-left: auto;
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0 20px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(79, 70, 229, 0.25);
+    transition: all 0.2s ease;
+  }
+  .btn-add:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  }
+
+  /* ===== Table ===== */
+  .table-panel {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+  .table-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    text-align: left;
+    padding: 8px 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    z-index: 2;
+  }
+  th.edit-col { width: 54px; text-align: center; }
+  tbody td {
+    padding: 8px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+  tbody tr:hover td { background: #f8fafc; }
+  tbody tr.selected td { background: var(--indigo-50); }
+  .amount-cell { font-weight: 600; color: var(--indigo-700); }
+  .edit-btn {
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--ink-faint);
+    transition: all 0.2s ease;
+    margin: 0 auto;
+  }
+  .edit-btn:hover { background: var(--indigo-50); color: var(--indigo-600); border-color: var(--indigo-100); }
+  .edit-btn svg { width: 14px; height: 14px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pill-yes { background: #dcfce7; color: var(--ok); }
+  .pill-no { background: #f1f5f9; color: var(--ink-faint); }
+  .manage-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--indigo-600);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .manage-btn:hover { background: var(--indigo-50); border-color: var(--indigo-100); transform: translateY(-1px); }
+  .empty-row td {
+    text-align: center;
+    color: var(--ink-faint);
+    padding: 46px 14px;
+    font-size: 14px;
+  }
+
+  /* ===== Bottom actions ===== */
+  .bottom-bar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .actions-left, .actions-right {
+    display: flex;
+    gap: 12px;
+  }
+  .action-btn {
+    height: 36px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .action-btn:hover { transform: translateY(-1px); }
+  .action-btn:active { transform: translateY(0); }
+  
+  .btn-template { background: #0284c7; }
+  .btn-import { background: #059669; }
+  .btn-export { background: #d97706; }
+  .btn-print { background: #4f46e5; }
+  
+  .btn-select {
+    background: #fff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  .btn-select:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+  }
+  
+  .btn-delete {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(239, 68, 68, 0.25);
+  }
+  .btn-delete:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+  }
+  
+  .btn-exit {
+    background: #0f172a;
+    color: #fff;
+  }
+  .btn-exit:hover {
+    background: #1e293b;
+  }
+  
+  .action-btn svg { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Standard Page Header -->
+  <div class="pr-header">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <h2 class="pr-title">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="20 12 20 22 4 22 4 12"></polyline>
+          <rect x="2" y="7" width="20" height="5"></rect>
+          <line x1="12" y1="22" x2="12" y2="7"></line>
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+        </svg>
+        Manage Bonus
+      </h2>
+      <div style="font-size: 13px; color: #64748b;">Configure recharge amount rules, bonus rewards, and VIP tiers</div>
+    </div>
+    <div>
+      <button type="button" class="btn-select action-btn" style="height: 34px; padding: 0 14px; font-size: 13px;" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span>Back to Master</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add rule form -->
+  <div class="panel form-panel">
+    <div class="form-row">
+      <div class="field">
+        <label for="amountInput">Amount</label>
+        <input type="number" id="amountInput" placeholder="e.g. 1000" step="any" />
+      </div>
+      <div class="field">
+        <label for="taxableInput">Taxable Amount</label>
+        <input type="number" id="taxableInput" class="auto-calc" placeholder="0.00" step="any" readonly tabindex="-1" />
+      </div>
+      <div class="field">
+        <label for="gstInput">GST 18% (Included)</label>
+        <input type="number" id="gstInput" class="auto-calc" placeholder="0.00" step="any" readonly tabindex="-1" />
+      </div>
+      <div class="field">
+        <label for="bonusInput">Bonus</label>
+        <input type="number" id="bonusInput" placeholder="0.00" step="any" />
+      </div>
+      <div class="field">
+        <label for="finalAmountInput">Final Amount</label>
+        <input type="number" id="finalAmountInput" class="final-highlight" placeholder="0.00" step="any" />
+      </div>
+      <div class="vip-check">
+        <input type="checkbox" id="vipCheck" />
+        <label for="vipCheck">Is VIP</label>
+      </div>
+      <div class="vip-check">
+        <input type="checkbox" id="mcardCheck" />
+        <label for="mcardCheck">Is MCard</label>
+      </div>
+      <div class="vip-check">
+        <input type="checkbox" id="cosmosCheck" />
+        <label for="cosmosCheck">Is Cosmos</label>
+      </div>
+      <button class="btn-add" onclick="addBonusRule()">Add</button>
+    </div>
+  </div>
+
+  <!-- Rules table -->
+  <div class="panel table-panel">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="edit-col">Edit</th>
+            <th>Amount</th>
+            <th>Taxable Amt</th>
+            <th>GST (18%)</th>
+            <th>Bonus</th>
+            <th>Final Amount</th>
+            <th>Is VIP</th>
+            <th>Is MCard</th>
+            <th>Is Cosmos</th>
+            <th>Allowed games</th>
+            <th>Manage bonus games</th>
+          </tr>
+        </thead>
+        <tbody id="bonusTableBody">
+          <tr class="selected">
+            <td class="edit-col">
+              <button class="edit-btn" title="Edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </td>
+            <td class="amount-cell">₹1.00</td>
+            <td>₹0.85</td>
+            <td>₹0.15</td>
+            <td style="font-weight: 600; color: #16a34a;">₹100.00</td>
+            <td style="font-weight: 700; color: #4f46e5;">₹101.00</td>
+            <td><span class="pill pill-no">No</span></td>
+            <td><span class="pill pill-no">No</span></td>
+            <td><span class="pill pill-no">No</span></td>
+            <td>2</td>
+            <td>
+              <button class="manage-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Manage
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td class="edit-col">
+              <button class="edit-btn" title="Edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </td>
+            <td class="amount-cell">₹2000.00</td>
+            <td>₹1694.92</td>
+            <td>₹305.08</td>
+            <td style="font-weight: 600; color: #16a34a;">₹0.00</td>
+            <td style="font-weight: 700; color: #4f46e5;">₹2000.00</td>
+            <td><span class="pill pill-no">No</span></td>
+            <td><span class="pill pill-no">No</span></td>
+            <td><span class="pill pill-no">No</span></td>
+            <td>22</td>
+            <td>
+              <button class="manage-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Manage
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bottom actions -->
+  <div class="bottom-bar">
+    <div class="actions-left">
+      <button class="action-btn btn-template">Template</button>
+      <button class="action-btn btn-import">Import</button>
+      <button class="action-btn btn-export">Export</button>
+      <button class="action-btn btn-print">Print</button>
+    </div>
+    <div class="actions-right">
+      <button class="action-btn btn-select">Select all</button>
+      <button class="action-btn btn-delete">Delete</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var amountEl = document.getElementById('amountInput');
+  var taxableEl = document.getElementById('taxableInput');
+  var gstEl = document.getElementById('gstInput');
+  var bonusEl = document.getElementById('bonusInput');
+  var finalEl = document.getElementById('finalAmountInput');
+
+  function updateBonusVisuals() {
+    var bVal = parseFloat(bonusEl.value);
+    if (!isNaN(bVal) && bVal < 0) {
+      bonusEl.classList.add('negative-val');
+    } else {
+      bonusEl.classList.remove('negative-val');
+    }
+  }
+
+  function updateTaxableAndGst(amt) {
+    if (!isNaN(amt) && amt > 0) {
+      // 18% GST included: Taxable = Amount / 1.18, GST = Amount - Taxable
+      var taxable = amt / 1.18;
+      var gst = amt - taxable;
+      taxableEl.value = taxable.toFixed(2);
+      gstEl.value = gst.toFixed(2);
+    } else {
+      taxableEl.value = '';
+      gstEl.value = '';
+    }
+  }
+
+  // When user enters/edits Amount
+  function onAmountChange() {
+    var amt = parseFloat(amountEl.value);
+    if (isNaN(amt)) {
+      taxableEl.value = '';
+      gstEl.value = '';
+      if (document.activeElement === amountEl) {
+        bonusEl.value = '';
+        finalEl.value = '';
+        updateBonusVisuals();
+      }
+      return;
+    }
+
+    updateTaxableAndGst(amt);
+    var taxable = amt / 1.18;
+
+    // GST amount deduct karke: Bonus = Final Amount - Taxable Amount
+    if (finalEl.value !== '' && document.activeElement !== bonusEl) {
+      var finalAmt = parseFloat(finalEl.value);
+      if (!isNaN(finalAmt)) {
+        bonusEl.value = (finalAmt - taxable).toFixed(2);
+      }
+    } else if (bonusEl.value !== '') {
+      var bVal = parseFloat(bonusEl.value);
+      if (!isNaN(bVal)) {
+        finalEl.value = (taxable + bVal).toFixed(2);
+      }
+    } else {
+      finalEl.value = amt.toFixed(2);
+      bonusEl.value = (amt - taxable).toFixed(2);
+    }
+    updateBonusVisuals();
+  }
+
+  // When user enters/edits Final Amount
+  function onFinalChange() {
+    var finalAmt = parseFloat(finalEl.value);
+    var amt = parseFloat(amountEl.value);
+
+    if (!isNaN(finalAmt)) {
+      if (!isNaN(amt)) {
+        var taxable = amt / 1.18;
+        // Bonus = Final - Taxable (Amount me se GST deduct karke: e.g. 400 - 423.73 = -23.73)
+        bonusEl.value = (finalAmt - taxable).toFixed(2);
+      } else {
+        amountEl.value = finalAmt.toFixed(2);
+        updateTaxableAndGst(finalAmt);
+        var taxable = finalAmt / 1.18;
+        bonusEl.value = (finalAmt - taxable).toFixed(2);
+      }
+    } else {
+      if (!isNaN(amt)) {
+        var taxable = amt / 1.18;
+        bonusEl.value = (amt - taxable).toFixed(2);
+        finalEl.value = amt.toFixed(2);
+      } else {
+        bonusEl.value = '';
+      }
+    }
+    updateBonusVisuals();
+  }
+
+  // When user enters/edits Bonus
+  function onBonusChange() {
+    var bVal = parseFloat(bonusEl.value);
+    var amt = parseFloat(amountEl.value);
+
+    if (!isNaN(bVal)) {
+      if (!isNaN(amt)) {
+        var taxable = amt / 1.18;
+        // Final = Taxable + Bonus (e.g. 423.73 + (-23.73) = 400.00)
+        finalEl.value = (taxable + bVal).toFixed(2);
+      } else if (finalEl.value !== '') {
+        var finalAmt = parseFloat(finalEl.value);
+        if (!isNaN(finalAmt)) {
+          var newTaxable = finalAmt - bVal;
+          var newAmt = newTaxable * 1.18;
+          amountEl.value = newAmt.toFixed(2);
+          updateTaxableAndGst(newAmt);
+        }
+      }
+    } else {
+      if (!isNaN(amt)) {
+        var taxable = amt / 1.18;
+        finalEl.value = taxable.toFixed(2);
+      }
+    }
+    updateBonusVisuals();
+  }
+
+  // Attach live event listeners: input, keyup, change
+  ['input', 'keyup', 'change'].forEach(function(evt) {
+    amountEl.addEventListener(evt, onAmountChange);
+    finalEl.addEventListener(evt, onFinalChange);
+    bonusEl.addEventListener(evt, onBonusChange);
+  });
+
+  function addBonusRule() {
+    var amt = parseFloat(amountEl.value);
+    if (isNaN(amt) || amt <= 0) {
+      alert('Please enter a valid amount');
+      amountEl.focus();
+      return;
+    }
+    var taxable = taxableEl.value || (amt / 1.18).toFixed(2);
+    var gst = gstEl.value || (amt - parseFloat(taxable)).toFixed(2);
+    var bonus = bonusEl.value !== '' ? parseFloat(bonusEl.value) : (parseFloat(finalEl.value || amt) - parseFloat(taxable));
+    var finalAmt = finalEl.value !== '' ? parseFloat(finalEl.value) : (parseFloat(taxable) + bonus);
+    var isVip = document.getElementById('vipCheck').checked;
+    var isMcard = document.getElementById('mcardCheck').checked;
+    var isCosmos = document.getElementById('cosmosCheck').checked;
+
+    var bonusColor = bonus < 0 ? '#ef4444' : (bonus > 0 ? '#16a34a' : '#64748b');
+
+    var tbody = document.getElementById('bonusTableBody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="edit-col">
+        <button class="edit-btn" title="Edit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </button>
+      </td>
+      <td class="amount-cell">₹${amt.toFixed(2)}</td>
+      <td>₹${taxable}</td>
+      <td>₹${gst}</td>
+      <td style="font-weight:700; color:${bonusColor};">₹${bonus.toFixed(2)}</td>
+      <td style="font-weight:700; color:#4f46e5;">₹${finalAmt.toFixed(2)}</td>
+      <td><span class="pill ${isVip ? 'pill-yes' : 'pill-no'}">${isVip ? 'Yes' : 'No'}</span></td>
+      <td><span class="pill ${isMcard ? 'pill-yes' : 'pill-no'}">${isMcard ? 'Yes' : 'No'}</span></td>
+      <td><span class="pill ${isCosmos ? 'pill-yes' : 'pill-no'}">${isCosmos ? 'Yes' : 'No'}</span></td>
+      <td>0</td>
+      <td>
+        <button class="manage-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Manage
+        </button>
+      </td>
+    `;
+    tbody.insertBefore(tr, tbody.firstChild);
+
+    // reset fields
+    amountEl.value = '';
+    taxableEl.value = '';
+    gstEl.value = '';
+    bonusEl.value = '';
+    finalEl.value = '';
+    updateBonusVisuals();
+    document.getElementById('vipCheck').checked = false;
+    document.getElementById('mcardCheck').checked = false;
+    document.getElementById('cosmosCheck').checked = false;
+  }
+</script>
+
+</body>
+</html>

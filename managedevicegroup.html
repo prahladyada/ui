@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Device Groups</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13.5px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pr-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+    }
+
+    .pr-title svg {
+      width: 28px;
+      height: 28px;
+      color: #4f46e5;
+      background: #e0e7ff;
+      padding: 5px;
+      border-radius: 8px;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 36px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .pr-btn-filter:hover {
+      background: #f8fafc;
+    }
+
+    .pr-btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    .pr-btn-primary:hover {
+      background: #4338ca;
+    }
+
+    .search-input {
+      padding: 9px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      width: 250px;
+    }
+
+    .search-input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      display: none;
+      align-items: flex-end;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13.5px;
+      color: #334155;
+      outline: none;
+      min-width: 180px;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #4f46e5;
+    }
+
+    .table-container {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .table-scroll {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #1e293b;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* Grid Styles */
+    .grid-container {
+      flex: 1;
+      display: none;
+      /* hidden by default; JS switches to grid */
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding-bottom: 24px;
+      align-content: flex-start;
+      min-height: 0;
+    }
+
+    .device-card {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bg-online {
+      background-color: #00b300 !important;
+      border-color: #00b300 !important;
+      color: #ffffff;
+    }
+
+    .bg-offline {
+      background-color: #ef4444 !important;
+      border-color: #ef4444 !important;
+      color: #ffffff;
+    }
+
+    .bg-maintenance {
+      background-color: #64748b !important;
+      border-color: #64748b !important;
+      color: #ffffff;
+    }
+
+    .device-card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .device-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .device-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #4f46e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .device-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      color: #fff;
+    }
+
+    .status-online {
+      background: #00b300;
+      /* Pure Green */
+    }
+
+    .status-offline {
+      background: #ef4444;
+      /* Pure Red */
+    }
+
+    .status-maintenance {
+      background: #64748b;
+      /* Gray */
+    }
+
+    .device-name {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .device-type {
+      font-size: 10px;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .device-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 10px;
+      color: #475569;
+    }
+
+    .device-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      background: #fff;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .action-btn.edit:hover {
+      background: #e0e7ff;
+      color: #4f46e5;
+      border-color: #4f46e5;
+    }
+
+    .action-btn.delete:hover {
+      background: #fee2e2;
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 480px;
+      max-width: 90%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .no-results {
+      padding: 32px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="pr-wrapper">
+    <div class="pr-header">
+      <h2 class="pr-title">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+          <rect x="9" y="9" width="6" height="6"></rect>
+          <line x1="9" y1="1" x2="9" y2="4"></line>
+          <line x1="15" y1="1" x2="15" y2="4"></line>
+          <line x1="9" y1="20" x2="9" y2="23"></line>
+          <line x1="15" y1="20" x2="15" y2="23"></line>
+          <line x1="20" y1="9" x2="23" y2="9"></line>
+          <line x1="20" y1="14" x2="23" y2="14"></line>
+          <line x1="1" y1="9" x2="4" y2="9"></line>
+          <line x1="1" y1="14" x2="4" y2="14"></line>
+        </svg>
+        Manage Device Groups
+      </h2>
+      <div class="pr-header-actions">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search device groups..."
+          onkeyup="filterDevices()" />
+
+        <button class="pr-btn pr-btn-filter"
+          onclick="document.getElementById('filterPanel').classList.toggle('show'); this.classList.toggle('active');">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+
+        <!-- View Toggles -->
+        <div style="display: flex; background: #e2e8f0; padding: 4px; border-radius: 8px; gap: 4px;">
+          <button id="btnListView" class="pr-btn"
+            style="background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.1); padding: 6px 10px;"
+            onclick="setView('list')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+          <button id="btnGridView" class="pr-btn" style="background: transparent; color: #64748b; padding: 6px 10px;"
+            onclick="setView('grid')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </button>
+        </div>
+
+        <button class="pr-btn pr-btn-primary" onclick="document.getElementById('addDeviceModal').style.display='flex'">
+          Add Device Group
+        </button>
+
+        <button class="pr-btn pr-btn-filter" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Master</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Panel: matched to the actual table/card fields (Type + Game/Device name search) -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+        <button class="pr-btn"
+          style="padding: 8px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #2563eb; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; transition: all 0.2s;"
+          title="Select All" onmouseover="this.style.background='#dbeafe';"
+          onmouseout="this.style.background='#eff6ff';" onclick="selectAllRows(this)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+            <polyline points="9 12 11.5 14.5 15 10"></polyline>
+          </svg>
+          Select All
+        </button>
+        <button class="pr-btn"
+          style="padding: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #16a34a; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+          title="Save" onmouseover="this.style.background='#dcfce7';" onmouseout="this.style.background='#f0fdf4';">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+          </svg>Save
+        </button>
+        <button class="pr-btn"
+          style="padding: 8px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+          title="Delete" onmouseover="this.style.background='#fee2e2';" onmouseout="this.style.background='#fef2f2';">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+            </path>
+          </svg>Delete
+        </button>
+        <div style="width: 1px; height: 24px; background: #cbd5e1; margin: 0 4px;"></div>
+        <button class="pr-btn pr-btn-filter"
+          style="background:#f1f5f9; padding: 8px 16px; border-radius: 8px; font-weight: 600; color: #475569;"
+          onclick="resetFilters()">Reset</button>
+      </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div id="listView" class="table-container">
+      <div class="table-scroll">
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Group Name</th>
+            </tr>
+          </thead>
+          <tbody id="deviceTableBody">
+            <tr data-name="Action Games">
+              <td style="padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a;">Action Games</td>
+            </tr>
+            <tr data-name="Racing Games">
+              <td style="padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a;">Racing Games</td>
+            </tr>
+            <tr data-name="Arcade Classics">
+              <td style="padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a;">Arcade Classics</td>
+            </tr>
+            <tr data-name="VR Experiences">
+              <td style="padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a;">VR Experiences</td>
+            </tr>
+            <tr data-name="Kids Zone">
+              <td style="padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a;">Kids Zone</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="no-results" id="tableNoResults">No devices match your filters.</div>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <div id="gridView" class="grid-container">
+      <div class="device-card bg-online" data-name="Action Games">
+        <h4 class="device-name" style="font-size: 15px; margin: 0; text-align: center; font-weight: 700;">Action Games
+        </h4>
+      </div>
+      <div class="device-card bg-online" data-name="Racing Games">
+        <h4 class="device-name" style="font-size: 15px; margin: 0; text-align: center; font-weight: 700;">Racing Games
+        </h4>
+      </div>
+      <div class="device-card bg-online" data-name="Arcade Classics">
+        <h4 class="device-name" style="font-size: 15px; margin: 0; text-align: center; font-weight: 700;">Arcade
+          Classics</h4>
+      </div>
+      <div class="device-card bg-online" data-name="VR Experiences">
+        <h4 class="device-name" style="font-size: 15px; margin: 0; text-align: center; font-weight: 700;">VR Experiences
+        </h4>
+      </div>
+      <div class="device-card bg-online" data-name="Kids Zone">
+        <h4 class="device-name" style="font-size: 15px; margin: 0; text-align: center; font-weight: 700;">Kids Zone</h4>
+      </div>
+
+      <div class="no-results" id="gridNoResults" style="grid-column: 1 / -1;">No devices match your filters.</div>
+    </div>
+  </div>
+
+  <!-- Unlisted Devices Modal -->
+  <div class="modal-overlay" id="addDeviceModal" style="background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);">
+    <div class="modal"
+      style="width: 700px; padding: 0; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
+      <div class="modal-header"
+        style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+        <h3
+          style="color: #0f172a; font-size: 18px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <svg width="22" height="22" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+            </path>
+          </svg>
+          Add Device Group
+        </h3>
+        <button class="modal-close"
+          style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.2s ease;"
+          onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+          onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
+          onclick="document.getElementById('addDeviceModal').style.display='none'">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px; background: #f8fafc;">
+        <div class="pr-filter-field" style="margin-bottom: 0;">
+          <label style="font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px; display: block;">Group
+            Name</label>
+          <input type="text" placeholder="e.g. Arcade Group"
+            style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #0f172a; outline: none; transition: border-color 0.2s;"
+            onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'" />
+        </div>
+      </div>
+      <div class="modal-footer"
+        style="padding: 16px 24px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
+        <button class="pr-btn"
+          style="background: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 8px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+          onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a'; this.style.borderColor='#94a3b8';"
+          onmouseout="this.style.background='#ffffff'; this.style.color='#475569'; this.style.borderColor='#cbd5e1';"
+          onclick="document.getElementById('addDeviceModal').style.display='none'">Cancel</button>
+        <button class="pr-btn"
+          style="background: #2563eb; color: #ffffff; border: none; padding: 8px 32px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1); transition: all 0.2s ease;"
+          onmouseover="this.style.background='#1d4ed8'; this.style.transform='translateY(-1px)';"
+          onmouseout="this.style.background='#2563eb'; this.style.transform='translateY(0)';"
+          onclick="document.getElementById('addDeviceModal').style.display='none'">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var allSelected = false;
+
+    function selectAllRows(btn) {
+      allSelected = !allSelected;
+      // Check/uncheck all checkboxes in list table
+      var checkboxes = document.querySelectorAll('#listView input[type="checkbox"]');
+      checkboxes.forEach(function (cb) { cb.checked = allSelected; });
+      // Update button label and icon
+      if (allSelected) {
+        btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><line x1="9" y1="12" x2="15" y2="12"></line></svg> Deselect All';
+        btn.style.background = '#dbeafe';
+      } else {
+        btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><polyline points="9 12 11.5 14.5 15 10"></polyline></svg> Select All';
+        btn.style.background = '#eff6ff';
+      }
+    }
+
+    function setView(viewType) {
+      const listView = document.getElementById('listView');
+      const gridView = document.getElementById('gridView');
+      const btnList = document.getElementById('btnListView');
+      const btnGrid = document.getElementById('btnGridView');
+
+      if (viewType === 'list') {
+        listView.style.display = 'flex';
+        gridView.style.display = 'none';
+        btnList.style.background = '#fff';
+        btnList.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        btnList.style.color = '#334155';
+        btnGrid.style.background = 'transparent';
+        btnGrid.style.boxShadow = 'none';
+        btnGrid.style.color = '#64748b';
+      } else {
+        listView.style.display = 'none';
+        gridView.style.display = 'grid';
+        btnGrid.style.background = '#fff';
+        btnGrid.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        btnGrid.style.color = '#334155';
+        btnList.style.background = 'transparent';
+        btnList.style.boxShadow = 'none';
+        btnList.style.color = '#64748b';
+      }
+    }
+
+    function filterDevices() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      const rows = document.querySelectorAll('#deviceTableBody tr');
+      let visibleRows = 0;
+      rows.forEach(row => {
+        const rowName = (row.dataset.name || '').toLowerCase();
+        const show = !search || rowName.includes(search);
+        row.style.display = show ? '' : 'none';
+        if (show) visibleRows++;
+      });
+      document.getElementById('tableNoResults').style.display = visibleRows === 0 ? 'block' : 'none';
+
+      const cards = document.querySelectorAll('#gridView .device-card');
+      let visibleCards = 0;
+      cards.forEach(card => {
+        const cardName = (card.dataset.name || '').toLowerCase();
+        const show = !search || cardName.includes(search);
+        card.style.display = show ? 'flex' : 'none';
+        if (show) visibleCards++;
+      });
+      document.getElementById('gridNoResults').style.display = visibleCards === 0 ? 'block' : 'none';
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      filterDevices();
+    }
+  </script>
+</body>
+
+</html>

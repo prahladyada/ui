@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monthwise Game Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= PROFESSIONAL REPORT STYLES ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+      gap: 10px;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 8px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #fef3c7;
+      border-color: #f59e0b;
+      color: #b45309;
+    }
+
+    /* KPI Summary Cards */
+    .pr-kpi-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pr-kpi-val.amber {
+      color: #d97706;
+    }
+
+    .pr-kpi-val.indigo {
+      color: #4f46e5;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: none;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      animation: slideDown 0.2s ease-out;
+      flex-shrink: 0;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 0 10px;
+      height: 32px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: #1e293b;
+      background: #fff;
+      outline: none;
+      min-width: 140px;
+      transition: all 0.2s ease;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #d97706;
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+    }
+
+    /* Table Container */
+    .pr-table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pr-table-area {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .pr-table-area table {
+      width: 100%;
+      min-width: 550px;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      table-layout: auto;
+      border: 1px solid #cbd5e1;
+    }
+
+    .pr-table-area thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #1e293b;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+      border: 1px solid #334155;
+    }
+
+    .pr-table-area thead th.text-center,
+    .pr-table-area tbody td.text-center,
+    .pr-table-area tfoot td.text-center {
+      text-align: center;
+    }
+
+    .pr-table-area thead th.text-right,
+    .pr-table-area tbody td.text-right,
+    .pr-table-area tfoot td.text-right {
+      text-align: right;
+    }
+
+    .pr-table-area tbody td {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      white-space: nowrap;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 12.5px;
+      text-align: left;
+      background: #ffffff;
+    }
+
+    .pr-table-area tbody tr {
+      transition: background-color 0.15s ease;
+      cursor: pointer;
+    }
+
+    .pr-table-area tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    /* Standard Report Hover Effect - identical to Game Report & Payment Report */
+    .pr-table-area tbody tr:hover td {
+      background: #e2e8f0 !important;
+      color: #0f172a;
+    }
+
+    /* Total Row matching standard report green theme */
+    .pr-table-area tfoot td,
+    .pr-table-area tbody tr.total-row td {
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+      background: #dcfce7 !important;
+      font-weight: 700;
+      color: #047857;
+      border: 1px solid #86efac;
+      border-top: 2px solid #10b981;
+      font-size: 12.5px;
+      padding: 10px 14px;
+    }
+
+    .game-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11.5px;
+      background: #e0e7ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      padding: 2px 10px;
+      border-radius: 12px;
+      background: #f0fdf4;
+      color: #166534;
+      font-weight: 700;
+      font-size: 12.5px;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        overflow: visible;
+        font-size: 9pt;
+      }
+
+      .pr-wrapper {
+        padding: 0;
+        overflow: visible;
+      }
+
+      .pr-header-actions,
+      .pr-filter-panel,
+      .pr-btn-back {
+        display: none !important;
+      }
+
+      .pr-table-card {
+        border: none;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .pr-table-area {
+        overflow: visible;
+      }
+
+      table {
+        min-width: 100%;
+        page-break-inside: auto;
+      }
+
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      tfoot {
+        display: table-footer-group;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header Bar -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">◫</div>
+        <div>
+          <h1 class="pr-title">Monthwise Game Report</h1>
+          <p class="pr-subtitle" id="reportSubtitle">Monthly gameplay count summary & activity comparison for September 2026</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="toggleFilterBtn" onclick="toggleFilter()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="printReport()" title="Print or Save PDF">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Summary Cards Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Active Month</span>
+        <span class="pr-kpi-val amber" id="kpiActiveMonth">Sep 2026</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Games Tracked</span>
+        <span class="pr-kpi-val indigo" id="kpiTotalGames">5 Games</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Game Count</span>
+        <span class="pr-kpi-val green" id="kpiTotalCount">715</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Highest Played Game</span>
+        <span class="pr-kpi-val" id="kpiTopGame" style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Air Hockey (215)</span>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div class="pr-filter-field">
+        <label>Month</label>
+        <select id="filterMonth" onchange="changeMonth()">
+          <option value="Sep 2026" selected>September 2026</option>
+          <option value="Aug 2026">August 2026</option>
+          <option value="Jul 2026">July 2026</option>
+          <option value="Jun 2026">June 2026</option>
+        </select>
+      </div>
+      <div class="pr-filter-field">
+        <label>Search (Game ID / Game Name)</label>
+        <input type="text" id="filterSearch" placeholder="Search game..." oninput="applyFilter()" />
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <button class="pr-btn pr-btn-filter" type="button" onclick="resetFilter()">Reset</button>
+        <button class="pr-btn" type="button" style="background:#d97706; color:#fff; border-color:#d97706;" onclick="applyFilter()">Apply Filter</button>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="pr-table-card">
+      <div class="pr-table-area">
+        <table id="monthwiseGameTable">
+          <thead>
+            <tr>
+              <th style="width: 160px;">Game ID</th>
+              <th>Game Name</th>
+              <th class="text-right" style="width: 180px;">Game Count</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dummy Data Rows -->
+            <tr>
+              <td><span class="game-badge">GM-101</span></td>
+              <td style="font-weight: 600; color: #0f172a;">VR Racing Simulator</td>
+              <td class="text-right"><span class="count-badge">142</span></td>
+            </tr>
+            <tr>
+              <td><span class="game-badge">GM-102</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Arcade Shooter #2</td>
+              <td class="text-right"><span class="count-badge">98</span></td>
+            </tr>
+            <tr>
+              <td><span class="game-badge">GM-103</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Air Hockey Arena</td>
+              <td class="text-right"><span class="count-badge">215</span></td>
+            </tr>
+            <tr>
+              <td><span class="game-badge">GM-104</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Basketball Shootout</td>
+              <td class="text-right"><span class="count-badge">184</span></td>
+            </tr>
+            <tr>
+              <td><span class="game-badge">GM-105</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Bowling Alley Express</td>
+              <td class="text-right"><span class="count-badge">76</span></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row" id="totalRow">
+              <td>Total :</td>
+              <td id="sumGameName">5 Games</td>
+              <td class="text-right" id="sumGameCount">715</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample monthly datasets
+    const monthlyData = {
+      "Sep 2026": [
+        { id: "GM-101", name: "VR Racing Simulator", count: 142 },
+        { id: "GM-102", name: "Arcade Shooter #2", count: 98 },
+        { id: "GM-103", name: "Air Hockey Arena", count: 215 },
+        { id: "GM-104", name: "Basketball Shootout", count: 184 },
+        { id: "GM-105", name: "Bowling Alley Express", count: 76 }
+      ],
+      "Aug 2026": [
+        { id: "GM-101", name: "VR Racing Simulator", count: 165 },
+        { id: "GM-102", name: "Arcade Shooter #2", count: 112 },
+        { id: "GM-103", name: "Air Hockey Arena", count: 240 },
+        { id: "GM-104", name: "Basketball Shootout", count: 195 },
+        { id: "GM-105", name: "Bowling Alley Express", count: 88 }
+      ],
+      "Jul 2026": [
+        { id: "GM-101", name: "VR Racing Simulator", count: 130 },
+        { id: "GM-102", name: "Arcade Shooter #2", count: 90 },
+        { id: "GM-103", name: "Air Hockey Arena", count: 190 },
+        { id: "GM-104", name: "Basketball Shootout", count: 160 },
+        { id: "GM-105", name: "Bowling Alley Express", count: 65 }
+      ],
+      "Jun 2026": [
+        { id: "GM-101", name: "VR Racing Simulator", count: 120 },
+        { id: "GM-102", name: "Arcade Shooter #2", count: 85 },
+        { id: "GM-103", name: "Air Hockey Arena", count: 175 },
+        { id: "GM-104", name: "Basketball Shootout", count: 150 },
+        { id: "GM-105", name: "Bowling Alley Express", count: 60 }
+      ]
+    };
+
+    function toggleFilter() {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('toggleFilterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function resetFilter() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterMonth').value = 'Sep 2026';
+      changeMonth();
+    }
+
+    function changeMonth() {
+      const month = document.getElementById('filterMonth').value;
+      document.getElementById('kpiActiveMonth').textContent = month;
+      document.getElementById('reportSubtitle').textContent = `Monthly gameplay count summary & activity comparison for ${month}`;
+      renderTable();
+    }
+
+    function renderTable() {
+      const month = document.getElementById('filterMonth').value;
+      const search = (document.getElementById('filterSearch').value || '').toLowerCase().trim();
+      const tbody = document.getElementById('tableBody');
+      const data = monthlyData[month] || [];
+
+      tbody.innerHTML = '';
+      let totalCount = 0;
+      let visibleGames = 0;
+      let topGame = null;
+
+      data.forEach(item => {
+        const text = (item.id + ' ' + item.name).toLowerCase();
+        if (!search || text.includes(search)) {
+          visibleGames++;
+          totalCount += item.count;
+
+          if (!topGame || item.count > topGame.count) {
+            topGame = item;
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><span class="game-badge">${item.id}</span></td>
+            <td style="font-weight: 600; color: #0f172a;">${item.name}</td>
+            <td class="text-right"><span class="count-badge">${item.count}</span></td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+
+      // Update Footer
+      document.getElementById('sumGameName').textContent = `${visibleGames} Games`;
+      document.getElementById('sumGameCount').textContent = totalCount;
+
+      // Update KPIs
+      document.getElementById('kpiTotalGames').textContent = `${visibleGames} Games`;
+      document.getElementById('kpiTotalCount').textContent = totalCount;
+      document.getElementById('kpiTopGame').textContent = topGame ? `${topGame.name} (${topGame.count})` : '-';
+    }
+
+    function applyFilter() {
+      renderTable();
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById('monthwiseGameTable');
+      let csv = [];
+      for (let r = 0; r < table.rows.length; r++) {
+        let row = [];
+        let cols = table.rows[r].querySelectorAll('td, th');
+        for (let c = 0; c < cols.length; c++) {
+          let text = cols[c].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+          text = text.replace(/"/g, '""');
+          row.push('"' + text + '"');
+        }
+        csv.push(row.join(','));
+      }
+      const csvString = csv.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      const month = document.getElementById('filterMonth').value.replace(/\s+/g, '_');
+      link.setAttribute('download', `Monthwise_Game_Report_${month}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+  </script>
+</body>
+
+</html>

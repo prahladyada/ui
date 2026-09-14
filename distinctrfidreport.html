@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Today's Distinct RFID Count</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= PROFESSIONAL REPORT STYLES ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+      gap: 10px;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 8px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+      flex-shrink: 0;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #eef2ff;
+      border-color: #818cf8;
+      color: #4338ca;
+    }
+
+    /* KPI Summary Cards */
+    .pr-kpi-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    .pr-kpi-val.blue {
+      color: #2563eb;
+    }
+
+    .pr-kpi-val.indigo {
+      color: #4f46e5;
+    }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: none;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      animation: slideDown 0.2s ease-out;
+      flex-shrink: 0;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 0 10px;
+      height: 32px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: #1e293b;
+      background: #fff;
+      outline: none;
+      min-width: 140px;
+      transition: all 0.2s ease;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Table Container */
+    .pr-table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pr-table-area {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .pr-table-area table {
+      width: 100%;
+      min-width: 1650px;
+      border-collapse: collapse;
+      font-size: 12px;
+      table-layout: auto;
+      border: 1px solid #cbd5e1;
+    }
+
+    .pr-table-area thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #1e293b;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      padding: 9px 8px;
+      text-align: center;
+      vertical-align: middle;
+      white-space: normal;
+      line-height: 1.25;
+      border: 1px solid #334155;
+    }
+
+    .pr-table-area tbody td {
+      padding: 8px 8px;
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 12px;
+      text-align: center;
+      background: #ffffff;
+    }
+
+    .pr-table-area tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .pr-table-area tbody tr:hover td {
+      background: #e2e8f0;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-standard {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .badge-vip {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-regular {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-member {
+      background: #e0e7ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+
+    /* Total Row */
+    .pr-table-area tfoot td,
+    .pr-table-area tbody tr.total-row td {
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+      background: #ecfdf5 !important;
+      font-weight: 700;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      border-top: 2px solid #059669;
+      font-size: 11.5px;
+      padding: 9px 8px;
+      text-align: center;
+    }
+
+    .rfid-total-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: #059669;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        overflow: visible;
+        font-size: 9pt;
+      }
+
+      .pr-wrapper {
+        padding: 0;
+        overflow: visible;
+      }
+
+      .pr-header-actions,
+      .pr-filter-panel,
+      .pr-btn-back {
+        display: none !important;
+      }
+
+      .pr-table-card {
+        border: none;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .pr-table-area {
+        overflow: visible;
+      }
+
+      table {
+        min-width: 100%;
+        page-break-inside: auto;
+      }
+
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      tfoot {
+        display: table-footer-group;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header Bar -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1 class="pr-title">Today's Distinct RFID Count</h1>
+          <p class="pr-subtitle">Real-time breakdown of distinct active RFID cards & gaming activity today</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="toggleFilterBtn" onclick="toggleFilter()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="printReport()" title="Print or Save PDF">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Summary Cards Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Distinct Cards</span>
+        <span class="pr-kpi-val green" id="kpiTotalCards">2 Cards</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Played Games</span>
+        <span class="pr-kpi-val indigo" id="kpiPlayedGames">8</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Played Amount</span>
+        <span class="pr-kpi-val" id="kpiPlayedAmount">430.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Main Amount Used</span>
+        <span class="pr-kpi-val green" id="kpiMainUsed">350.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Bonus Amount Used</span>
+        <span class="pr-kpi-val blue" id="kpiBonusUsed">80.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Net Played Amount</span>
+        <span class="pr-kpi-val" id="kpiNetPlayed">430.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Total Wallet Balance</span>
+        <span class="pr-kpi-val green" id="kpiWalletBalance">820.00</span>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div class="pr-filter-field">
+        <label>Date</label>
+        <input type="date" id="filterDate" value="2026-09-10" onclick="try{this.showPicker()}catch(e){}" onchange="applyFilter()" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Search (RFID / Name / Phone)</label>
+        <input type="text" id="filterSearch" placeholder="Enter keyword..." oninput="applyFilter()" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Card Type</label>
+        <select id="filterCardType" onchange="applyFilter()">
+          <option value="">All Card Types</option>
+          <option value="Standard">Standard</option>
+          <option value="VIP">VIP</option>
+        </select>
+      </div>
+      <div class="pr-filter-field">
+        <label>Customer Type</label>
+        <select id="filterCustType" onchange="applyFilter()">
+          <option value="">All Customer Types</option>
+          <option value="Regular">Regular</option>
+          <option value="Member">Member</option>
+        </select>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <button class="pr-btn pr-btn-filter" type="button" onclick="resetFilter()">Reset</button>
+        <button class="pr-btn" type="button" style="background:#059669; color:#fff; border-color:#059669;" onclick="applyFilter()">Apply Filter</button>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="pr-table-card">
+      <div class="pr-table-area">
+        <table id="distinctRfidTable">
+          <thead>
+            <tr>
+              <th>RFID</th>
+              <th>Card<br>Type</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Customer<br>Type</th>
+              <th>Total<br>Played<br>Games</th>
+              <th>Total<br>Played<br>Amount</th>
+              <th>Main<br>Amount<br>Used</th>
+              <th>Bonus<br>Amount<br>Used</th>
+              <th>Total<br>Refund<br>Games</th>
+              <th>Total<br>Refund<br>Amount</th>
+              <th>Net<br>Played<br>Amount</th>
+              <th>Wallet<br>Main<br>Balance</th>
+              <th>First Play<br>Time</th>
+              <th>Wallet<br>Bonus<br>Balance</th>
+              <th>Total<br>Wallet<br>Balance</th>
+              <th>Last Play<br>Time</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dummy Data Row 1 -->
+            <tr data-card="Standard" data-cust="Regular">
+              <td style="font-weight: 700; color: #059669;">RF-84291</td>
+              <td><span class="badge badge-standard">Standard</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Mohit Sharma</td>
+              <td>9876543210</td>
+              <td style="color: #64748b;">mohit.sharma@example.com</td>
+              <td><span class="badge badge-regular">Regular</span></td>
+              <td style="font-weight: 600;">5</td>
+              <td style="font-weight: 600; color: #0f172a;">250.00</td>
+              <td style="font-weight: 600; color: #059669;">200.00</td>
+              <td style="font-weight: 600; color: #2563eb;">50.00</td>
+              <td>0</td>
+              <td>0.00</td>
+              <td style="font-weight: 700; color: #0f172a;">250.00</td>
+              <td style="font-weight: 600; color: #059669;">450.00</td>
+              <td>10-Sep-2026 11:15 AM</td>
+              <td style="font-weight: 600; color: #2563eb;">100.00</td>
+              <td style="font-weight: 700; color: #059669;">550.00</td>
+              <td>10-Sep-2026 03:45 PM</td>
+            </tr>
+            <!-- Dummy Data Row 2 -->
+            <tr data-card="VIP" data-cust="Member">
+              <td style="font-weight: 700; color: #059669;">RF-84292</td>
+              <td><span class="badge badge-vip">VIP</span></td>
+              <td style="font-weight: 600; color: #0f172a;">Rahul Verma</td>
+              <td>9812345678</td>
+              <td style="color: #64748b;">rahul.verma@example.com</td>
+              <td><span class="badge badge-member">Member</span></td>
+              <td style="font-weight: 600;">3</td>
+              <td style="font-weight: 600; color: #0f172a;">180.00</td>
+              <td style="font-weight: 600; color: #059669;">150.00</td>
+              <td style="font-weight: 600; color: #2563eb;">30.00</td>
+              <td>0</td>
+              <td>0.00</td>
+              <td style="font-weight: 700; color: #0f172a;">180.00</td>
+              <td style="font-weight: 600; color: #059669;">220.00</td>
+              <td>10-Sep-2026 12:30 PM</td>
+              <td style="font-weight: 600; color: #2563eb;">50.00</td>
+              <td style="font-weight: 700; color: #059669;">270.00</td>
+              <td>10-Sep-2026 04:10 PM</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row" id="totalRow">
+              <td><span class="rfid-total-badge" id="totalRfidBadge">TOTAL (2 Cards)</span></td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td id="sumPlayedGames">8</td>
+              <td id="sumPlayedAmount">430.00</td>
+              <td id="sumMainUsed">350.00</td>
+              <td id="sumBonusUsed">80.00</td>
+              <td id="sumRefundGames">0</td>
+              <td id="sumRefundAmount">0.00</td>
+              <td id="sumNetPlayed">430.00</td>
+              <td id="sumMainBalance">670.00</td>
+              <td>-</td>
+              <td id="sumBonusBalance">150.00</td>
+              <td id="sumWalletBalance">820.00</td>
+              <td>-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleFilter() {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('toggleFilterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function resetFilter() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterCardType').value = '';
+      document.getElementById('filterCustType').value = '';
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const search = (document.getElementById('filterSearch').value || '').toLowerCase().trim();
+      const cardType = document.getElementById('filterCardType').value;
+      const custType = document.getElementById('filterCustType').value;
+
+      const rows = document.querySelectorAll('#tableBody tr');
+      let visibleCards = 0;
+      let playedGames = 0;
+      let playedAmount = 0;
+      let mainUsed = 0;
+      let bonusUsed = 0;
+      let refundGames = 0;
+      let refundAmount = 0;
+      let netPlayed = 0;
+      let mainBal = 0;
+      let bonusBal = 0;
+      let walletBal = 0;
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowCard = row.getAttribute('data-card');
+        const rowCust = row.getAttribute('data-cust');
+
+        const matchSearch = !search || text.includes(search);
+        const matchCard = !cardType || rowCard === cardType;
+        const matchCust = !custType || rowCust === custType;
+
+        if (matchSearch && matchCard && matchCust) {
+          row.style.display = '';
+          visibleCards++;
+
+          const cells = row.querySelectorAll('td');
+          playedGames += parseInt(cells[6].innerText) || 0;
+          playedAmount += parseFloat(cells[7].innerText) || 0;
+          mainUsed += parseFloat(cells[8].innerText) || 0;
+          bonusUsed += parseFloat(cells[9].innerText) || 0;
+          refundGames += parseInt(cells[10].innerText) || 0;
+          refundAmount += parseFloat(cells[11].innerText) || 0;
+          netPlayed += parseFloat(cells[12].innerText) || 0;
+          mainBal += parseFloat(cells[13].innerText) || 0;
+          bonusBal += parseFloat(cells[15].innerText) || 0;
+          walletBal += parseFloat(cells[16].innerText) || 0;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Update Total Footer
+      document.getElementById('totalRfidBadge').textContent = `TOTAL (${visibleCards} Cards)`;
+      document.getElementById('sumPlayedGames').textContent = playedGames;
+      document.getElementById('sumPlayedAmount').textContent = playedAmount.toFixed(2);
+      document.getElementById('sumMainUsed').textContent = mainUsed.toFixed(2);
+      document.getElementById('sumBonusUsed').textContent = bonusUsed.toFixed(2);
+      document.getElementById('sumRefundGames').textContent = refundGames;
+      document.getElementById('sumRefundAmount').textContent = refundAmount.toFixed(2);
+      document.getElementById('sumNetPlayed').textContent = netPlayed.toFixed(2);
+      document.getElementById('sumMainBalance').textContent = mainBal.toFixed(2);
+      document.getElementById('sumBonusBalance').textContent = bonusBal.toFixed(2);
+      document.getElementById('sumWalletBalance').textContent = walletBal.toFixed(2);
+
+      // Update KPI Top Cards
+      document.getElementById('kpiTotalCards').textContent = `${visibleCards} Cards`;
+      document.getElementById('kpiPlayedGames').textContent = playedGames;
+      document.getElementById('kpiPlayedAmount').textContent = playedAmount.toFixed(2);
+      document.getElementById('kpiMainUsed').textContent = mainUsed.toFixed(2);
+      document.getElementById('kpiBonusUsed').textContent = bonusUsed.toFixed(2);
+      document.getElementById('kpiNetPlayed').textContent = netPlayed.toFixed(2);
+      document.getElementById('kpiWalletBalance').textContent = walletBal.toFixed(2);
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById('distinctRfidTable');
+      let csv = [];
+      for (let r = 0; r < table.rows.length; r++) {
+        let row = [];
+        let cols = table.rows[r].querySelectorAll('td, th');
+        for (let c = 0; c < cols.length; c++) {
+          let text = cols[c].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+          text = text.replace(/"/g, '""');
+          row.push('"' + text + '"');
+        }
+        csv.push(row.join(','));
+      }
+      const csvString = csv.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', "Todays_Distinct_RFID_Count_" + new Date().toISOString().slice(0, 10) + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+  </script>
+</body>
+
+</html>

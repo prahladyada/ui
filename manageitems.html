@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Items</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      font-size: 13px;
+    }
+
+    .mi-page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* Main Container with 2-tier Tabs like Manage Customer */
+    .mc-main-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f2e2c4;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    /* Tier 1: Top Tabs Bar (Light slate header) */
+    .mc-topbar {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      background: #e2e8f0;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 10px 18px 0 18px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .mc-tab {
+      height: 38px;
+      padding: 0 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #475569;
+      background: #ffffff;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      border-radius: 8px 8px 0 0;
+      margin-bottom: -1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .mc-tab:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .mc-tab.active {
+      background: #f2e2c4;
+      color: #0f172a;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      border-top: 3px solid #4f46e5;
+      border-bottom: 1px solid #f2e2c4;
+      z-index: 10;
+    }
+
+    /* Tier 2: Sub-Tabs Bar */
+    .mc-action-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      background: #f2e2c4;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 8px 18px 0 18px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .mc-pill-btn {
+      height: 36px;
+      padding: 0 18px;
+      border: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      border-radius: 8px 8px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #475569;
+      background: #ffffff;
+      margin-bottom: -1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .mc-pill-btn:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .mc-pill-btn.active {
+      background: #ffffff;
+      color: #4f46e5;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      border-top: 3px solid #4f46e5;
+      border-bottom: 1px solid #ffffff;
+      z-index: 10;
+    }
+
+    /* Main Content Area */
+    .mc-content-body {
+      flex: 1;
+      background: #ffffff;
+      padding: 18px 22px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Controls: Search & Filters */
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 7px 12px;
+      width: 290px;
+    }
+
+    .search-input-wrap input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 13px;
+      background: transparent;
+    }
+
+    .select-filter {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    /* Boxed Spreadsheet Table */
+    .table-container {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .table-scroll {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    thead th {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 9px 12px;
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border: 1px solid #334155;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* Badges */
+    .badge-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-category {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+
+    .status-active {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    .status-active::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+
+    .status-inactive {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .status-inactive::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    /* Table Action Buttons */
+    .table-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .action-edit {
+      color: #4f46e5;
+      border-color: #c7d2fe;
+    }
+
+    .action-edit:hover {
+      background: #eef2ff;
+      border-color: #4f46e5;
+    }
+
+    .action-stock {
+      color: #0f766e;
+      border-color: #99f6e4;
+    }
+
+    .action-stock:hover {
+      background: #f0fdfa;
+      border-color: #0f766e;
+    }
+
+    .action-delete {
+      color: #ef4444;
+      border-color: #fecaca;
+    }
+
+    .action-delete:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+    }
+
+    /* Forms */
+    .form-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 20px 24px;
+      max-width: 680px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .form-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .btn-submit {
+      padding: 9px 22px;
+      background: #4f46e5;
+      color: #ffffff;
+      border: none;
+      border-radius: 7px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #4338ca;
+    }
+
+    .btn-cancel-form {
+      padding: 9px 18px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mi-page-wrapper">
+    <div class="mc-main-card">
+      <!-- Tier 1: Main Menu Categories Tabs (Manage Customer Header Style) -->
+      <div class="mc-topbar">
+        <div class="mc-tab active" data-top="direct-sale" onclick="switchTopTab('Direct Sale Items', this)">
+          Direct Sale Items
+        </div>
+        <!-- Quick Billing / Quick Sale section (Commented out as requested)
+        <div class="mc-tab" data-top="quick-sale" onclick="switchTopTab('Quick Sale Items', this)">
+          Quick Sale Items
+        </div>
+        -->
+        <div class="mc-tab" data-top="food" onclick="switchTopTab('Food Items', this)">
+          Food Items
+        </div>
+        <div class="mc-tab" data-top="categories" onclick="switchTopTab('Categories', this)">
+          Manage Categories
+        </div>
+        <div style="margin-left: auto; margin-bottom: 4px;">
+          <button type="button" style="height: 32px; padding: 0 14px; font-size: 12.5px; font-weight: 600; color: #475569; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back to Master</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tier 2: Sub-Tabs Bar (Items List & + Add Item only) -->
+      <div class="mc-action-bar" id="subTabsBar">
+        <div class="mc-pill-btn active" data-sub="items" onclick="switchSubTab('items', this)">
+          Items List
+        </div>
+        <div class="mc-pill-btn" data-sub="add-item" onclick="switchSubTab('add-item', this)">
+          + Add Item
+        </div>
+      </div>
+
+      <!-- View Container -->
+      <div class="mc-content-body" id="mainViewContainer">
+        <!-- Dynamic Content Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Categories Store
+    let categories = [
+      { id: 'CAT-1', name: 'Fast Food', menu: 'Food Items', status: 'Active' },
+      { id: 'CAT-2', name: 'Beverages', menu: 'Food Items', status: 'Active' },
+      { id: 'CAT-3', name: 'Pizzas & Pastas', menu: 'Food Items', status: 'Active' },
+      { id: 'CAT-4', name: 'Snacks & Sides', menu: 'Food Items', status: 'Active' },
+      { id: 'CAT-5', name: 'Amusement Rides', menu: 'Direct Sale Items', status: 'Active' },
+      { id: 'CAT-6', name: 'Soft Play Zones', menu: 'Direct Sale Items', status: 'Active' },
+      { id: 'CAT-7', name: 'Merchandise & Toys', menu: 'Direct Sale Items', status: 'Active' },
+      { id: 'CAT-8', name: 'Game Cards & Points', menu: 'Quick Sale Items', status: 'Active' },
+      { id: 'CAT-9', name: 'Combo Deals', menu: 'Quick Sale Items', status: 'Active' },
+      { id: 'CAT-10', name: 'VIP Bands & Tokens', menu: 'Quick Sale Items', status: 'Active' }
+    ];
+
+    // 2. Items Store
+    let items = [
+      // Direct Sale Items (has tokenCount)
+      {
+        code: 'DS-101',
+        name: 'Veg Burger',
+        menu: 'Direct Sale Items',
+        category: 'Fast Food',
+        tokenCount: 0,
+        price: 120.00,
+        tax: '5%',
+        status: 'Active'
+      },
+      {
+        code: 'DS-102',
+        name: 'Cheese Pizza',
+        menu: 'Direct Sale Items',
+        category: 'Pizzas & Pastas',
+        tokenCount: 0,
+        price: 250.00,
+        tax: '5%',
+        status: 'Active'
+      },
+      {
+        code: 'DS-103',
+        name: 'Soft Play Entry',
+        menu: 'Direct Sale Items',
+        category: 'Soft Play Zones',
+        tokenCount: 2,
+        price: 350.00,
+        tax: '18%',
+        status: 'Active'
+      },
+      {
+        code: 'DS-104',
+        name: 'Plush Teddy Toy',
+        menu: 'Direct Sale Items',
+        category: 'Merchandise & Toys',
+        tokenCount: 0,
+        price: 199.00,
+        tax: '12%',
+        status: 'Active'
+      },
+      {
+        code: 'DS-105',
+        name: 'Laser Tag Arena',
+        menu: 'Direct Sale Items',
+        category: 'Amusement Rides',
+        tokenCount: 5,
+        price: 300.00,
+        tax: '18%',
+        status: 'Active'
+      },
+
+      // Quick Sale Items (NO tokenCount)
+      {
+        code: 'QS-201',
+        name: 'Quick Game Card ₹100',
+        menu: 'Quick Sale Items',
+        category: 'Game Cards & Points',
+        price: 100.00,
+        tax: '18%',
+        status: 'Active'
+      },
+      {
+        code: 'QS-202',
+        name: 'Quick Game Card ₹500',
+        menu: 'Quick Sale Items',
+        category: 'Game Cards & Points',
+        price: 500.00,
+        tax: '18%',
+        status: 'Active'
+      },
+      {
+        code: 'QS-203',
+        name: 'Quick Family Combo Pass',
+        menu: 'Quick Sale Items',
+        category: 'Combo Deals',
+        price: 1200.00,
+        tax: '18%',
+        status: 'Active'
+      },
+      {
+        code: 'QS-204',
+        name: 'Arcade Token Bag',
+        menu: 'Quick Sale Items',
+        category: 'VIP Bands & Tokens',
+        price: 200.00,
+        tax: '18%',
+        status: 'Active'
+      },
+      {
+        code: 'QS-205',
+        name: 'VIP Priority Band',
+        menu: 'Quick Sale Items',
+        category: 'VIP Bands & Tokens',
+        price: 150.00,
+        tax: '18%',
+        status: 'Active'
+      },
+
+      // Food Items (NO tokenCount, with Description)
+      {
+        code: 'FD-301',
+        name: 'French Fries',
+        description: 'Crispy salted potato fries served hot',
+        menu: 'Food Items',
+        category: 'Snacks & Sides',
+        price: 90.00,
+        tax: '5%',
+        status: 'Active'
+      },
+      {
+        code: 'FD-302',
+        name: 'White Sauce Pasta',
+        description: 'Creamy rich alfredo penne pasta with garlic herbs',
+        menu: 'Food Items',
+        category: 'Pizzas & Pastas',
+        price: 180.00,
+        tax: '5%',
+        status: 'Active'
+      },
+      {
+        code: 'FD-303',
+        name: 'Red Sauce Arrabiata',
+        description: 'Penne pasta tossed in spicy tangy tomato herb sauce',
+        menu: 'Food Items',
+        category: 'Pizzas & Pastas',
+        price: 190.00,
+        tax: '5%',
+        status: 'Active'
+      },
+      {
+        code: 'FD-304',
+        name: 'Paneer Tikka Wrap',
+        description: 'Spiced cottage cheese rolled in tortilla wrap',
+        menu: 'Food Items',
+        category: 'Fast Food',
+        price: 140.00,
+        tax: '5%',
+        status: 'Active'
+      },
+      {
+        code: 'FD-305',
+        name: 'Cold Coffee Frappe',
+        description: 'Rich blended iced espresso with creamy froth',
+        menu: 'Food Items',
+        category: 'Beverages',
+        price: 110.00,
+        tax: '5%',
+        status: 'Active'
+      }
+    ];
+
+    let activeTopTab = 'Direct Sale Items';
+    let activeSubTab = 'items';
+    let editingItemCode = null;
+    let editingCatId = null;
+
+    // Switch Top Tab (Tier 1)
+    function switchTopTab(tabName, btn) {
+      activeTopTab = tabName;
+      document.querySelectorAll('.mc-topbar .mc-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const subBar = document.getElementById('subTabsBar');
+      if (activeTopTab === 'Categories') {
+        subBar.style.display = 'none';
+      } else {
+        subBar.style.display = 'flex';
+        if (activeSubTab !== 'items' && activeSubTab !== 'add-item') {
+          activeSubTab = 'items';
+        }
+        highlightActiveSubTab();
+      }
+      renderView();
+    }
+
+    // Switch Sub Tab (Tier 2)
+    function switchSubTab(subName, btn) {
+      activeSubTab = subName;
+      document.querySelectorAll('.mc-action-bar .mc-pill-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderView();
+    }
+
+    function highlightActiveSubTab() {
+      document.querySelectorAll('.mc-action-bar .mc-pill-btn').forEach(b => {
+        if (b.getAttribute('data-sub') === activeSubTab) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+    }
+
+    // Main Renderer
+    function renderView() {
+      const container = document.getElementById('mainViewContainer');
+
+      if (activeTopTab === 'Categories') {
+        renderCategoriesView(container);
+        return;
+      }
+
+      if (activeSubTab === 'items') {
+        renderItemsListView(container);
+      } else if (activeSubTab === 'add-item') {
+        renderAddItemView(container);
+      }
+    }
+
+    // ==========================================
+    // 1. ITEMS LIST VIEW
+    // ==========================================
+    function renderItemsListView(container) {
+      const hasTokenCount = (activeTopTab === 'Direct Sale Items');
+
+      container.innerHTML = `
+        <div class="table-controls">
+          <div class="search-input-wrap">
+            <svg width="15" height="15" fill="none" stroke="#94a3b8" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="itemSearchInput" placeholder="Search by name, code or category..." oninput="filterItemsTable()" />
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <select class="select-filter" id="itemCategoryFilter" onchange="filterItemsTable()">
+              <option value="All">All Categories</option>
+              ${categories.filter(c => c.menu === activeTopTab).map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+            </select>
+            <select class="select-filter" id="itemStatusFilter" onchange="filterItemsTable()">
+              <option value="All">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 85px;">Item Code</th>
+                  <th>Item Name</th>
+                  ${activeTopTab === 'Food Items' ? '<th>Description</th>' : ''}
+                  <th style="width: 140px;">Category</th>
+                  ${hasTokenCount ? '<th style="width: 95px; text-align: center;">Stock Qty</th><th style="width: 95px; text-align: center;">Token Count</th>' : ''}
+                  <th style="width: 110px;">Price (₹)</th>
+                  <th style="width: 85px;">GST %</th>
+                  <th style="width: 90px;">Status</th>
+                  <th style="width: 180px; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      filterItemsTable();
+    }
+
+    function filterItemsTable() {
+      const hasTokenCount = (activeTopTab === 'Direct Sale Items');
+      const search = (document.getElementById('itemSearchInput')?.value || '').trim().toLowerCase();
+      const catF = document.getElementById('itemCategoryFilter')?.value || 'All';
+      const statF = document.getElementById('itemStatusFilter')?.value || 'All';
+      const tbody = document.getElementById('itemsTableBody');
+      if (!tbody) return;
+
+      const filtered = items.filter(i => {
+        const matchMenu = i.menu === activeTopTab;
+        const matchCat = (catF === 'All') || (i.category === catF);
+        const matchStat = (statF === 'All') || (i.status === statF);
+        const matchSearch = i.name.toLowerCase().includes(search) || 
+                            i.code.toLowerCase().includes(search) || 
+                            i.category.toLowerCase().includes(search) ||
+                            (i.description && i.description.toLowerCase().includes(search));
+        return matchMenu && matchCat && matchStat && matchSearch;
+      });
+
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        const colCount = 7 + (hasTokenCount ? 2 : 0) + (activeTopTab === 'Food Items' ? 1 : 0);
+        tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align: center; color: #94a3b8; padding: 25px;">No items found under ${activeTopTab}.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight: 700; color: #334155;">${item.code}</td>
+          <td style="font-weight: 600; color: #0f172a;">${item.name}</td>
+          ${activeTopTab === 'Food Items' ? `<td style="color: #64748b; font-size: 12px;">${item.description || '-'}</td>` : ''}
+          <td><span class="badge-tag badge-category">${item.category}</span></td>
+          ${hasTokenCount ? `<td style="text-align: center; font-weight: 700; color: #0f766e;">${item.stockQty !== undefined ? item.stockQty : 0}</td>` : ''}
+          ${hasTokenCount ? `<td style="text-align: center; font-weight: 700; color: #4f46e5;">${item.tokenCount !== undefined ? item.tokenCount : 0}</td>` : ''}
+          <td style="font-weight: 700; color: #0f172a;">₹${item.price.toFixed(2)}</td>
+          <td>${item.tax}</td>
+          <td><span class="${item.status === 'Active' ? 'status-active' : 'status-inactive'}">${item.status}</span></td>
+          <td>
+            <div class="table-actions">
+              <button class="action-btn action-edit" onclick="triggerEditItem('${item.code}')" title="Edit Item">Edit</button>
+              ${hasTokenCount ? `<button class="action-btn action-stock" onclick="triggerAddStock('${item.code}')" title="Add Stock">Add Stock</button>` : ''}
+              <button class="action-btn action-delete" onclick="triggerDeleteItem('${item.code}')" title="Delete Item">Delete</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // ==========================================
+    // 2. ADD / EDIT ITEM FORM
+    // ==========================================
+    function renderAddItemView(container) {
+      const hasTokenCount = (activeTopTab === 'Direct Sale Items');
+      let editItem = editingItemCode ? items.find(i => i.code === editingItemCode) : null;
+      const matchedCats = categories.filter(c => c.menu === activeTopTab);
+
+      container.innerHTML = `
+        <div class="form-card">
+          <div class="form-title">
+            ${editItem ? `Edit Item: ${editItem.name} (${editItem.code})` : `Add New Item to ${activeTopTab}`}
+          </div>
+
+          <form onsubmit="handleSaveItem(event)">
+            <input type="hidden" id="fItemCode" value="${editItem ? editItem.code : ''}" />
+
+            <!-- Row 1: Item Name on Left, Category on Right -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Item Name *</label>
+                <input type="text" id="fItemName" value="${editItem ? editItem.name : ''}" required placeholder="e.g. Veg Burger, Laser Tag, Entry Pass" />
+              </div>
+
+              <div class="form-group">
+                <label>Category *</label>
+                <select id="fItemCategory" required>
+                  ${matchedCats.map(c => `<option value="${c.name}" ${editItem && editItem.category === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            ${!hasTokenCount ? `
+              <!-- Quick Sale & Food Items: NO Token Count -->
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Price (₹) *</label>
+                  <input type="number" step="0.01" id="fItemPrice" value="${editItem ? editItem.price : ''}" required placeholder="120.00" />
+                </div>
+
+                <div class="form-group">
+                  <label>GST Rate (%)</label>
+                  <select id="fItemTax">
+                    <option value="5%" ${editItem && editItem.tax === '5%' ? 'selected' : ''}>5%</option>
+                    <option value="12%" ${editItem && editItem.tax === '12%' ? 'selected' : ''}>12%</option>
+                    <option value="18%" ${!editItem || editItem.tax === '18%' ? 'selected' : ''}>18%</option>
+                    <option value="28%" ${editItem && editItem.tax === '28%' ? 'selected' : ''}>28%</option>
+                    <option value="0%" ${editItem && editItem.tax === '0%' ? 'selected' : ''}>0% (Exempt)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Status</label>
+                  <select id="fItemStatus">
+                    <option value="Active" ${!editItem || editItem.status === 'Active' ? 'selected' : ''}>Active</option>
+                    <option value="Inactive" ${editItem && editItem.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                  </select>
+                </div>
+
+                ${activeTopTab === 'Food Items' ? `
+                  <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="fItemDescription" value="${editItem && editItem.description ? editItem.description : ''}" placeholder="e.g. Crispy golden fries served with ketchup" />
+                  </div>
+                ` : ''}
+              </div>
+            ` : `
+              <!-- Direct Sale Items: Stock and Token Count -->
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Stock Quantity</label>
+                  <input type="number" id="fItemStockQty" value="${editItem ? (editItem.stockQty !== undefined ? editItem.stockQty : 0) : '0'}" placeholder="0" min="0" step="1" />
+                </div>
+
+                <div class="form-group">
+                  <label>Token Count</label>
+                  <input type="number" id="fItemTokenCount" value="${editItem ? (editItem.tokenCount !== undefined ? editItem.tokenCount : 0) : '0'}" placeholder="0" min="0" />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Price (₹) *</label>
+                  <input type="number" step="0.01" id="fItemPrice" value="${editItem ? editItem.price : ''}" required placeholder="120.00" />
+                </div>
+
+                <div class="form-group">
+                  <label>GST Rate (%)</label>
+                  <select id="fItemTax">
+                    <option value="5%" ${editItem && editItem.tax === '5%' ? 'selected' : ''}>5%</option>
+                    <option value="12%" ${editItem && editItem.tax === '12%' ? 'selected' : ''}>12%</option>
+                    <option value="18%" ${!editItem || editItem.tax === '18%' ? 'selected' : ''}>18%</option>
+                    <option value="28%" ${editItem && editItem.tax === '28%' ? 'selected' : ''}>28%</option>
+                    <option value="0%" ${editItem && editItem.tax === '0%' ? 'selected' : ''}>0% (Exempt)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Status</label>
+                  <select id="fItemStatus">
+                    <option value="Active" ${!editItem || editItem.status === 'Active' ? 'selected' : ''}>Active</option>
+                    <option value="Inactive" ${editItem && editItem.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                  </select>
+                </div>
+              </div>
+            `}
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+              <button type="submit" class="btn-submit">${editItem ? 'Update Item' : 'Save Item'}</button>
+              <button type="button" class="btn-cancel-form" onclick="cancelItemEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      `;
+    }
+
+    function handleSaveItem(e) {
+      e.preventDefault();
+      const hasTokenCount = (activeTopTab === 'Direct Sale Items');
+      const code = document.getElementById('fItemCode').value;
+      const name = document.getElementById('fItemName').value.trim();
+      const category = document.getElementById('fItemCategory').value;
+      const stockQty = hasTokenCount ? (parseInt(document.getElementById('fItemStockQty')?.value) || 0) : 0;
+      const tokenCount = hasTokenCount ? (parseInt(document.getElementById('fItemTokenCount')?.value) || 0) : 0;
+      const price = parseFloat(document.getElementById('fItemPrice').value);
+      const tax = document.getElementById('fItemTax').value;
+      const status = document.getElementById('fItemStatus').value;
+      const description = document.getElementById('fItemDescription') ? document.getElementById('fItemDescription').value.trim() : '';
+
+      if (code) {
+        // Update
+        const itm = items.find(i => i.code === code);
+        if (itm) {
+          itm.name = name;
+          itm.category = category;
+          if (hasTokenCount) {
+            itm.stockQty = stockQty;
+            itm.tokenCount = tokenCount;
+          } else {
+            delete itm.stockQty;
+            delete itm.tokenCount;
+          }
+          if (activeTopTab === 'Food Items') {
+            itm.description = description;
+          }
+          itm.price = price;
+          itm.tax = tax;
+          itm.status = status;
+        }
+      } else {
+        // Add
+        const prefix = activeTopTab === 'Direct Sale Items' ? 'DS' : (activeTopTab === 'Quick Sale Items' ? 'QS' : 'FD');
+        const newCode = `${prefix}-${Math.floor(100 + Math.random() * 900)}`;
+        const newItem = {
+          code: newCode,
+          name: name,
+          menu: activeTopTab,
+          category: category,
+          price: price,
+          tax: tax,
+          status: status
+        };
+        if (hasTokenCount) {
+          newItem.stockQty = stockQty;
+          newItem.tokenCount = tokenCount;
+        }
+        if (activeTopTab === 'Food Items') {
+          newItem.description = description;
+        }
+        items.push(newItem);
+      }
+
+      editingItemCode = null;
+      activeSubTab = 'items';
+      highlightActiveSubTab();
+      renderView();
+    }
+
+    function triggerEditItem(code) {
+      editingItemCode = code;
+      activeSubTab = 'add-item';
+      highlightActiveSubTab();
+      renderView();
+    }
+
+    function triggerAddStock(code) {
+      const itm = items.find(i => i.code === code);
+      if (!itm) return;
+
+      const enteredQty = prompt(`Enter stock quantity to add for "${itm.name}":`, '1');
+      if (enteredQty === null) return;
+
+      const addQty = Number(enteredQty);
+      if (!Number.isInteger(addQty) || addQty <= 0) {
+        alert('Please enter a positive whole number.');
+        return;
+      }
+
+      itm.stockQty = (itm.stockQty || 0) + addQty;
+      filterItemsTable();
+    }
+
+    function cancelItemEdit() {
+      editingItemCode = null;
+      activeSubTab = 'items';
+      highlightActiveSubTab();
+      renderView();
+    }
+
+    function triggerDeleteItem(code) {
+      const itm = items.find(i => i.code === code);
+      if (itm && confirm(`Are you sure you want to delete item "${itm.name}" (${code})?`)) {
+        items = items.filter(i => i.code !== code);
+        filterItemsTable();
+      }
+    }
+
+    // ==========================================
+    // 3. MANAGE CATEGORIES VIEW
+    // ==========================================
+    function renderCategoriesView(container) {
+      let editCat = editingCatId ? categories.find(c => c.id === editingCatId) : null;
+
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: 360px 1fr; gap: 20px; height: 100%;">
+          <!-- Left: Add / Edit Category Form -->
+          <div class="form-card" style="height: fit-content; max-width: 100%;">
+            <div class="form-title">
+              ${editCat ? `Edit Category: ${editCat.name}` : `+ Add New Category`}
+            </div>
+            <form onsubmit="handleSaveCategory(event)">
+              <input type="hidden" id="fCatId" value="${editCat ? editCat.id : ''}" />
+
+              <div class="form-group">
+                <label>Category Name *</label>
+                <input type="text" id="fCatName" value="${editCat ? editCat.name : ''}" required placeholder="e.g. Fast Food, Rides, Toys" />
+              </div>
+
+              <div class="form-group">
+                <label>Assign to Menu Type *</label>
+                <select id="fCatMenu" required>
+                  <option value="Direct Sale Items" ${editCat && editCat.menu === 'Direct Sale Items' ? 'selected' : ''}>Direct Sale Items</option>
+                  <!-- <option value="Quick Sale Items" ${editCat && editCat.menu === 'Quick Sale Items' ? 'selected' : ''}>Quick Sale Items</option> -->
+                  <option value="Food Items" ${editCat && editCat.menu === 'Food Items' ? 'selected' : ''}>Food Items</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Status</label>
+                <select id="fCatStatus">
+                  <option value="Active" ${!editCat || editCat.status === 'Active' ? 'selected' : ''}>Active</option>
+                  <option value="Inactive" ${editCat && editCat.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 14px;">
+                <button type="submit" class="btn-submit">${editCat ? 'Update Category' : 'Add Category'}</button>
+                ${editCat ? `<button type="button" class="btn-cancel-form" onclick="cancelCatEdit()">Cancel</button>` : ''}
+              </div>
+            </form>
+          </div>
+
+          <!-- Right: Categories List Table -->
+          <div class="table-container">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 80px;">Cat ID</th>
+                    <th>Category Name</th>
+                    <th style="width: 150px;">Assigned Menu Type</th>
+                    <th style="width: 100px; text-align: center;">Items Count</th>
+                    <th style="width: 90px;">Status</th>
+                    <th style="width: 120px; text-align: center;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="catTableBody">
+                  ${categories.map(cat => {
+                    const count = items.filter(i => i.category === cat.name).length;
+                    return `
+                      <tr>
+                        <td style="font-weight: 700; color: #64748b;">${cat.id}</td>
+                        <td style="font-weight: 700; color: #0f172a;">${cat.name}</td>
+                        <td><span class="badge-tag badge-category">${cat.menu}</span></td>
+                        <td style="text-align: center; font-weight: 700; color: #475569;">${count} items</td>
+                        <td><span class="${cat.status === 'Inactive' ? 'status-inactive' : 'status-active'}">${cat.status || 'Active'}</span></td>
+                        <td>
+                          <div class="table-actions">
+                            <button class="action-btn action-edit" onclick="triggerEditCategory('${cat.id}')">Edit</button>
+                            <button class="action-btn action-delete" onclick="triggerDeleteCategory('${cat.id}')">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleSaveCategory(e) {
+      e.preventDefault();
+      const id = document.getElementById('fCatId').value;
+      const name = document.getElementById('fCatName').value.trim();
+      const menu = document.getElementById('fCatMenu').value;
+      const status = document.getElementById('fCatStatus').value;
+
+      if (!name) return;
+
+      if (id) {
+        // Edit category
+        const cat = categories.find(c => c.id === id);
+        if (cat) {
+          const oldName = cat.name;
+          cat.name = name;
+          cat.menu = menu;
+          cat.status = status;
+
+          // Cascade update items belonging to this category
+          items.forEach(i => {
+            if (i.category === oldName) {
+              i.category = name;
+              i.menu = menu;
+            }
+          });
+        }
+      } else {
+        // Check duplicate
+        if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+          alert('A category with this name already exists.');
+          return;
+        }
+
+        const newId = 'CAT-' + (categories.length + 1);
+        categories.push({
+          id: newId,
+          name: name,
+          menu: menu,
+          status: status
+        });
+      }
+
+      editingCatId = null;
+      renderView();
+    }
+
+    function triggerEditCategory(id) {
+      editingCatId = id;
+      renderView();
+    }
+
+    function cancelCatEdit() {
+      editingCatId = null;
+      renderView();
+    }
+
+    function triggerDeleteCategory(id) {
+      const cat = categories.find(c => c.id === id);
+      if (!cat) return;
+
+      const itemsInCat = items.filter(i => i.category === cat.name);
+      if (itemsInCat.length > 0) {
+        if (!confirm(`Warning: Category "${cat.name}" has ${itemsInCat.length} items. Deleting it will set those items to "General". Proceed?`)) {
+          return;
+        }
+        items.forEach(i => {
+          if (i.category === cat.name) i.category = 'General';
+        });
+      } else {
+        if (!confirm(`Are you sure you want to delete category "${cat.name}"?`)) {
+          return;
+        }
+      }
+
+      categories = categories.filter(c => c.id !== id);
+      renderView();
+    }
+
+    // Initial render
+    renderView();
+  </script>
+</body>
+
+</html>

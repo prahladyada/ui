@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reconcile Management</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-y: auto;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= LAYOUT CONTAINER ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      gap: 16px;
+    }
+
+    /* Header Bar */
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .pr-icon-badge {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      height: 38px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    /* ================= MAIN 3 CARDS VIEW ================= */
+    .reconcile-cards-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 10px 60px;
+      width: 100%;
+    }
+
+    .reconcile-cards-banner {
+      text-align: center;
+      margin-bottom: 34px;
+      max-width: 620px;
+    }
+
+    .reconcile-cards-banner h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .reconcile-cards-banner p {
+      font-size: 13.5px;
+      color: #64748b;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .reconcile-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    @media (max-width: 900px) {
+      .reconcile-card-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+      }
+    }
+
+    .reconcile-big-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      cursor: pointer;
+      position: relative;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .reconcile-big-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 30px -8px rgba(15, 23, 42, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.06);
+      border-color: #cbd5e1;
+    }
+
+    .reconcile-big-card .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .reconcile-big-card .card-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    .reconcile-big-card.card-payment .card-icon-box {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    .reconcile-big-card.card-game .card-icon-box {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+    }
+
+    .reconcile-big-card.card-direct .card-icon-box {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+    }
+
+    .reconcile-big-card .card-arrow-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+
+    .reconcile-big-card:hover .card-arrow-circle {
+      background: #0f172a;
+      color: #ffffff;
+      transform: translateX(4px);
+    }
+
+    .reconcile-big-card h2 {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .reconcile-big-card p {
+      margin: 6px 0 0;
+      font-size: 12.5px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .reconcile-big-card .card-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid #f1f5f9;
+      margin-top: auto;
+    }
+
+    .reconcile-big-card .badge-pending-pill {
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .reconcile-big-card .badge-pending-pill.resolved {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .reconcile-big-card .card-click-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4f46e5;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s ease;
+    }
+
+    /* Notification Toast */
+    .toast-popup {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      z-index: 10001;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ================= 10s RECONCILE PROGRESS MODAL ================= */
+    .reconcile-progress-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reconcile-progress-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .reconcile-progress-card {
+      background: #ffffff;
+      border-radius: 22px;
+      width: 480px;
+      max-width: 92vw;
+      padding: 34px 30px 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.15);
+      transform: scale(0.92);
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+      position: relative;
+    }
+
+    .reconcile-progress-overlay.active .reconcile-progress-card {
+      transform: scale(1);
+    }
+
+    .prog-close-x {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 20px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .prog-close-x:hover {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    .prog-state-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Animated Dual-Ring Spinner */
+    .prog-spinner-wrap {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prog-spinner-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 4px solid #e2e8f0;
+      border-top-color: #059669;
+      border-right-color: #10b981;
+      animation: spinRing 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+
+    @keyframes spinRing {
+      to { transform: rotate(360deg); }
+    }
+
+    .prog-spinner-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      color: #059669;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .prog-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .prog-subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin: 6px 0 24px;
+      font-weight: 500;
+    }
+
+    /* Progress Bar */
+    .prog-bar-container {
+      width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .prog-bar-track {
+      width: 100%;
+      height: 10px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .prog-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+      border-radius: 10px;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .prog-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .prog-status-msg {
+      color: #059669;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .prog-timer {
+      font-weight: 800;
+      color: #0f172a;
+      background: #f1f5f9;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: 'Inter', monospace;
+      font-size: 13px;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Pulse Step Pill */
+    .prog-step-indicator {
+      display: flex;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .prog-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #475569;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .prog-dot-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: dotPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* Success State */
+    .prog-success-icon-wrap {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 28px -5px rgba(16, 185, 129, 0.45);
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.4); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .prog-success-title {
+      font-size: 23px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .prog-success-sub {
+      font-size: 13.5px;
+      color: #64748b;
+      margin: 8px 0 24px;
+      line-height: 1.45;
+    }
+
+    .prog-success-stats {
+      display: flex;
+      gap: 14px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    .prog-stat-item {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .prog-stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .prog-stat-val {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .text-green {
+      color: #059669;
+    }
+
+    .prog-btn-done {
+      width: 100%;
+      height: 46px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .prog-btn-done:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+
+    <!-- ================= MAIN RECONCILE MANAGEMENT CONSOLE ================= -->
+    <div id="cardsView">
+      <!-- Main Header -->
+      <header class="pr-header">
+        <div class="pr-title-group">
+          <div class="pr-icon-badge" title="Reconcile Management Console">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="pr-title">Reconcile Management</h1>
+            <p class="pr-subtitle">Select a billing module to audit and reconcile</p>
+          </div>
+        </div>
+
+        <div class="pr-header-actions">
+          <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Master">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Master
+          </button>
+        </div>
+      </header>
+
+      <!-- 3 Card Buttons Section -->
+      <div class="reconcile-cards-section">
+        <div class="reconcile-cards-banner">
+          <h2>Reconciliation Modules</h2>
+          <p>Click on any of the 3 billing cards below to start 10-second automatic reconciliation and ledger auditing.</p>
+        </div>
+
+        <div class="reconcile-card-grid">
+          <!-- 1. Payment Billing Card Button -->
+          <div class="reconcile-big-card card-payment" id="cardPayment" onclick="startReconcileFlow('payment')" title="Click to start Payment Billing Reconciliation">
+            <div class="card-top-row">
+              <div class="card-icon-box">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+              </div>
+              <div class="card-arrow-circle" id="cardArrowPayment">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="card-text-group">
+              <h2>Payment Billing</h2>
+              <p>Reconcile POS counter payments, card settlements &amp; drawer cash collections</p>
+            </div>
+            <div class="card-meta-row">
+              <span class="badge-pending-pill" id="cardBadgePayment">
+                <svg width="8" height="8" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"></circle></svg>
+                1 Variance Pending
+              </span>
+              <span class="card-click-label" id="cardLabelPayment">Reconcile Now &rarr;</span>
+            </div>
+          </div>
+
+          <!-- 2. Game Billing Card Button -->
+          <div class="reconcile-big-card card-game" id="cardGame" onclick="startReconcileFlow('game')" title="Click to start Game Billing Reconciliation">
+            <div class="card-top-row">
+              <div class="card-icon-box">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="6" width="20" height="12" rx="6"></rect>
+                  <line x1="6" y1="12" x2="10" y2="12"></line>
+                  <line x1="8" y1="10" x2="8" y2="14"></line>
+                  <circle cx="15" cy="13" r="1"></circle>
+                  <circle cx="18" cy="11" r="1"></circle>
+                </svg>
+              </div>
+              <div class="card-arrow-circle" id="cardArrowGame">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="card-text-group">
+              <h2>Game Billing</h2>
+              <p>Reconcile RFID card deductions, reader plays &amp; arcade machine revenues</p>
+            </div>
+            <div class="card-meta-row">
+              <span class="badge-pending-pill" id="cardBadgeGame">
+                <svg width="8" height="8" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"></circle></svg>
+                1 Variance Pending
+              </span>
+              <span class="card-click-label" id="cardLabelGame">Reconcile Now &rarr;</span>
+            </div>
+          </div>
+
+          <!-- 3. Direct Billing Card Button -->
+          <div class="reconcile-big-card card-direct" id="cardDirect" onclick="startReconcileFlow('direct')" title="Click to start Direct Billing Reconciliation">
+            <div class="card-top-row">
+              <div class="card-icon-box">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+              </div>
+              <div class="card-arrow-circle" id="cardArrowDirect">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="card-text-group">
+              <h2>Direct Billing</h2>
+              <p>Reconcile direct counter billing sales, item invoices &amp; cash register receipts</p>
+            </div>
+            <div class="card-meta-row">
+              <span class="badge-pending-pill" id="cardBadgeDirect">
+                <svg width="8" height="8" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"></circle></svg>
+                1 Variance Pending
+              </span>
+              <span class="card-click-label" id="cardLabelDirect">Reconcile Now &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= 10s RECONCILE PROGRESS MODAL OVERLAY ================= -->
+  <div class="reconcile-progress-overlay" id="reconcileProgressOverlay">
+    <div class="reconcile-progress-card" role="dialog" aria-modal="true">
+      <button class="prog-close-x" onclick="closeReconcileOverlay()" title="Close">&times;</button>
+
+      <!-- State 1: Reconcile in Progress -->
+      <div id="progStateInProgress" class="prog-state-block">
+        <div class="prog-spinner-wrap">
+          <div class="prog-spinner-ring"></div>
+          <div class="prog-spinner-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+          </div>
+        </div>
+
+        <h3 class="prog-title" id="progTitleText">Reconcile in Progress...</h3>
+        <p class="prog-subtitle" id="progModuleText">Reconciling Payment Billing Transactions</p>
+
+        <div class="prog-bar-container">
+          <div class="prog-bar-track">
+            <div class="prog-bar-fill" id="progBarFill"></div>
+          </div>
+          <div class="prog-bar-labels">
+            <span class="prog-status-msg" id="progStatusMsg">Connecting to settlement gateway...</span>
+            <span class="prog-timer" id="progTimerText">10s</span>
+          </div>
+        </div>
+
+        <div class="prog-step-indicator">
+          <div class="prog-pill">
+            <span class="prog-dot-pulse"></span>
+            <span id="progStepText">Auditing ledgers &amp; matching variances</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 2: Reconcile Successful -->
+      <div id="progStateSuccess" class="prog-state-block" style="display: none;">
+        <div class="prog-success-icon-wrap">
+          <svg class="prog-checkmark" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+
+        <h3 class="prog-success-title">Reconcile Successful! ✓</h3>
+        <p class="prog-success-sub" id="progSuccessMsg">Payment Billing transactions reconciled successfully with zero variance.</p>
+
+        <div class="prog-success-stats">
+          <div class="prog-stat-item">
+            <span class="prog-stat-label">Audit Status</span>
+            <span class="prog-stat-val text-green">100% Balanced</span>
+          </div>
+          <div class="prog-stat-item">
+            <span class="prog-stat-label">Discrepancy</span>
+            <span class="prog-stat-val text-green">₹ 0.00 (Zero)</span>
+          </div>
+        </div>
+
+        <button class="prog-btn-done" onclick="finishReconcileSuccess()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let activeModule = 'payment';
+    let reconcileTimerInterval = null;
+
+    // ================= 10-SECOND RECONCILIATION FLOW =================
+    // Triggered by clicking Payment Billing, Game Billing, or Direct Billing
+    function startReconcileFlow(type) {
+      type = type || activeModule || 'payment';
+      activeModule = type;
+
+      const overlay = document.getElementById('reconcileProgressOverlay');
+      const stateInProgress = document.getElementById('progStateInProgress');
+      const stateSuccess = document.getElementById('progStateSuccess');
+      const titleText = document.getElementById('progTitleText');
+      const moduleText = document.getElementById('progModuleText');
+      const barFill = document.getElementById('progBarFill');
+      const timerText = document.getElementById('progTimerText');
+      const statusMsg = document.getElementById('progStatusMsg');
+      const stepText = document.getElementById('progStepText');
+
+      let moduleName = 'Payment Billing';
+      if (type === 'game') moduleName = 'Game Billing';
+      else if (type === 'direct') moduleName = 'Direct Billing';
+
+      // Reset Modal to In Progress state
+      stateInProgress.style.display = 'flex';
+      stateSuccess.style.display = 'none';
+      titleText.textContent = 'Reconcile in Progress...';
+      moduleText.textContent = 'Reconciling ' + moduleName + ' Transactions';
+      barFill.style.width = '0%';
+      timerText.textContent = '10s';
+      statusMsg.textContent = 'Connecting to settlement gateway & POS audit ledgers...';
+      stepText.textContent = 'Auditing ledgers & matching variances';
+
+      overlay.classList.add('active');
+
+      if (reconcileTimerInterval) {
+        clearInterval(reconcileTimerInterval);
+      }
+
+      const totalDuration = 10000; // 10 seconds exactly
+      const startTime = Date.now();
+
+      reconcileTimerInterval = setInterval(function () {
+        const elapsed = Date.now() - startTime;
+        const progressRatio = Math.min(1, elapsed / totalDuration);
+        const percent = Math.round(progressRatio * 100);
+        const secondsRemaining = Math.max(0, Math.ceil((totalDuration - elapsed) / 1000));
+
+        barFill.style.width = percent + '%';
+        timerText.textContent = secondsRemaining + 's';
+
+        // Dynamic step messages during the 10 seconds
+        if (progressRatio < 0.25) {
+          statusMsg.textContent = 'Connecting to settlement gateway & POS audit ledgers...';
+          stepText.textContent = 'Verifying cashier terminal authorization...';
+        } else if (progressRatio < 0.50) {
+          statusMsg.textContent = 'Auditing Billed entries against counter transactions...';
+          stepText.textContent = 'Cross-referencing payment modes & RFID logs...';
+        } else if (progressRatio < 0.75) {
+          statusMsg.textContent = 'Cross-matching discrepancies and balancing registers...';
+          stepText.textContent = 'Auto-reconciling pending variances...';
+        } else if (progressRatio < 0.98) {
+          statusMsg.textContent = 'Zeroing ledger variance and finalizing entries...';
+          stepText.textContent = 'Writing reconciled audit logs...';
+        }
+
+        // Exact 10 seconds completed
+        if (elapsed >= totalDuration) {
+          clearInterval(reconcileTimerInterval);
+          reconcileTimerInterval = null;
+
+          // Apply Reconcile state
+          applyReconcileData(type);
+
+          // Transition to Success State
+          stateInProgress.style.display = 'none';
+          stateSuccess.style.display = 'flex';
+
+          document.getElementById('progSuccessMsg').textContent =
+            moduleName + ' transactions reconciled successfully with ₹ 0.00 variance.';
+
+          showToast('✓ ' + moduleName + ' Reconcile Successful!');
+        }
+      }, 100);
+    }
+
+    // Apply actual reconciliation state to the card button
+    function applyReconcileData(type) {
+      let badgeId = 'cardBadgePayment';
+      let labelId = 'cardLabelPayment';
+
+      if (type === 'game') {
+        badgeId = 'cardBadgeGame';
+        labelId = 'cardLabelGame';
+      } else if (type === 'direct') {
+        badgeId = 'cardBadgeDirect';
+        labelId = 'cardLabelDirect';
+      }
+
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.innerHTML = '<svg width="8" height="8" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"></circle></svg> ✓ All Reconciled';
+        badge.className = 'badge-pending-pill resolved';
+      }
+
+      const label = document.getElementById(labelId);
+      if (label) {
+        label.innerHTML = '✓ Reconciled';
+        label.style.color = '#059669';
+      }
+    }
+
+    // Finish modal and close - stays right on Reconcile Management!
+    function finishReconcileSuccess() {
+      const overlay = document.getElementById('reconcileProgressOverlay');
+      overlay.classList.remove('active');
+    }
+
+    function closeReconcileOverlay() {
+      if (reconcileTimerInterval) {
+        clearInterval(reconcileTimerInterval);
+        reconcileTimerInterval = null;
+      }
+      const overlay = document.getElementById('reconcileProgressOverlay');
+      overlay.classList.remove('active');
+    }
+
+    function showToast(msg) {
+      const existing = document.querySelector('.toast-popup');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-popup';
+      toast.innerHTML = '<span>' + msg + '</span>';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-master' }, '*');
+      } else {
+        history.back();
+      }
+    }
+
+    // Forward Ctrl+Shift+R shortcut to parent window if iframe has focus
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'r' || e.key === 'R' || e.keyCode === 82)) {
+        e.preventDefault();
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'trigger-reconcile-modal' }, '*');
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

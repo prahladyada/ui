@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Mode & User Breakdown Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-y: auto;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    /* ===== Custom Scrollbars ===== */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= REPORT CONTAINER ================= */
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      gap: 14px;
+    }
+
+    /* Header Bar */
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-icon-badge {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
+      flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .pr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .pr-subtitle {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-back {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+    }
+
+    .pr-btn-back:hover {
+      background: #1e293b;
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-filter:hover,
+    .pr-btn-filter.active {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .pr-btn-export {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    .pr-btn-export:hover {
+      background: #ccfbf1;
+      border-color: #5eead4;
+      color: #115e59;
+    }
+
+    /* KPI Summary Cards Bar */
+    .pr-kpi-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+    }
+
+    @media (max-width: 800px) {
+      .pr-kpi-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .pr-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .pr-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px -3px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .pr-kpi-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pr-kpi-val {
+      font-size: 19px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .pr-kpi-val.blue {
+      color: #2563eb;
+    }
+
+    .pr-kpi-val.green {
+      color: #059669;
+    }
+
+    .pr-kpi-val.amber {
+      color: #d97706;
+    }
+
+    .pr-kpi-val.teal {
+      color: #0d9488;
+    }
+
+    /* Filter Panel */
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: none;
+      align-items: flex-end;
+      gap: 14px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #1e293b;
+      background: #ffffff;
+      outline: none;
+      min-width: 140px;
+      font-family: inherit;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #0d9488;
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+    }
+
+    /* Section Tabs / View Switcher */
+    .view-pills-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+
+    .view-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .view-pill:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .view-pill.active {
+      background: #0d9488;
+      border-color: #0d9488;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+    }
+
+    /* ================= CARDS & TABLES ================= */
+    .report-card-container {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
+      margin-bottom: 14px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .report-card-container:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px -3px rgba(15, 23, 42, 0.09);
+    }
+
+    /* Top Accent Lines */
+    .card-teal {
+      border-top: 3.5px solid #0d9488;
+    }
+
+    .card-purple {
+      border-top: 3.5px solid #7c3aed;
+    }
+
+    .card-blue {
+      border-top: 3.5px solid #2563eb;
+    }
+
+    /* Card Header Bar */
+    .pos-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      color: #ffffff;
+      gap: 10px;
+    }
+
+    .pos-card-header.th-mode-header {
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+    }
+
+    .pos-card-header.th-user-header {
+      background: linear-gradient(135deg, #4c1d95, #7c3aed);
+    }
+
+    .pos-card-header.th-matrix-header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    }
+
+    .pos-card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .pos-card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #ffffff;
+    }
+
+    .pos-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin: 0;
+      line-height: 1.2;
+      color: #ffffff;
+    }
+
+    .pos-total-badge {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 11px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table.pos-report-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    table.pos-report-table thead th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      padding: 9.5px 12px;
+      border-bottom: 2px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
+      white-space: nowrap;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    table.pos-report-table thead th:last-child {
+      border-right: none;
+    }
+
+    table.pos-report-table td {
+      padding: 9.5px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #fafafa;
+      white-space: nowrap;
+      color: #1e293b;
+      background: #ffffff;
+      font-size: 12.5px;
+      vertical-align: middle;
+    }
+
+    table.pos-report-table td:last-child {
+      border-right: none;
+    }
+
+    .text-right {
+      text-align: right !important;
+    }
+
+    .text-center {
+      text-align: center !important;
+    }
+
+    table.pos-report-table tbody tr:hover td {
+      background: #f8fafc !important;
+      color: #0f172a;
+    }
+
+    /* Badges & Dots */
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+
+    .mode-cash {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+
+    .mode-upi {
+      background: #faf5ff;
+      color: #6d28d9;
+      border-color: #ddd6fe;
+    }
+
+    .mode-card {
+      background: #eff6ff;
+      color: #1e40af;
+      border-color: #bfdbfe;
+    }
+
+    .mode-netbanking {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .user-avatar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .user-avatar-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      color: #4338ca;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .role-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .badge-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      min-width: 24px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .pm-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+
+    .pm-dot.cash {
+      background: #10b981;
+    }
+
+    .pm-dot.upi {
+      background: #8b5cf6;
+    }
+
+    .pm-dot.card {
+      background: #3b82f6;
+    }
+
+    .pm-dot.netbanking {
+      background: #f59e0b;
+    }
+
+    /* Total Rows */
+    table.pos-report-table tfoot td,
+    table.pos-report-table tr.total-row td {
+      background: #f8fafc !important;
+      font-weight: 700;
+      color: #0f172a;
+      border-top: 2px solid #e2e8f0;
+      border-bottom: none;
+      font-size: 12.5px;
+      padding: 10px 12px;
+      vertical-align: middle;
+    }
+
+    .tfoot-teal td {
+      background: #f0fdfa !important;
+      color: #0f766e !important;
+      border-top: 2px solid #99f6e4 !important;
+    }
+
+    .tfoot-purple td {
+      background: #faf5ff !important;
+      color: #6d28d9 !important;
+      border-top: 2px solid #ddd6fe !important;
+    }
+
+    .tfoot-blue td {
+      background: #eff6ff !important;
+      color: #1e40af !important;
+      border-top: 2px solid #bfdbfe !important;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        font-size: 9pt;
+      }
+
+      .pr-wrapper {
+        padding: 0;
+      }
+
+      .pr-header-actions,
+      .pr-filter-panel,
+      .view-pills-bar,
+      .pr-btn-back {
+        display: none !important;
+      }
+
+      .report-card-container {
+        border: 1px solid #cbd5e1;
+        box-shadow: none;
+        margin-bottom: 15px;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pr-wrapper">
+    <!-- Header Bar -->
+    <header class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-icon-badge" title="Payment Mode & User Breakdown">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+            <path d="M17 15h2M12 15h2"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="pr-title">Payment Mode & User Breakdown Report</h1>
+          <p class="pr-subtitle">Consolidated collection breakdown, taxable sales, and tax analysis by payment mode & user</p>
+        </div>
+      </div>
+
+      <div class="pr-header-actions">
+        <button class="pr-btn pr-btn-filter" id="toggleFilterBtn" onclick="toggleFilter()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="exportToExcel()" title="Export CSV / Excel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+          Excel
+        </button>
+        <button class="pr-btn pr-btn-export" onclick="printReport()" title="Print or Save PDF">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button class="pr-btn pr-btn-back" onclick="goBack()" title="Back to Reports list">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Reports
+        </button>
+      </div>
+    </header>
+
+    <!-- Top KPI Summary Cards Bar -->
+    <div class="pr-kpi-bar">
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Gross Collection</span>
+        <span class="pr-kpi-val blue" id="kpiGrossTotal">₹ 68,100.00</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Taxable Sales</span>
+        <span class="pr-kpi-val green" id="kpiTaxSales">₹ 57,711.86</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Tax Collected (18%)</span>
+        <span class="pr-kpi-val amber" id="kpiTax">₹ 10,388.14</span>
+      </div>
+      <div class="pr-kpi-card">
+        <span class="pr-kpi-title">Net Total Collection</span>
+        <span class="pr-kpi-val teal" id="kpiTotal">₹ 68,100.00</span>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div class="pr-filter-field">
+        <label>From Date</label>
+        <input type="date" id="filterFromDate" value="2026-09-01" onclick="try{this.showPicker()}catch(e){}" onchange="applyFilter()" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>To Date</label>
+        <input type="date" id="filterToDate" value="2026-09-10" onclick="try{this.showPicker()}catch(e){}" onchange="applyFilter()" style="cursor: pointer;" />
+      </div>
+      <div class="pr-filter-field">
+        <label>Payment Mode</label>
+        <select id="filterMode" onchange="applyFilter()">
+          <option value="">All Payment Modes</option>
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="Card">Card</option>
+          <option value="Net Banking">Net Banking</option>
+        </select>
+      </div>
+      <div class="pr-filter-field">
+        <label>User / Operator</label>
+        <select id="filterUser" onchange="applyFilter()">
+          <option value="">All Users</option>
+          <option value="Admin">Admin</option>
+          <option value="Cashier1">Cashier1 (Rahul)</option>
+          <option value="Cashier2">Cashier2 (Amit)</option>
+          <option value="Supervisor">Supervisor (Priya)</option>
+        </select>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <button class="pr-btn pr-btn-filter" type="button" onclick="resetFilter()">Reset</button>
+        <button class="pr-btn" type="button" style="background:#0d9488; color:#fff; border-color:#0d9488;" onclick="applyFilter()">Apply Filter</button>
+      </div>
+    </div>
+
+    <!-- View Switcher Pills -->
+    <div class="view-pills-bar">
+      <span style="font-size: 12px; font-weight: 700; color: #64748b; margin-right: 4px;">REPORT VIEWS:</span>
+      <button class="view-pill active" id="pillAll" onclick="switchSection('all')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        All Views
+      </button>
+      <button class="view-pill" id="pillModes" onclick="switchSection('modes')">
+        <span class="pm-dot upi"></span> Payment Modes Summary
+      </button>
+      <button class="view-pill" id="pillUsers" onclick="switchSection('users')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        User Breakdown
+      </button>
+      <button class="view-pill" id="pillMatrix" onclick="switchSection('matrix')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>
+        User × Mode Cross Matrix
+      </button>
+    </div>
+
+    <!-- SECTION 1: PAYMENT MODE SUMMARY TABLE CARD -->
+    <div class="report-card-container card-teal" id="sectionPaymentModes">
+      <div class="pos-card-header th-mode-header">
+        <div class="pos-card-title-group">
+          <div class="pos-card-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+          </div>
+          <div>
+            <h3 class="pos-card-title">1. Payment Mode Report</h3>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="pos-total-badge" id="badgeModeTotal">Total: ₹ 68,100.00</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="pos-report-table" id="tablePaymentMode">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Payment Mode</th>
+              <th class="text-center" style="width: 12%;">Count</th>
+              <th class="text-right" style="width: 20%;">Gross Total (₹)</th>
+              <th class="text-right" style="width: 21%;">Taxable Sales (₹)</th>
+              <th class="text-right" style="width: 22%;">Tax Amount (₹)</th>
+              <th class="text-right" style="width: 20%;">Total (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="tableModeBody">
+            <tr data-mode="Cash">
+              <td>
+                <span class="mode-badge mode-cash">
+                  <span class="pm-dot cash"></span> Cash
+                </span>
+              </td>
+              <td class="text-center"><span class="badge-count">28</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">15,000.00</td>
+              <td class="text-right" style="color: #475569;">12,711.86</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">2,288.14</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">15,000.00</td>
+            </tr>
+            <tr data-mode="UPI">
+              <td>
+                <span class="mode-badge mode-upi">
+                  <span class="pm-dot upi"></span> UPI
+                </span>
+              </td>
+              <td class="text-center"><span class="badge-count">46</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">28,500.00</td>
+              <td class="text-right" style="color: #475569;">24,152.54</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">4,347.46</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">28,500.00</td>
+            </tr>
+            <tr data-mode="Card">
+              <td>
+                <span class="mode-badge mode-card">
+                  <span class="pm-dot card"></span> Card (Debit/Credit)
+                </span>
+              </td>
+              <td class="text-center"><span class="badge-count">12</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">18,200.00</td>
+              <td class="text-right" style="color: #475569;">15,423.73</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">2,776.27</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">18,200.00</td>
+            </tr>
+            <tr data-mode="Net Banking">
+              <td>
+                <span class="mode-badge mode-netbanking">
+                  <span class="pm-dot netbanking"></span> Net Banking
+                </span>
+              </td>
+              <td class="text-center"><span class="badge-count">6</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">6,400.00</td>
+              <td class="text-right" style="color: #475569;">5,423.73</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">976.27</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">6,400.00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row tfoot-teal">
+              <td><strong>Total :</strong></td>
+              <td class="text-center"><strong id="sumModeCount">92</strong></td>
+              <td class="text-right"><strong id="sumModeGross">68,100.00</strong></td>
+              <td class="text-right"><strong id="sumModeTaxSales">57,711.86</strong></td>
+              <td class="text-right"><strong id="sumModeTax">10,388.14</strong></td>
+              <td class="text-right" style="font-size: 13.5px;"><strong id="sumModeTotal">68,100.00</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 2: USER BREAKDOWN TABLE CARD -->
+    <div class="report-card-container card-purple" id="sectionUsers">
+      <div class="pos-card-header th-user-header">
+        <div class="pos-card-title-group">
+          <div class="pos-card-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div>
+            <h3 class="pos-card-title">2. Payment Collection User Breakdown</h3>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="pos-total-badge" id="badgeUserTotal">Total: ₹ 68,100.00</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="pos-report-table" id="tableUserBreakdown">
+          <thead>
+            <tr>
+              <th style="width: 25%;">User / Operator</th>
+              <th style="width: 18%;">Role / Department</th>
+              <th class="text-center" style="width: 10%;">Transactions</th>
+              <th class="text-right" style="width: 15%;">Gross Total (₹)</th>
+              <th class="text-right" style="width: 16%;">Taxable Sales (₹)</th>
+              <th class="text-right" style="width: 16%;">Tax Amount (₹)</th>
+              <th class="text-right" style="width: 18%;">Total Collection (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="tableUserBody">
+            <tr data-user="Admin">
+              <td>
+                <div class="user-avatar-badge">
+                  <div class="user-avatar-circle">A</div>
+                  <span>Admin</span>
+                </div>
+              </td>
+              <td><span class="role-badge">Administrator</span></td>
+              <td class="text-center"><span class="badge-count">34</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">25,000.00</td>
+              <td class="text-right" style="color: #475569;">21,186.44</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">3,813.56</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">25,000.00</td>
+            </tr>
+            <tr data-user="Cashier1">
+              <td>
+                <div class="user-avatar-badge">
+                  <div class="user-avatar-circle" style="background:#dcfce7; color:#15803d;">R</div>
+                  <span>Cashier1 (Rahul)</span>
+                </div>
+              </td>
+              <td><span class="role-badge">Counter POS 01</span></td>
+              <td class="text-center"><span class="badge-count">30</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">22,500.00</td>
+              <td class="text-right" style="color: #475569;">19,067.80</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">3,432.20</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">22,500.00</td>
+            </tr>
+            <tr data-user="Cashier2">
+              <td>
+                <div class="user-avatar-badge">
+                  <div class="user-avatar-circle" style="background:#fef3c7; color:#b45309;">A</div>
+                  <span>Cashier2 (Amit)</span>
+                </div>
+              </td>
+              <td><span class="role-badge">Counter POS 02</span></td>
+              <td class="text-center"><span class="badge-count">19</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">14,200.00</td>
+              <td class="text-right" style="color: #475569;">12,033.90</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">2,166.10</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">14,200.00</td>
+            </tr>
+            <tr data-user="Supervisor">
+              <td>
+                <div class="user-avatar-badge">
+                  <div class="user-avatar-circle" style="background:#fce7f3; color:#be185d;">P</div>
+                  <span>Supervisor (Priya)</span>
+                </div>
+              </td>
+              <td><span class="role-badge">Shift Supervisor</span></td>
+              <td class="text-center"><span class="badge-count">9</span></td>
+              <td class="text-right" style="font-weight: 600; color: #0f172a;">6,400.00</td>
+              <td class="text-right" style="color: #475569;">5,423.73</td>
+              <td class="text-right" style="font-weight: 600; color: #d97706;">976.27</td>
+              <td class="text-right" style="font-weight: 700; color: #059669; font-size: 13px;">6,400.00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row tfoot-purple">
+              <td><strong>Total :</strong></td>
+              <td><span style="font-size: 11px; opacity: 0.85;">All Active Users</span></td>
+              <td class="text-center"><strong id="sumUserCount">92</strong></td>
+              <td class="text-right"><strong id="sumUserGross">68,100.00</strong></td>
+              <td class="text-right"><strong id="sumUserTaxSales">57,711.86</strong></td>
+              <td class="text-right"><strong id="sumUserTax">10,388.14</strong></td>
+              <td class="text-right" style="font-size: 13.5px;"><strong id="sumUserTotal">68,100.00</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 3: USER X PAYMENT MODE CROSS MATRIX CARD -->
+    <div class="report-card-container card-blue" id="sectionMatrix">
+      <div class="pos-card-header th-matrix-header">
+        <div class="pos-card-title-group">
+          <div class="pos-card-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="pos-card-title">3. User × Payment Mode Cross Matrix</h3>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="pos-total-badge" id="badgeMatrixTotal">Consolidated: ₹ 68,100.00</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="pos-report-table" id="tableCrossMatrix">
+          <thead>
+            <tr>
+              <th style="width: 25%;">User / Operator</th>
+              <th class="text-right" style="width: 15%;">Cash (₹)</th>
+              <th class="text-right" style="width: 15%;">UPI (₹)</th>
+              <th class="text-right" style="width: 15%;">Card (₹)</th>
+              <th class="text-right" style="width: 15%;">Net Banking (₹)</th>
+              <th class="text-right" style="width: 15%;">Total Collection (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="tableMatrixBody">
+            <tr data-user="Admin">
+              <td style="font-weight: 700;">
+                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span class="pm-dot upi"></span> Admin
+                </span>
+              </td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">5,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #6d28d9;">11,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #1e40af;">6,500.00</td>
+              <td class="text-right" style="font-weight: 600; color: #b45309;">2,500.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a; font-size: 13px;">25,000.00</td>
+            </tr>
+            <tr data-user="Cashier1">
+              <td style="font-weight: 700;">
+                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span class="pm-dot cash"></span> Cashier1 (Rahul)
+                </span>
+              </td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">6,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #6d28d9;">10,500.00</td>
+              <td class="text-right" style="font-weight: 600; color: #1e40af;">5,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #b45309;">1,000.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a; font-size: 13px;">22,500.00</td>
+            </tr>
+            <tr data-user="Cashier2">
+              <td style="font-weight: 700;">
+                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span class="pm-dot card"></span> Cashier2 (Amit)
+                </span>
+              </td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">3,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #6d28d9;">5,500.00</td>
+              <td class="text-right" style="font-weight: 600; color: #1e40af;">4,700.00</td>
+              <td class="text-right" style="font-weight: 600; color: #b45309;">1,000.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a; font-size: 13px;">14,200.00</td>
+            </tr>
+            <tr data-user="Supervisor">
+              <td style="font-weight: 700;">
+                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span class="pm-dot netbanking"></span> Supervisor (Priya)
+                </span>
+              </td>
+              <td class="text-right" style="font-weight: 600; color: #059669;">1,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #6d28d9;">1,500.00</td>
+              <td class="text-right" style="font-weight: 600; color: #1e40af;">2,000.00</td>
+              <td class="text-right" style="font-weight: 600; color: #b45309;">1,900.00</td>
+              <td class="text-right" style="font-weight: 700; color: #0f172a; font-size: 13px;">6,400.00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row tfoot-blue">
+              <td><strong>Total Collection :</strong></td>
+              <td class="text-right"><strong id="matrixSumCash">15,000.00</strong></td>
+              <td class="text-right"><strong id="matrixSumUPI">28,500.00</strong></td>
+              <td class="text-right"><strong id="matrixSumCard">18,200.00</strong></td>
+              <td class="text-right"><strong id="matrixSumNetBanking">6,400.00</strong></td>
+              <td class="text-right" style="font-size: 13.5px;"><strong id="matrixGrandTotal">68,100.00</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleFilter() {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('toggleFilterBtn');
+      panel.classList.toggle('show');
+      btn.classList.toggle('active');
+    }
+
+    function switchSection(view) {
+      document.querySelectorAll('.view-pill').forEach(p => p.classList.remove('active'));
+      const secModes = document.getElementById('sectionPaymentModes');
+      const secUsers = document.getElementById('sectionUsers');
+      const secMatrix = document.getElementById('sectionMatrix');
+
+      if (view === 'all') {
+        document.getElementById('pillAll').classList.add('active');
+        secModes.style.display = '';
+        secUsers.style.display = '';
+        secMatrix.style.display = '';
+      } else if (view === 'modes') {
+        document.getElementById('pillModes').classList.add('active');
+        secModes.style.display = '';
+        secUsers.style.display = 'none';
+        secMatrix.style.display = 'none';
+      } else if (view === 'users') {
+        document.getElementById('pillUsers').classList.add('active');
+        secModes.style.display = 'none';
+        secUsers.style.display = '';
+        secMatrix.style.display = 'none';
+      } else if (view === 'matrix') {
+        document.getElementById('pillMatrix').classList.add('active');
+        secModes.style.display = 'none';
+        secUsers.style.display = 'none';
+        secMatrix.style.display = '';
+      }
+    }
+
+    function resetFilter() {
+      document.getElementById('filterMode').value = '';
+      document.getElementById('filterUser').value = '';
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const selectedMode = document.getElementById('filterMode').value;
+      const selectedUser = document.getElementById('filterUser').value;
+
+      // 1. Filter Payment Modes Table
+      const modeRows = document.querySelectorAll('#tableModeBody tr');
+      let modeCount = 0, modeGross = 0, modeTaxSales = 0, modeTax = 0, modeTotal = 0;
+
+      modeRows.forEach(row => {
+        const mode = row.getAttribute('data-mode');
+        const match = !selectedMode || mode === selectedMode;
+        if (match) {
+          row.style.display = '';
+          const count = parseFloat(row.cells[1].innerText.replace(/,/g, '')) || 0;
+          const gross = parseFloat(row.cells[2].innerText.replace(/,/g, '')) || 0;
+          const taxSales = parseFloat(row.cells[3].innerText.replace(/,/g, '')) || 0;
+          const tax = parseFloat(row.cells[4].innerText.replace(/,/g, '')) || 0;
+          const total = parseFloat(row.cells[5].innerText.replace(/,/g, '')) || 0;
+
+          modeCount += count;
+          modeGross += gross;
+          modeTaxSales += taxSales;
+          modeTax += tax;
+          modeTotal += total;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('sumModeCount').textContent = modeCount;
+      document.getElementById('sumModeGross').textContent = modeGross.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumModeTaxSales').textContent = modeTaxSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumModeTax').textContent = modeTax.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumModeTotal').textContent = modeTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('badgeModeTotal').textContent = 'Total: ₹ ' + modeTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      // 2. Filter User Breakdown Table
+      const userRows = document.querySelectorAll('#tableUserBody tr');
+      let userCount = 0, userGross = 0, userTaxSales = 0, userTax = 0, userTotal = 0;
+
+      userRows.forEach(row => {
+        const user = row.getAttribute('data-user');
+        const match = !selectedUser || user === selectedUser;
+        if (match) {
+          row.style.display = '';
+          const count = parseFloat(row.cells[2].innerText.replace(/,/g, '')) || 0;
+          const gross = parseFloat(row.cells[3].innerText.replace(/,/g, '')) || 0;
+          const taxSales = parseFloat(row.cells[4].innerText.replace(/,/g, '')) || 0;
+          const tax = parseFloat(row.cells[5].innerText.replace(/,/g, '')) || 0;
+          const total = parseFloat(row.cells[6].innerText.replace(/,/g, '')) || 0;
+
+          userCount += count;
+          userGross += gross;
+          userTaxSales += taxSales;
+          userTax += tax;
+          userTotal += total;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('sumUserCount').textContent = userCount;
+      document.getElementById('sumUserGross').textContent = userGross.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumUserTaxSales').textContent = userTaxSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumUserTax').textContent = userTax.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumUserTotal').textContent = userTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('badgeUserTotal').textContent = 'Total: ₹ ' + userTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      // 3. Filter Cross Matrix Table
+      const matrixRows = document.querySelectorAll('#tableMatrixBody tr');
+      let mCash = 0, mUPI = 0, mCard = 0, mNet = 0, mTotal = 0;
+
+      matrixRows.forEach(row => {
+        const user = row.getAttribute('data-user');
+        const match = !selectedUser || user === selectedUser;
+        if (match) {
+          row.style.display = '';
+          const cash = parseFloat(row.cells[1].innerText.replace(/,/g, '')) || 0;
+          const upi = parseFloat(row.cells[2].innerText.replace(/,/g, '')) || 0;
+          const card = parseFloat(row.cells[3].innerText.replace(/,/g, '')) || 0;
+          const net = parseFloat(row.cells[4].innerText.replace(/,/g, '')) || 0;
+          const total = parseFloat(row.cells[5].innerText.replace(/,/g, '')) || 0;
+
+          mCash += cash;
+          mUPI += upi;
+          mCard += card;
+          mNet += net;
+          mTotal += total;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('matrixSumCash').textContent = mCash.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('matrixSumUPI').textContent = mUPI.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('matrixSumCard').textContent = mCard.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('matrixSumNetBanking').textContent = mNet.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('matrixGrandTotal').textContent = mTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('badgeMatrixTotal').textContent = 'Consolidated: ₹ ' + mTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      // 4. Update Top KPIs
+      let displayGross = selectedUser ? userGross : modeGross;
+      let displayTaxSales = selectedUser ? userTaxSales : modeTaxSales;
+      let displayTax = selectedUser ? userTax : modeTax;
+      let displayTotal = selectedUser ? userTotal : modeTotal;
+
+      document.getElementById('kpiGrossTotal').textContent = '₹ ' + displayGross.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('kpiTaxSales').textContent = '₹ ' + displayTaxSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('kpiTax').textContent = '₹ ' + displayTax.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('kpiTotal').textContent = '₹ ' + displayTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function exportToExcel() {
+      const tables = [
+        { id: 'tablePaymentMode', name: 'Payment Mode Report' },
+        { id: 'tableUserBreakdown', name: 'Payment Collection User Breakdown' },
+        { id: 'tableCrossMatrix', name: 'User x Payment Mode Cross Matrix' }
+      ];
+
+      let csv = [];
+      csv.push('"PAYMENT MODE & USER BREAKDOWN REPORT - ' + new Date().toLocaleDateString() + '"');
+      csv.push('');
+
+      tables.forEach(t => {
+        const table = document.getElementById(t.id);
+        if (table) {
+          csv.push('"' + t.name + '"');
+          for (let r = 0; r < table.rows.length; r++) {
+            let row = [];
+            let cols = table.rows[r].querySelectorAll('td, th');
+            for (let c = 0; c < cols.length; c++) {
+              let text = cols[c].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+              text = text.replace(/"/g, '""');
+              row.push('"' + text + '"');
+            }
+            csv.push(row.join(','));
+          }
+          csv.push('');
+        }
+      });
+
+      const csvString = csv.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', "Payment_Mode_and_User_Breakdown_" + new Date().toISOString().slice(0, 10) + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'show-reports' }, '*');
+      } else {
+        history.back();
+      }
+    }
+  </script>
+</body>
+
+</html>

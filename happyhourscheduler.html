@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Hour Scheduler</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --indigo: #4338ca;
+      --indigo-dark: #3730a3;
+      --indigo-light: #eef2ff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --ink-faint: #94a3b8;
+      --line: #e2e8f0;
+      --line-strong: #cbd5e1;
+      --bg: #f8fafc;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --ok: #15803d;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0;
+      gap: 8px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* ===== Standardized Page Header ===== */
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 10px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pr-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .pr-title svg {
+      width: 24px;
+      height: 24px;
+      color: #4f46e5;
+      background: #e0e7ff;
+      padding: 4px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    /* ===== Shared panel look ===== */
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title .step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--indigo);
+      color: #fff;
+      font-size: 10.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ===== Top wizard grid ===== */
+    .wizard {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+
+    .wizard-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 1 0;
+      min-width: 240px;
+    }
+
+    /* Day checkboxes */
+    .day-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+    }
+
+    .day-grid .check-row {
+      flex: 0 0 calc(50% - 12px);
+    }
+
+    .check-row,
+    .radio-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      color: var(--ink);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-row input,
+    .radio-row input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--indigo);
+      cursor: pointer;
+    }
+
+    /* Happy hour time card */
+    .time-card {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .time-card-head {
+      background: var(--indigo);
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-card-head input[type="checkbox"] {
+      accent-color: #fff;
+      width: 14px;
+      height: 14px;
+    }
+
+    .time-card-body {
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .time-field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .time-field label {
+      width: 36px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .time-field input[type="time"] {
+      flex: 1;
+      padding: 5px 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      font-size: 12.5px;
+    }
+
+    .time-field input[type="time"]:focus {
+      outline: none;
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px var(--indigo-light);
+    }
+
+    /* Radio option with side input */
+    .option-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .option-line .radio-row {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .option-line input[type="number"] {
+      width: 75px;
+      padding: 4px 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .option-line input[type="number"]:focus {
+      outline: none;
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px var(--indigo-light);
+    }
+
+    .option-hint {
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-left: 24px;
+    }
+
+    .adjust-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .adjust-block:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    /* Review changes columns */
+    .review-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .select-all {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .select-all input {
+      accent-color: var(--indigo);
+      width: 14px;
+      height: 14px;
+    }
+
+    .review-grid {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+
+    .review-box {
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 80px;
+      overflow: hidden;
+    }
+
+    .review-box-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      padding: 5px 8px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .review-box-body {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 12px;
+      color: var(--ink-faint);
+      overflow-y: auto;
+    }
+
+    .btn-primary-wide {
+      margin-top: auto;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 0;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      transition: background 0.15s;
+    }
+
+    .btn-primary-wide:hover {
+      background: #1d4ed8;
+    }
+
+    /* ===== Filter bar ===== */
+    .filter-bar {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      flex-shrink: 0;
+    }
+
+    .filter-bar>span {
+      font-weight: 700;
+      color: var(--ink-soft);
+      font-size: 12.5px;
+    }
+
+    .filter-bar label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12.5px;
+    }
+
+    .filter-bar input {
+      accent-color: var(--indigo);
+      width: 14px;
+      height: 14px;
+    }
+
+    .filter-bar .action-btn {
+      height: 28px;
+      padding: 0 12px;
+      font-size: 12px;
+      border-radius: 5px;
+    }
+
+    /* ===== Table ===== */
+    .table-panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      margin: 0;
+    }
+
+    .table-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+      min-height: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #f1f5f9;
+      text-align: left;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      border-bottom: 2px solid var(--line-strong);
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    thead th.check-col {
+      width: 36px;
+    }
+
+    tbody td {
+      padding: 6px 12px;
+      font-size: 12.5px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    tbody tr:hover td {
+      background: #f8fafc;
+    }
+
+    tbody tr.selected td {
+      background: var(--indigo-light);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-current {
+      background: #dcfce7;
+      color: var(--ok);
+    }
+
+    .badge-expired {
+      background: #f1f5f9;
+      color: var(--ink-faint);
+    }
+
+    .empty-row td {
+      text-align: center;
+      color: var(--ink-faint);
+      padding: 24px 14px;
+      font-size: 13px;
+    }
+
+    /* ===== Bottom actions ===== */
+    .bottom-bar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .actions-left,
+    .actions-right {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-btn {
+      height: 36px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-template {
+      background: #0284c7;
+    }
+
+    .btn-import {
+      background: #059669;
+    }
+
+    .btn-export {
+      background: #d97706;
+    }
+
+    .btn-print {
+      background: #4f46e5;
+    }
+
+    .btn-select {
+      background: #fff;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-select:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .btn-delete {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-delete:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Standard Page Header -->
+    <div class="pr-header">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <h2 class="pr-title">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          Happy Hour / Game Price Scheduler
+        </h2>
+        <div style="font-size: 13px; color: #64748b;">Schedule promotional game discounts, timings, and recurring happy hours</div>
+      </div>
+      <div>
+        <button type="button" class="btn-select action-btn" style="height: 34px; padding: 0 14px; font-size: 13px;" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Master</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="wizard">
+
+      <!-- Step 1: Days -->
+      <div class="wizard-col">
+        <div class="panel">
+          <div class="panel-title"><span class="step-num">1</span>Days selection (weekdays)</div>
+          <div class="day-grid">
+            <label class="check-row"><input type="checkbox" /> Sunday</label>
+            <label class="check-row"><input type="checkbox" checked /> Monday</label>
+            <label class="check-row"><input type="checkbox" /> Tuesday</label>
+            <label class="check-row"><input type="checkbox" /> Wednesday</label>
+            <label class="check-row"><input type="checkbox" /> Thursday</label>
+            <label class="check-row"><input type="checkbox" /> Friday</label>
+            <label class="check-row"><input type="checkbox" /> Saturday</label>
+          </div>
+        </div>
+
+        <div class="time-card">
+          <div class="time-card-head">
+            <input type="checkbox" id="hhToggle" />
+            <label for="hhToggle" style="cursor:pointer;">Happy hour time setting</label>
+          </div>
+          <div class="time-card-body">
+            <div class="time-field">
+              <label>From</label>
+              <input type="time" value="09:00" />
+            </div>
+            <div class="time-field">
+              <label>To</label>
+              <input type="time" value="22:00" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 + 3 -->
+      <div class="wizard-col">
+        <div class="panel">
+          <div class="panel-title"><span class="step-num">2</span>Model &amp; time selection</div>
+          <div style="display: flex; gap: 16px;">
+            <label class="radio-row"><input type="radio" name="model" checked /> By game group</label>
+            <label class="radio-row"><input type="radio" name="model" /> By individual game</label>
+          </div>
+        </div>
+
+        <div class="panel" style="flex:1;">
+          <div class="panel-title"><span class="step-num">3</span>Price adjustment</div>
+
+          <div class="adjust-block">
+            <div class="option-line">
+              <label class="radio-row"><input type="radio" name="adjust" checked /> A. Adjust by percentage</label>
+              <input type="number" value="0" />
+            </div>
+            <div class="option-hint">Base price % change</div>
+          </div>
+
+          <div class="adjust-block">
+            <div class="option-line">
+              <label class="radio-row"><input type="radio" name="adjust" /> B. Adjust by fixed amount</label>
+              <input type="number" value="0" />
+            </div>
+            <div class="option-hint">Fixed price add-on</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="wizard-col">
+        <div class="panel" style="flex:1;">
+          <div class="review-head">
+            <div class="panel-title"><span class="step-num">4</span>Review changes</div>
+            <label class="select-all"><input type="checkbox" /> Select all</label>
+          </div>
+          <div class="review-grid">
+            <div class="review-box">
+              <div class="review-box-label">Pre-adjustment price</div>
+              <div class="review-box-body">Nothing to review yet — choose games and a price adjustment to see the
+                current prices here.</div>
+            </div>
+            <div class="review-box">
+              <div class="review-box-label">Post-adjustment price</div>
+              <div class="review-box-body">The new prices will appear here once an adjustment is applied.</div>
+            </div>
+          </div>
+          <button class="btn-primary-wide">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 12.5px;">Filter by day</span>
+        <label><input type="checkbox" checked /> All</label>
+        <label><input type="checkbox" checked /> Monday</label>
+        <label><input type="checkbox" checked /> Tuesday</label>
+        <label><input type="checkbox" checked /> Wednesday</label>
+        <label><input type="checkbox" checked /> Thursday</label>
+        <label><input type="checkbox" checked /> Friday</label>
+        <label><input type="checkbox" checked /> Saturday</label>
+        <label><input type="checkbox" checked /> Sunday</label>
+      </div>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;">
+          <span id="switchLabelLeft" style="color: #4f46e5;">Happy Hour</span>
+          <div id="hhDaySwitch" onclick="toggleHHSwitch()"
+            style="width: 40px; height: 22px; background: #4f46e5; border-radius: 999px; position: relative; cursor: pointer; transition: background 0.25s; flex-shrink: 0;">
+            <div id="hhDaySwitchThumb"
+              style="width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: left 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+            </div>
+          </div>
+          <span id="switchLabelRight" style="color: #94a3b8;">Day</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-panel">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="check-col"><input type="checkbox" /></th>
+              <th>Day</th>
+              <th>Type</th>
+              <th>Time range</th>
+              <th>Game / device</th>
+              <th>Amount</th>
+              <th>Is current</th>
+              <th>Created at</th>
+            </tr>
+          </thead>
+          <tbody id="hhBody">
+            <tr class="empty-row">
+              <td colspan="8">No happy hour rules yet — build one above and select "Add happy hour."</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom actions -->
+    <div class="bottom-bar">
+      <div class="actions-left">
+        <button class="action-btn btn-template">Template</button>
+        <button class="action-btn btn-import">Import</button>
+        <button class="action-btn btn-export">Export</button>
+        <button class="action-btn btn-print">Print</button>
+      </div>
+      <div class="actions-right">
+        <button class="action-btn btn-select">Select all</button>
+        <button class="action-btn btn-delete">Delete</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    var hhSwitchState = false; // false = Happy Hour (left), true = Day (right)
+
+    function toggleHHSwitch() {
+      hhSwitchState = !hhSwitchState;
+      var sw = document.getElementById('hhDaySwitch');
+      var thumb = document.getElementById('hhDaySwitchThumb');
+      var left = document.getElementById('switchLabelLeft');
+      var right = document.getElementById('switchLabelRight');
+
+      if (hhSwitchState) {
+        // Day mode — thumb slides right, pill turns green
+        thumb.style.left = '21px';
+        sw.style.background = '#16a34a';
+        left.style.color = '#94a3b8';
+        right.style.color = '#16a34a';
+      } else {
+        // Happy Hour mode — thumb slides left, pill turns indigo
+        thumb.style.left = '3px';
+        sw.style.background = '#4f46e5';
+        left.style.color = '#4f46e5';
+        right.style.color = '#94a3b8';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

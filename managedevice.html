@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Device</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13.5px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .pr-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #f1f5f9;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pr-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+    }
+
+    .pr-title svg {
+      width: 28px;
+      height: 28px;
+      color: #4f46e5;
+      background: #e0e7ff;
+      padding: 5px;
+      border-radius: 8px;
+    }
+
+    .pr-header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 36px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .pr-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pr-btn:active {
+      transform: translateY(0);
+    }
+
+    .pr-btn-filter {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .pr-btn-filter:hover {
+      background: #f8fafc;
+    }
+
+    .pr-btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    .pr-btn-primary:hover {
+      background: #4338ca;
+    }
+
+    /* Premium Action Buttons */
+    .pr-btn-sync {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
+      gap: 7px;
+      padding: 0 16px;
+    }
+
+    .pr-btn-sync:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .pr-btn-sync.syncing svg {
+      animation: spinSync 0.75s linear infinite;
+    }
+
+    .pr-btn-save {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+      gap: 7px;
+      padding: 0 16px;
+    }
+
+    .pr-btn-save:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #15803d;
+      transform: translateY(-1px);
+    }
+
+    .pr-btn-delete {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      gap: 7px;
+      padding: 0 16px;
+    }
+
+    .pr-btn-delete:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    /* Table Sync Action Button */
+    .tbl-sync-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.05);
+    }
+
+    .tbl-sync-btn:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 3px 8px rgba(37, 99, 235, 0.28);
+      transform: translateY(-1px);
+    }
+
+    .tbl-sync-btn:active {
+      transform: translateY(0);
+    }
+
+    .tbl-sync-btn.syncing svg {
+      animation: spinSync 0.75s linear infinite;
+    }
+
+    @keyframes spinSync {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Device Toast */
+    .device-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      z-index: 99999;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    
+    /* Select Sync Options Modal (Windows Desktop / POS Native Style) */
+    
+    /* Headers (Columns) Visibility Dropdown */
+    .pr-btn-headers {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .pr-btn-headers:hover {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+    .pr-btn-headers.active {
+      background: #eff6ff;
+      color: #2563eb;
+      border-color: #93c5fd;
+    }
+    .headers-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      width: 250px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.08);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      overflow: hidden;
+      animation: hdrMenuPop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .headers-menu.show {
+      display: flex;
+    }
+    @keyframes hdrMenuPop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .headers-menu-head {
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .headers-menu-reset {
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+    .headers-menu-reset:hover {
+      text-decoration: underline;
+    }
+    .headers-menu-list {
+      max-height: 290px;
+      overflow-y: auto;
+      padding: 6px 0;
+    }
+    .header-item-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      color: #1e293b;
+      font-weight: 500;
+      transition: background 0.12s;
+    }
+    .header-item-row:hover {
+      background: #f1f5f9;
+    }
+    .header-item-row input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #2563eb;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    
+    /* Editable / Non-Editable Cell Visual Indicators */
+    .editable-cell {
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s ease;
+    }
+    .editable-cell:hover {
+      background: #f0fdf4 !important;
+      outline: 1px dashed #22c55e;
+      outline-offset: -1px;
+    }
+    .non-editable-cell {
+      cursor: not-allowed !important;
+      background: #fafafa;
+      color: #64748b;
+    }
+
+    .sync-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+    }
+
+    .sync-modal-box {
+      background: #ffffff;
+      width: 320px;
+      max-width: 90%;
+      border-radius: 4px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22), 0 4px 10px rgba(0, 0, 0, 0.12);
+      border: 1px solid #94a3b8;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      animation: syncModalPop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes syncModalPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .sync-modal-header {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+      background: #ffffff;
+    }
+
+    .sync-modal-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .sync-modal-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #334155;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      transition: all 0.15s ease;
+      line-height: 1;
+    }
+
+    .sync-modal-close:hover {
+      background: #e2e8f0;
+      color: #000000;
+    }
+
+    .sync-modal-body {
+      padding: 14px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #ffffff;
+    }
+
+    .sync-fields-heading {
+      color: #0078d4;
+      font-size: 14.5px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .btn-sync-select-all {
+      background: #eff6ff;
+      color: #0078d4;
+      border: 1px solid #bfdbfe;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      line-height: 1.3;
+    }
+
+    .btn-sync-select-all:hover {
+      background: #0078d4;
+      color: #ffffff;
+      border-color: #0078d4;
+    }
+
+    .btn-sync-select-all:active {
+      transform: translateY(1px);
+    }
+
+    .sync-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sync-check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13.5px;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .sync-check-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #0078d4;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .sync-delay-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      font-size: 13.5px;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .sync-delay-input {
+      width: 82px;
+      height: 28px;
+      padding: 2px 6px;
+      border: 1px solid #94a3b8;
+      border-radius: 2px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #0f172a;
+      outline: none;
+      text-align: right;
+    }
+
+    .sync-delay-input:focus {
+      border-color: #0078d4;
+    }
+
+    .sync-modal-footer {
+      padding: 12px 18px 18px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 12px;
+      background: #ffffff;
+    }
+
+    .btn-sync-submit {
+      padding: 7px 18px;
+      background: #0078d4;
+      color: #ffffff;
+      border: none;
+      border-radius: 2px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-sync-submit:hover {
+      background: #0063b1;
+    }
+
+    .btn-sync-submit:active {
+      transform: translateY(1px);
+    }
+
+    .btn-sync-cancel {
+      padding: 7px 22px;
+      background: #71717a;
+      color: #ffffff;
+      border: none;
+      border-radius: 2px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-sync-cancel:hover {
+      background: #52525b;
+    }
+
+    .btn-sync-cancel:active {
+      transform: translateY(1px);
+    }
+
+    .device-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .search-input {
+      padding: 9px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      width: 250px;
+    }
+
+    .search-input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .pr-filter-panel {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      display: none;
+      align-items: flex-end;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .pr-filter-panel.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pr-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pr-filter-field label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pr-filter-field input,
+    .pr-filter-field select {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13.5px;
+      color: #334155;
+      outline: none;
+      min-width: 180px;
+    }
+
+    .pr-filter-field input:focus,
+    .pr-filter-field select:focus {
+      border-color: #4f46e5;
+    }
+
+    .table-container {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .table-scroll {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #1e293b;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* Grid Styles */
+    .grid-container {
+      flex: 1;
+      display: none;
+      /* hidden by default; JS switches to grid */
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding-bottom: 24px;
+      align-content: flex-start;
+      min-height: 0;
+    }
+
+    .device-card {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bg-online {
+      background-color: #00b300 !important;
+      border-color: #00b300 !important;
+      color: #ffffff;
+    }
+
+    .bg-offline {
+      background-color: #ef4444 !important;
+      border-color: #ef4444 !important;
+      color: #ffffff;
+    }
+
+    .bg-maintenance {
+      background-color: #64748b !important;
+      border-color: #64748b !important;
+      color: #ffffff;
+    }
+
+    .device-card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .device-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .device-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #4f46e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .device-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      color: #fff;
+    }
+
+    .status-online {
+      background: #00b300;
+      /* Pure Green */
+    }
+
+    .status-offline {
+      background: #ef4444;
+      /* Pure Red */
+    }
+
+    .status-maintenance {
+      background: #64748b;
+      /* Gray */
+    }
+
+    .device-name {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .device-type {
+      font-size: 10px;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .device-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 10px;
+      color: #475569;
+    }
+
+    .device-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      background: #fff;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .action-btn.edit:hover {
+      background: #e0e7ff;
+      color: #4f46e5;
+      border-color: #4f46e5;
+    }
+
+    .action-btn.delete:hover {
+      background: #fee2e2;
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 480px;
+      max-width: 90%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Unlisted Devices Modal Specifics - Strictly No Scrollbars & No Hidden Parts */
+    #addDeviceModal .modal {
+      width: 760px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow: visible;
+    }
+    #addDeviceModal .modal-body {
+      overflow: visible;
+    }
+    #addDeviceModal table {
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+    #addDeviceModal th,
+    #addDeviceModal td {
+      box-sizing: border-box;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .no-results {
+      padding: 32px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="pr-wrapper">
+    <div class="pr-header" id="devicePageHeader">
+      <h2 class="pr-title">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+          <rect x="9" y="9" width="6" height="6"></rect>
+          <line x1="9" y1="1" x2="9" y2="4"></line>
+          <line x1="15" y1="1" x2="15" y2="4"></line>
+          <line x1="9" y1="20" x2="9" y2="23"></line>
+          <line x1="15" y1="20" x2="15" y2="23"></line>
+          <line x1="20" y1="9" x2="23" y2="9"></line>
+          <line x1="20" y1="14" x2="23" y2="14"></line>
+          <line x1="1" y1="9" x2="4" y2="9"></line>
+          <line x1="1" y1="14" x2="4" y2="14"></line>
+        </svg>
+        Manage Devices
+      </h2>
+      <div class="pr-header-actions">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search devices..."
+          onkeyup="filterDevices()" />
+
+        <button class="pr-btn pr-btn-filter"
+          onclick="document.getElementById('filterPanel').classList.toggle('show'); this.classList.toggle('active');">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter
+        </button>
+
+        <!-- View Toggles -->
+        <div style="display: flex; background: #e2e8f0; padding: 4px; border-radius: 8px; gap: 4px;">
+          <button id="btnListView" class="pr-btn"
+            style="background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.1); padding: 6px 10px;"
+            onclick="setView('list')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+          <button id="btnGridView" class="pr-btn" style="background: transparent; color: #64748b; padding: 6px 10px;"
+            onclick="setView('grid')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </button>
+        </div>
+
+
+        <button id="btnUnlistedDevices" class="pr-btn pr-btn-primary" onclick="document.getElementById('addDeviceModal').style.display='flex'">
+          Unlisted Devices <span id="unlistedToolbarBadge" style="background: rgba(255,255,255,0.25); color: #ffffff; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 6px;">2</span>
+        </button>
+
+        <button class="pr-btn pr-btn-filter" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Master</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Panel: matched to the actual table/card fields (Type + Game/Device name search) -->
+    <div id="filterPanel" class="pr-filter-panel">
+      <div class="pr-filter-field">
+        <label>Type</label>
+        <select id="filterType" onchange="filterDevices()">
+          <option value="all">All Types</option>
+          <option value="device">Device</option>
+          <option value="reader">Reader</option>
+        </select>
+      </div>
+      <div class="pr-filter-field">
+        <label>Category</label>
+        <input type="text" id="filterCategory" placeholder="Filter by Category" onkeyup="filterDevices()" />
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px; align-items: center;">
+        <button id="btnSyncAll" class="pr-btn pr-btn-sync" onclick="openSyncModal('all', this)" title="Synchronize all devices with server">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+            </path>
+          </svg>
+          <span>Sync All</span>
+        </button>
+        <button id="btnSaveDevice" class="pr-btn pr-btn-save" title="Save changes" onclick="showDeviceToast('✓ Device settings saved successfully!')">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+          </svg>
+          <span>Save</span>
+        </button>
+        <button id="btnDeleteDevice" class="pr-btn pr-btn-delete" title="Delete selected" onclick="handleDeleteDeviceClick()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+            </path>
+          </svg>
+          <span>Delete</span>
+        </button>
+        <div style="width: 1px; height: 24px; background: #cbd5e1; margin: 0 4px;"></div>
+        <button class="pr-btn pr-btn-filter" style="font-weight: 600; color: #475569;" onclick="resetFilters()">Reset</button>
+      </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div id="listView" class="table-container">
+      <div class="table-scroll">
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th class="col-type" data-col="type"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Type</th>
+              <th class="col-mac" data-col="mac"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Device MAC</th>
+              <th class="col-name" data-col="name"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Game Name</th>
+              <th class="col-category" data-col="category"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Category</th>
+              <th class="col-network" data-col="network"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Network</th>
+              <th class="col-trigger" data-col="trigger"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Trigger</th>
+              <th class="col-delay" data-col="delay"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Delay</th>
+              <th class="col-ticket" data-col="ticket"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Random Ticket</th>
+              <th class="col-price" data-col="price"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Price</th>
+              <th class="col-bonus" data-col="bonus"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Allowed Bonus</th>
+              <th class="col-points" data-col="points"
+                style="padding: 8px 12px; border-right: 1px solid #e2e8f0; white-space: nowrap; font-size: 14px; font-weight: 600; color: #475569;">
+                Allowed Points</th>
+              <th class="col-sync" data-col="sync" style="padding: 8px 12px; white-space: nowrap; font-size: 13.5px; font-weight: 600; color: #475569; text-align: center;">Sync</th>
+            </tr>
+          </thead>
+          <tbody id="deviceTableBody">
+            <!-- Click to add new row trigger -->
+            <tr id="addNewDeviceRow" onclick="addNewDeviceRow()"
+              style="cursor: pointer; border-bottom: 1px solid #e2e8f0; transition: background 0.15s;"
+              onmouseover="this.style.background='#f0fdf4';" onmouseout="this.style.background='transparent';">
+              <td colspan="12"
+                style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #16a34a; text-align: left; letter-spacing: 0.01em;">
+                <span style="display: inline-flex; align-items: center; gap: 5px;">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Click to add new row
+                </span>
+              </td>
+            </tr>
+
+
+            <tr data-type="DEVICE" data-mac="263762q7636" data-name="Hammer" data-category="Arcades">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">DEVICE</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">263762q7636</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Hammer</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Arcades</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">
+                100.00</td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="DEVICE" data-mac="923762a4521" data-name="Claw Machine" data-category="Prize">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">DEVICE</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">923762a4521</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Claw Machine</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Prize</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">5.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">50.00
+              </td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="READER" data-mac="113762w8900" data-name="Air Hockey" data-category="Sports">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">READER</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">113762w8900</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Air Hockey</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Sports</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">
+                120.00</td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="DEVICE" data-mac="884762p4321" data-name="VR Racing" data-category="Virtual">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">DEVICE</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">884762p4321</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">VR Racing</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Virtual</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">3</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">
+                250.00</td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="READER" data-mac="773762c9922" data-name="Basketball" data-category="Sports">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">READER</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">773762c9922</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Basketball</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Sports</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">10.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">80.00
+              </td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="DEVICE" data-mac="552762k1144" data-name="Pac-Man" data-category="Retro">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">DEVICE</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">552762k1144</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Pac-Man</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Retro</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">3</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">40.00
+              </td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="DEVICE" data-mac="221762j5588" data-name="Super Mario" data-category="Retro">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">DEVICE</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">221762j5588</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Super Mario</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Retro</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">60.00
+              </td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="READER" data-mac="998762m7733" data-name="Zombie Shoot" data-category="Arcades">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">READER</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">998762m7733</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Zombie Shoot</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Arcades</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">3</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">4</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2.50</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">
+                150.00</td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="DEVICE" data-mac="445762t1199" data-name="Dance Dance" data-category="Music">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">DEVICE</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">445762t1199</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Dance Dance</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Music</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">1</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">90.00
+              </td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-type="READER" data-mac="118762y4466" data-name="Bowling Mini" data-category="Sports">
+              <td class="col-type" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">READER</td>
+              <td class="col-mac" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">118762y4466</td>
+              <td class="col-name" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Bowling Mini</td>
+              <td class="col-category" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">Sports</td>
+              <td class="col-network" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2</td>
+              <td class="col-trigger" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">5</td>
+              <td class="col-delay" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">2</td>
+              <td class="col-ticket" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px;">0.00</td>
+              <td class="col-price" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: right;">70.00
+              </td>
+              <td class="col-bonus" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-points" style="padding: 10px 12px; border-right: 1px solid #e2e8f0; font-size: 14px; text-align: center;">
+                <input type="checkbox" checked style="width:16px; height:16px; cursor:pointer;" />
+              </td>
+              <td class="col-sync" style="padding: 8px 12px; text-align: center;">
+                <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Sync</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="no-results" id="tableNoResults">No devices match your filters.</div>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <div id="gridView" class="grid-container">
+
+      <div class="device-card bg-online" data-name="Hammer">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Hammer</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">100.00</div>
+      </div>
+
+      <div class="device-card bg-online" data-name="Claw Machine">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Claw Machine</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">50.00</div>
+      </div>
+
+      <div class="device-card bg-offline" data-name="Air Hockey">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Air Hockey</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">120.00</div>
+      </div>
+
+      <div class="device-card bg-maintenance" data-name="VR Racing">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">VR Racing</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">250.00</div>
+      </div>
+
+      <div class="device-card bg-online" data-name="Basketball">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Basketball</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">80.00</div>
+      </div>
+
+      <div class="device-card bg-online" data-name="Pac-Man">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Pac-Man</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">40.00</div>
+      </div>
+
+      <div class="device-card bg-offline" data-name="Super Mario">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Super Mario</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">60.00</div>
+      </div>
+
+      <div class="device-card bg-maintenance" data-name="Zombie Shoot">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Zombie Shoot</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">150.00</div>
+      </div>
+
+      <div class="device-card bg-online" data-name="Dance Dance">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Dance Dance</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">90.00</div>
+      </div>
+
+      <div class="device-card bg-online" data-name="Bowling Mini">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h4 class="device-name col-name" style="font-size: 14px; margin: 0; flex: 1;">Bowling Mini</h4>
+        </div>
+        <div class="col-price" style="font-size: 16px; font-weight: 700; margin-top: auto;">70.00</div>
+      </div>
+
+      <div class="no-results" id="gridNoResults" style="grid-column: 1 / -1;">No devices match your filters.</div>
+    </div>
+  </div>
+
+  <!-- Unlisted Devices Modal -->
+  <div class="modal-overlay" id="addDeviceModal" style="background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);">
+    <div class="modal"
+      style="width: 760px; max-width: 95vw; padding: 0; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: visible; border: 1px solid rgba(255,255,255,0.2);">
+      <div class="modal-header"
+        style="padding: 16px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+        <h3
+          style="color: #0f172a; font-size: 17px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <svg width="22" height="22" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+            </path>
+          </svg>
+          Unlisted Devices <span id="unlistedCountBadge" style="background: #ef4444; color: #ffffff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-left: 6px;">2</span>
+        </h3>
+        <button class="modal-close"
+          style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.2s ease;"
+          onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+          onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
+          onclick="document.getElementById('addDeviceModal').style.display='none'">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 16px 24px; background: #f8fafc; overflow: visible;">
+        <div class="unlisted-table-card"
+          style="background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); width: 100%;">
+          <table style="width: 100% !important; min-width: 100% !important; max-width: 100% !important; table-layout: fixed; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                <th
+                  style="padding: 11px 14px; text-align: center; font-size: 13px; font-weight: 600; color: #475569; width: 60px;">
+                  ID</th>
+                <th style="padding: 11px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; width: 220px;">
+                  Device MAC</th>
+                <th style="padding: 11px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; width: 220px;">
+                  Detected At</th>
+                <th style="padding: 11px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; width: 210px;">
+                  Updated At</th>
+              </tr>
+            </thead>
+            <tbody id="unlistedDevicesTbody">
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 12px 14px; font-size: 13px; font-weight: 600; color: #1e293b; text-align: center;">101</td>
+                <td style="padding: 12px 16px; font-size: 13px; font-family: monospace; color: #2563eb; font-weight: 600;">
+                  <span style="background: #eff6ff; padding: 3px 8px; border-radius: 4px; border: 1px solid #bfdbfe;">A4:CF:12:89:BC:44</span>
+                </td>
+                <td style="padding: 12px 16px; font-size: 13px; color: #64748b;">Today, 12:40 PM</td>
+                <td style="padding: 12px 16px; font-size: 13px; color: #059669; font-weight: 500;">Just now</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 12px 14px; font-size: 13px; font-weight: 600; color: #1e293b; text-align: center;">102</td>
+                <td style="padding: 12px 16px; font-size: 13px; font-family: monospace; color: #2563eb; font-weight: 600;">
+                  <span style="background: #eff6ff; padding: 3px 8px; border-radius: 4px; border: 1px solid #bfdbfe;">E2:1B:67:90:3A:12</span>
+                </td>
+                <td style="padding: 12px 16px; font-size: 13px; color: #64748b;">Today, 01:15 PM</td>
+                <td style="padding: 12px 16px; font-size: 13px; color: #059669; font-weight: 500;">2 mins ago</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"
+        style="padding: 14px 24px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+        <button type="button" class="pr-btn" id="btnClearUnlisted"
+          style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 7px 18px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease;"
+          onmouseover="this.style.background='#fee2e2'; this.style.borderColor='#fca5a5';"
+          onmouseout="this.style.background='#fef2f2'; this.style.borderColor='#fecaca';"
+          onclick="clearUnlistedDevices()" title="Clear unlisted devices list">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Clear
+        </button>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="pr-btn"
+            style="background: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 7px 22px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+            onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a'; this.style.borderColor='#94a3b8';"
+            onmouseout="this.style.background='#ffffff'; this.style.color='#475569'; this.style.borderColor='#cbd5e1';"
+            onclick="document.getElementById('addDeviceModal').style.display='none'">Cancel</button>
+          <button class="pr-btn"
+            style="background: #2563eb; color: #ffffff; border: none; padding: 7px 28px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1); transition: all 0.2s ease;"
+            onmouseover="this.style.background='#1d4ed8'; this.style.transform='translateY(-1px)';"
+            onmouseout="this.style.background='#2563eb'; this.style.transform='translateY(0)';"
+            onclick="document.getElementById('addDeviceModal').style.display='none'">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var isAddingRow = false;
+
+    function addNewDeviceRow() {
+      const mdPerms = getManageDeviceModulePerms();
+      if (mdPerms.entry === false) {
+        showDeviceToast('Adding new devices is restricted by Manage Permission.');
+        return;
+      }
+      if (isAddingRow) return; // prevent duplicate rows
+      isAddingRow = true;
+
+      var triggerRow = document.getElementById('addNewDeviceRow');
+      var perms = getDeviceColumnPerms();
+      var inputStyle = 'width:100%; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; outline:none; background:#fff;';
+      var disabledStyle = 'width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; font-size:13px; outline:none; background:#f8fafc; cursor:not-allowed; color:#94a3b8;';
+      var checkStyle = 'width:15px; height:15px; cursor:pointer;';
+
+      var newRow = document.createElement('tr');
+      newRow.id = 'editingNewRow';
+      newRow.style.cssText = 'background:#f0fdf4; border-bottom:1px solid #bbf7d0;';
+      newRow.innerHTML = `
+        <td class="col-type" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <select style="${perms.type.edit !== false ? inputStyle : disabledStyle}" ${perms.type.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'}>
+            <option>Device</option><option>Ticket</option><option>Balance</option><option>Quick Sale</option>
+          </select>
+        </td>
+        <td class="col-mac" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="text" placeholder="MAC Address" style="${perms.mac.edit !== false ? inputStyle : disabledStyle}" ${perms.mac.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-name" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="text" placeholder="Game Name" style="${perms.name.edit !== false ? inputStyle : disabledStyle}" ${perms.name.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-category" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="text" placeholder="Category" style="${perms.category.edit !== false ? inputStyle : disabledStyle}" ${perms.category.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-network" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="number" placeholder="0" style="${perms.network.edit !== false ? inputStyle : disabledStyle}" value="0" ${perms.network.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-trigger" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="number" placeholder="0" style="${perms.trigger.edit !== false ? inputStyle : disabledStyle}" value="0" ${perms.trigger.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-delay" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="number" placeholder="0" style="${perms.delay.edit !== false ? inputStyle : disabledStyle}" value="0" ${perms.delay.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-ticket" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="number" placeholder="0.00" step="0.01" style="${perms.ticket.edit !== false ? inputStyle : disabledStyle}" value="0.00" ${perms.ticket.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-price" style="padding:6px 8px; border-right:1px solid #e2e8f0;">
+          <input type="number" placeholder="0.00" step="0.01" style="${perms.price.edit !== false ? inputStyle : disabledStyle}" value="0.00" ${perms.price.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-bonus" style="padding:6px 8px; border-right:1px solid #e2e8f0; text-align:center;">
+          <input type="checkbox" style="${checkStyle}" checked ${perms.bonus.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-points" style="padding:6px 8px; border-right:1px solid #e2e8f0; text-align:center;">
+          <input type="checkbox" style="${checkStyle}" checked ${perms.points.edit !== false ? '' : 'disabled title="Editing disabled in Manage Permission"'} />
+        </td>
+        <td class="col-sync" style="padding:6px 8px; white-space:nowrap;">
+          <div style="display:flex; gap:6px; justify-content:center;">
+            <button onclick="saveNewRow(this)" style="padding:4px 10px; background:#16a34a; color:#fff; border:none; border-radius:4px; font-size:12px; font-weight:600; cursor:pointer;">Save</button>
+            <button onclick="cancelNewRow()" style="padding:4px 10px; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:4px; font-size:12px; font-weight:600; cursor:pointer;">Cancel</button>
+          </div>
+        </td>
+      `;
+
+      // Insert the editable row AFTER the trigger row
+      triggerRow.parentNode.insertBefore(newRow, triggerRow.nextSibling);
+      const firstEnabled = newRow.querySelector('input:not([disabled]), select:not([disabled])');
+      if (firstEnabled) firstEnabled.focus();
+    }
+
+    function saveNewRow(btn) {
+      const mdPerms = getManageDeviceModulePerms();
+      if (mdPerms.entry === false) {
+        showDeviceToast('Adding new devices is restricted by Manage Permission.');
+        return;
+      }
+      var editingRow = document.getElementById('editingNewRow');
+      if (!editingRow) return;
+      var cells = editingRow.querySelectorAll('td');
+      var type = cells[0].querySelector('select').value;
+      var mac = cells[1].querySelector('input').value || '—';
+      var name = cells[2].querySelector('input').value || '—';
+      var category = cells[3].querySelector('input').value || '—';
+      var network = cells[4].querySelector('input').value || '0';
+      var trigger = cells[5].querySelector('input').value || '0';
+      var delay = cells[6].querySelector('input').value || '0';
+      var ticket = parseFloat(cells[7].querySelector('input').value || 0).toFixed(2);
+      var price = parseFloat(cells[8].querySelector('input').value || 0).toFixed(2);
+      var bonus = cells[9].querySelector('input').checked;
+      var points = cells[10].querySelector('input').checked;
+
+      var td = 'style="padding:10px 12px; border-right:1px solid #e2e8f0; font-size:14px;"';
+      var savedRow = document.createElement('tr');
+      savedRow.setAttribute('data-type', type);
+      savedRow.setAttribute('data-mac', mac);
+      savedRow.setAttribute('data-name', name);
+      savedRow.setAttribute('data-category', category);
+      savedRow.innerHTML = `
+        <td class="col-type" ${td}>${type}</td>
+        <td class="col-mac" ${td}>${mac}</td>
+        <td class="col-name" ${td}>${name}</td>
+        <td class="col-category" ${td}>${category}</td>
+        <td class="col-network" ${td}>${network}</td>
+        <td class="col-trigger" ${td}>${trigger}</td>
+        <td class="col-delay" ${td}>${delay}</td>
+        <td class="col-ticket" ${td}>${ticket}</td>
+        <td class="col-price" style="padding:10px 12px; border-right:1px solid #e2e8f0; font-size:14px; text-align:right;">${price}</td>
+        <td class="col-bonus" style="padding:10px 12px; border-right:1px solid #e2e8f0; font-size:14px; text-align:center;"><input type="checkbox" ${bonus ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;" /></td>
+        <td class="col-points" style="padding:10px 12px; border-right:1px solid #e2e8f0; font-size:14px; text-align:center;"><input type="checkbox" ${points ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;" /></td>
+        <td class="col-sync" style="padding:8px 12px; text-align:center;">
+          <button type="button" class="tbl-sync-btn" onclick="openSyncModal(this, this)" title="Sync Device">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span>Sync</span>
+          </button>
+        </td>
+      `;
+
+      editingRow.parentNode.replaceChild(savedRow, editingRow);
+      isAddingRow = false;
+      applyDeviceColumnVisibility();
+      showDeviceToast('✓ Device added successfully!');
+    }
+
+    function cancelNewRow() {
+      var editingRow = document.getElementById('editingNewRow');
+      if (editingRow) editingRow.remove();
+      isAddingRow = false;
+    }
+
+    function setView(viewType) {
+
+      const listView = document.getElementById('listView');
+      const gridView = document.getElementById('gridView');
+      const btnList = document.getElementById('btnListView');
+      const btnGrid = document.getElementById('btnGridView');
+
+      if (viewType === 'list') {
+        listView.style.display = 'flex';
+        gridView.style.display = 'none';
+        btnList.style.background = '#fff';
+        btnList.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        btnList.style.color = '#334155';
+        btnGrid.style.background = 'transparent';
+        btnGrid.style.boxShadow = 'none';
+        btnGrid.style.color = '#64748b';
+      } else {
+        listView.style.display = 'none';
+        gridView.style.display = 'grid';
+        btnGrid.style.background = '#fff';
+        btnGrid.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        btnGrid.style.color = '#334155';
+        btnList.style.background = 'transparent';
+        btnList.style.boxShadow = 'none';
+        btnList.style.color = '#64748b';
+      }
+    }
+
+    function filterDevices() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const type = document.getElementById('filterType').value.toLowerCase();
+      const category = document.getElementById('filterCategory').value.trim().toLowerCase();
+
+      // Filter Table (search matches Game Name or MAC; type matches DEVICE/READER; category matches Category column)
+      const rows = document.querySelectorAll('#deviceTableBody tr');
+      let visibleRows = 0;
+      rows.forEach(row => {
+        const rowType = (row.dataset.type || '').toLowerCase();
+        const rowMac = (row.dataset.mac || '').toLowerCase();
+        const rowName = (row.dataset.name || '').toLowerCase();
+        const rowCategory = (row.dataset.category || '').toLowerCase();
+
+        const matchSearch = !search || rowName.includes(search) || rowMac.includes(search);
+        const matchType = type === 'all' || rowType === type;
+        const matchCategory = !category || rowCategory.includes(category);
+
+        const show = matchSearch && matchType && matchCategory;
+        row.style.display = show ? '' : 'none';
+        if (show) visibleRows++;
+      });
+      document.getElementById('tableNoResults').style.display = visibleRows === 0 ? 'block' : 'none';
+
+      // Filter Grid (search matches device name; type filter/category filter aren't shown for cards, so just apply search)
+      const cards = document.querySelectorAll('#gridView .device-card');
+      let visibleCards = 0;
+      cards.forEach(card => {
+        const cardName = (card.dataset.name || '').toLowerCase();
+        const matchSearch = !search || cardName.includes(search);
+        const show = matchSearch;
+        card.style.display = show ? 'flex' : 'none';
+        if (show) visibleCards++;
+      });
+      document.getElementById('gridNoResults').style.display = visibleCards === 0 ? 'block' : 'none';
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterType').value = 'all';
+      document.getElementById('filterCategory').value = '';
+      filterDevices();
+    }
+
+
+    // Select Sync Options Modal Handler
+    let currentSyncTarget = 'all';
+    let currentSyncTriggerBtn = null;
+
+    function selectAllSyncFields() {
+      const checkable = ['syncField_name', 'syncField_delay', 'syncField_vipprice', 'syncField_stdprice', 'syncField_trigger', 'syncField_network'];
+      const typeEl = document.getElementById('syncField_type');
+
+      // Check if all 6 (excluding Device Type) are already checked
+      const all6Checked = checkable.every(id => {
+        const el = document.getElementById(id);
+        return el && el.checked;
+      });
+
+      if (all6Checked) {
+        // Deselect all
+        checkable.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.checked = false;
+        });
+        if (typeEl) typeEl.checked = false;
+        showDeviceToast('All fields deselected');
+      } else {
+        // Select all EXCEPT Device Type (Only device type NOT selected)
+        checkable.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.checked = true;
+        });
+        if (typeEl) typeEl.checked = false; // Only Device Type is NOT selected
+        showDeviceToast('✓ All fields selected (Device Type excluded)');
+      }
+      updateSelectAllButtonText();
+    }
+
+    function updateSelectAllButtonText() {
+      const btn = document.getElementById('btnSyncSelectAll');
+      if (!btn) return;
+      const checkable = ['syncField_name', 'syncField_delay', 'syncField_vipprice', 'syncField_stdprice', 'syncField_trigger', 'syncField_network'];
+      const all6Checked = checkable.every(id => {
+        const el = document.getElementById(id);
+        return el && el.checked;
+      });
+      if (all6Checked) {
+        btn.innerHTML = '<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> <span>Deselect</span>';
+      } else {
+        btn.innerHTML = '<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Select All</span>';
+      }
+    }
+
+    function openSyncModal(target, btn) {
+      currentSyncTarget = target || 'all';
+      currentSyncTriggerBtn = btn || (target instanceof HTMLElement ? target : null);
+      if (currentSyncTriggerBtn && currentSyncTriggerBtn.closest('tr')) {
+        const row = currentSyncTriggerBtn.closest('tr');
+        currentSyncTarget = row.getAttribute('data-name') || 'Device';
+      }
+
+      const modal = document.getElementById('syncOptionsModal');
+      const title = document.getElementById('syncModalTitle');
+      if (title) {
+        title.textContent = 'Select Sync Options';
+      }
+      if (modal) {
+        modal.style.display = 'flex';
+        updateSelectAllButtonText();
+      }
+    }
+
+    function closeSyncModal() {
+      const modal = document.getElementById('syncOptionsModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function executeSelectedSync() {
+      const checkboxes = document.querySelectorAll('.sync-checklist input[type="checkbox"]:checked');
+      const selectedFields = Array.from(checkboxes).map(cb => cb.value);
+      const delay = document.getElementById('syncDelayBetweenGroups').value || '500';
+
+      if (selectedFields.length === 0) {
+        showDeviceToast('Please select at least one field to sync');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btnExecuteSync');
+      if (submitBtn) {
+        submitBtn.textContent = 'Syncing...';
+        submitBtn.disabled = true;
+      }
+
+      // Add spinning to triggering buttons
+      if (currentSyncTarget === 'all') {
+        const btnAll = document.getElementById('btnSyncAll');
+        if (btnAll) btnAll.classList.add('syncing');
+        document.querySelectorAll('.tbl-sync-btn').forEach(b => b.classList.add('syncing'));
+      } else if (currentSyncTriggerBtn) {
+        currentSyncTriggerBtn.classList.add('syncing');
+      }
+
+      setTimeout(() => {
+        closeSyncModal();
+        if (submitBtn) {
+          submitBtn.textContent = 'Sync Selected';
+          submitBtn.disabled = false;
+        }
+
+        // Remove spinning
+        const btnAll = document.getElementById('btnSyncAll');
+        if (btnAll) btnAll.classList.remove('syncing');
+        document.querySelectorAll('.tbl-sync-btn').forEach(b => b.classList.remove('syncing'));
+
+        const fieldSummary = selectedFields.length > 2
+          ? `${selectedFields.slice(0, 2).join(', ')} (+${selectedFields.length - 2} more)`
+          : selectedFields.join(', ');
+
+        if (currentSyncTarget === 'all') {
+          showDeviceToast(`✓ Synced [${fieldSummary}] for all 10 devices (${delay}ms delay)!`);
+        } else {
+          showDeviceToast(`✓ Synced [${fieldSummary}] for "${currentSyncTarget}" (${delay}ms delay)!`);
+        }
+      }, 700);
+    }
+
+    // Sync Functions
+    function syncAllDevices(btn) {
+      if (!btn) btn = document.getElementById('btnSyncAll');
+      if (btn) btn.classList.add('syncing');
+
+      const tblBtns = document.querySelectorAll('.tbl-sync-btn');
+      tblBtns.forEach(b => b.classList.add('syncing'));
+
+      showDeviceToast('Syncing all devices with server & readers...');
+
+      setTimeout(() => {
+        if (btn) btn.classList.remove('syncing');
+        tblBtns.forEach(b => b.classList.remove('syncing'));
+        showDeviceToast('✓ All 10 devices synchronized successfully!');
+      }, 800);
+    }
+
+    function syncSingleDevice(btn) {
+      const row = btn ? btn.closest('tr') : null;
+      const name = row ? (row.getAttribute('data-name') || 'Device') : 'Device';
+      if (btn) btn.classList.add('syncing');
+      showDeviceToast(`Syncing "${name}"...`);
+
+      setTimeout(() => {
+        if (btn) btn.classList.remove('syncing');
+        showDeviceToast(`✓ "${name}" synced successfully!`);
+      }, 600);
+    }
+
+    let deviceToastTimer = null;
+    function showDeviceToast(msg) {
+      let toast = document.getElementById('deviceToast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(deviceToastTimer);
+      deviceToastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    
+    // ================= MANAGE DEVICE MODULE PERMISSIONS (LIST, ENTRY, EDIT, DELETE) =================
+    function getManageDeviceModulePerms() {
+      const currentUser = localStorage.getItem('pos_current_user') || 'admin';
+      let perms = { list: true, entry: true, edit: true, delete: true };
+      try {
+        const raw = localStorage.getItem('pos_manage_device_perms_' + currentUser) || localStorage.getItem('pos_manage_device_perms');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          perms = {
+            list: parsed.list !== false,
+            entry: parsed.entry !== false,
+            edit: parsed.edit !== false,
+            delete: parsed.delete !== false
+          };
+        }
+      } catch (e) {}
+      return perms;
+    }
+
+    function applyManageDeviceModulePerms() {
+      const perms = getManageDeviceModulePerms();
+
+      // 1. LIST PERMISSION ENFORCEMENT
+      let noAccessBanner = document.getElementById('noAccessDeviceOverlay');
+      const tableWrap = document.querySelector('.table-container') || document.querySelector('.table-wrapper') || document.getElementById('listView');
+      const cardsWrap = document.getElementById('cardsView');
+
+      if (perms.list === false) {
+        if (!noAccessBanner) {
+          noAccessBanner = document.createElement('div');
+          noAccessBanner.id = 'noAccessDeviceOverlay';
+          noAccessBanner.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; background: #ffffff; border: 1.5px dashed #fca5a5; border-radius: 12px; margin: 24px; text-align: center; gap: 14px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);';
+          noAccessBanner.innerHTML = `
+            <div style="width: 58px; height: 58px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #1e293b;">Access Restricted</h3>
+            <p style="margin: 0; font-size: 14px; color: #64748b; max-width: 440px; line-height: 1.5;">You do not have permission to view or list devices. Contact your system administrator to enable "List" permission for Manage Device.</p>
+          `;
+          const contentArea = document.querySelector('.pr-content') || document.querySelector('.pr-wrapper');
+          if (contentArea) contentArea.appendChild(noAccessBanner);
+        }
+        noAccessBanner.style.display = 'flex';
+        if (tableWrap) tableWrap.style.display = 'none';
+        if (cardsWrap) cardsWrap.style.display = 'none';
+      } else {
+        if (noAccessBanner) noAccessBanner.style.display = 'none';
+        const isCards = document.getElementById('btnViewCards')?.classList.contains('active');
+        if (tableWrap && !isCards) tableWrap.style.display = 'block';
+        if (cardsWrap && isCards) cardsWrap.style.display = 'grid';
+      }
+
+      // 2. ENTRY PERMISSION ENFORCEMENT
+      const addRowTr = document.getElementById('addNewDeviceRow');
+      if (addRowTr) {
+        if (perms.entry === false) {
+          addRowTr.style.display = 'none';
+        } else {
+          addRowTr.style.display = '';
+        }
+      }
+      const btnUnlisted = document.getElementById('btnUnlistedDevices');
+      if (btnUnlisted) {
+        if (perms.entry === false) {
+          btnUnlisted.disabled = true;
+          btnUnlisted.style.opacity = '0.45';
+          btnUnlisted.style.cursor = 'not-allowed';
+          btnUnlisted.title = 'Add/Entry permission disabled in Manage Permission';
+        } else {
+          btnUnlisted.disabled = false;
+          btnUnlisted.style.opacity = '1';
+          btnUnlisted.style.cursor = 'pointer';
+          btnUnlisted.title = '';
+        }
+      }
+
+      // 3. EDIT PERMISSION ENFORCEMENT
+      const btnSave = document.getElementById('btnSaveDevice');
+      if (btnSave) {
+        if (perms.edit === false) {
+          btnSave.disabled = true;
+          btnSave.style.opacity = '0.45';
+          btnSave.style.cursor = 'not-allowed';
+          btnSave.title = 'Edit permission disabled in Manage Permission';
+        } else {
+          btnSave.disabled = false;
+          btnSave.style.opacity = '1';
+          btnSave.style.cursor = 'pointer';
+          btnSave.title = 'Save changes';
+        }
+      }
+
+      // 4. DELETE PERMISSION ENFORCEMENT
+      const btnDelete = document.getElementById('btnDeleteDevice');
+      if (btnDelete) {
+        if (perms.delete === false) {
+          btnDelete.disabled = true;
+          btnDelete.style.opacity = '0.45';
+          btnDelete.style.cursor = 'not-allowed';
+          btnDelete.title = 'Delete permission disabled in Manage Permission';
+        } else {
+          btnDelete.disabled = false;
+          btnDelete.style.opacity = '1';
+          btnDelete.style.cursor = 'pointer';
+          btnDelete.title = 'Delete selected';
+        }
+      }
+
+      const btnClearUnlisted = document.getElementById('btnClearUnlisted');
+      if (btnClearUnlisted) {
+        if (perms.delete === false) {
+          btnClearUnlisted.disabled = true;
+          btnClearUnlisted.style.opacity = '0.45';
+          btnClearUnlisted.style.cursor = 'not-allowed';
+          btnClearUnlisted.title = 'Delete/Clear permission disabled in Manage Permission';
+        } else {
+          btnClearUnlisted.disabled = false;
+          btnClearUnlisted.style.opacity = '1';
+          btnClearUnlisted.style.cursor = 'pointer';
+          btnClearUnlisted.title = 'Clear unlisted devices list';
+        }
+      }
+    }
+
+    // Manage Device Header Permissions Integration (View & Edit)
+    function applyDeviceHeaderPermissions() {
+      try {
+        const stored = localStorage.getItem('pos_device_header_perms');
+        if (!stored) return;
+        const perms = JSON.parse(stored);
+
+        // 1. Header View Permission
+        const header = document.getElementById('devicePageHeader');
+        if (header) {
+          if (perms.view === false) {
+            header.style.display = 'none';
+          } else {
+            header.style.display = 'flex';
+          }
+        }
+
+        // 2. Header Edit Permission
+        const editElements = document.querySelectorAll('.pr-btn-sync, #btnSaveDevice, #btnDeleteDevice, #btnUnlistedDevices, .tbl-sync-btn');
+        editElements.forEach(el => {
+          if (perms.edit === false) {
+            el.disabled = true;
+            el.style.opacity = '0.45';
+            el.style.cursor = 'not-allowed';
+            el.title = 'Edit permission disabled in Manage Permission';
+          } else {
+            el.disabled = false;
+            el.style.opacity = '1';
+            el.style.cursor = 'pointer';
+          }
+        });
+      } catch (e) {
+        console.warn('Device Header Perms check:', e);
+      }
+    }
+
+    
+    function handleDeleteDeviceClick() {
+      const mdPerms = getManageDeviceModulePerms();
+      if (mdPerms.delete === false) {
+        showDeviceToast('Deleting devices is restricted by Manage Permission.');
+        return;
+      }
+      showDeviceToast('Please select a device row to delete');
+    }
+
+    // Clear Unlisted Devices Handler
+    function clearUnlistedDevices() {
+      const mdPerms = getManageDeviceModulePerms();
+      if (mdPerms.delete === false) {
+        showDeviceToast('Clearing/deleting unlisted devices is restricted by Manage Permission.');
+        return;
+      }
+      const tbody = document.querySelector('#addDeviceModal tbody');
+      const badge1 = document.getElementById('unlistedCountBadge');
+      const badge2 = document.getElementById('unlistedToolbarBadge');
+      
+      const hasRows = tbody && tbody.querySelectorAll('tr:not(.empty-state-row)').length > 0;
+      
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr class="empty-state-row">
+            <td colspan="4" style="padding: 28px 16px; text-align: center;">
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef2f2; display: flex; align-items: center; justify-content: center; color: #dc2626;">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 style="margin: 0 0 3px 0; color: #334155; font-size: 14.5px; font-weight: 600;">Unlisted devices cleared</h4>
+                  <p style="margin: 0; color: #64748b; font-size: 12.5px;">The unlisted detection buffer has been purged.</p>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+
+      if (badge1) badge1.style.display = 'none';
+      if (badge2) badge2.style.display = 'none';
+
+      if (hasRows) {
+        showDeviceToast('✓ Unlisted devices cleared successfully!');
+      } else {
+        showDeviceToast('✓ Unlisted devices list is already empty!');
+      }
+    }
+
+    
+    // ================= DEVICE COLUMN & HEADER VISIBILITY =================
+    const DEVICE_COLUMNS_CONFIG = [
+      { key: 'type', name: 'Type' },
+      { key: 'mac', name: 'Device MAC' },
+      { key: 'name', name: 'Game Name' },
+      { key: 'category', name: 'Category' },
+      { key: 'network', name: 'Network' },
+      { key: 'trigger', name: 'Trigger' },
+      { key: 'delay', name: 'Delay' },
+      { key: 'ticket', name: 'Random Ticket' },
+      { key: 'price', name: 'Price' },
+      { key: 'bonus', name: 'Allowed Bonus' },
+      { key: 'points', name: 'Allowed Points' },
+      { key: 'sync', name: 'Sync Action' }
+    ];
+
+    function getDeviceColumnPerms() {
+      const currentUser = localStorage.getItem('pos_current_user') || 'admin';
+      let perms = {};
+      try {
+        const uRaw = localStorage.getItem('pos_device_column_perms_' + currentUser);
+        if (uRaw) perms = JSON.parse(uRaw);
+        else {
+          const gRaw = localStorage.getItem('pos_device_column_perms');
+          if (gRaw) perms = JSON.parse(gRaw);
+        }
+      } catch (e) {}
+
+      // Normalize to { [colKey]: { view: boolean, edit: boolean } }
+      const normalized = {};
+      DEVICE_COLUMNS_CONFIG.forEach(col => {
+        const val = perms[col.key];
+        if (typeof val === 'object' && val !== null) {
+          normalized[col.key] = {
+            view: val.view !== false,
+            edit: val.edit !== false
+          };
+        } else if (typeof val === 'boolean') {
+          normalized[col.key] = {
+            view: val,
+            edit: true
+          };
+        } else {
+          normalized[col.key] = {
+            view: true,
+            edit: true
+          };
+        }
+      });
+      return normalized;
+    }
+
+    function applyDeviceColumnVisibility() {
+      const perms = getDeviceColumnPerms();
+      let hiddenCount = 0;
+      const hiddenCols = [];
+
+      DEVICE_COLUMNS_CONFIG.forEach(col => {
+        const isVisible = perms[col.key].view !== false;
+        if (!isVisible) {
+          hiddenCount++;
+          hiddenCols.push(col.key);
+        }
+      });
+
+      // Inject or update dynamic stylesheet to instantly hide/show header & all row cells
+      let styleEl = document.getElementById('dynamicColumnVisibilityStyles');
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'dynamicColumnVisibilityStyles';
+        document.head.appendChild(styleEl);
+      }
+
+      if (hiddenCols.length === 0) {
+        styleEl.textContent = '';
+      } else {
+        styleEl.textContent = hiddenCols.map(k => `.col-${k} { display: none !important; }`).join('\n');
+      }
+
+      // Update colspan for add new row
+      const addRowTd = document.querySelector('#addNewDeviceRow td');
+      if (addRowTd) {
+        addRowTd.setAttribute('colspan', 12 - hiddenCount);
+      }
+
+      // Apply Edit permissions on all table cells
+      applyColumnEditPermissions(perms);
+    }
+
+    function applyColumnEditPermissions(perms) {
+      perms = perms || getDeviceColumnPerms();
+
+      DEVICE_COLUMNS_CONFIG.forEach(col => {
+        const canEdit = perms[col.key].edit !== false;
+        const cells = document.querySelectorAll(`#deviceTableBody tr:not(#addNewDeviceRow):not(#editingNewRow) .col-${col.key}`);
+
+        cells.forEach(cell => {
+          // Checkboxes (allowed bonus / allowed points)
+          const cb = cell.querySelector('input[type="checkbox"]');
+          if (cb) {
+            cb.disabled = !canEdit;
+            cb.style.cursor = canEdit ? 'pointer' : 'not-allowed';
+            cb.style.opacity = canEdit ? '1' : '0.55';
+            cb.title = canEdit ? '' : `Editing "${col.name}" is disabled in Manage Permission`;
+            return;
+          }
+
+          // Sync button
+          const syncBtn = cell.querySelector('.tbl-sync-btn');
+          if (syncBtn) {
+            syncBtn.disabled = !canEdit;
+            syncBtn.style.cursor = canEdit ? 'pointer' : 'not-allowed';
+            syncBtn.style.opacity = canEdit ? '1' : '0.45';
+            syncBtn.title = canEdit ? 'Sync Device' : `Sync action is disabled in Manage Permission`;
+            return;
+          }
+
+          // Text data cells
+          if (canEdit) {
+            cell.classList.add('editable-cell');
+            cell.classList.remove('non-editable-cell');
+            cell.title = `Double-click to edit ${col.name}`;
+          } else {
+            cell.classList.remove('editable-cell');
+            cell.classList.add('non-editable-cell');
+            cell.title = `Editing "${col.name}" is disabled in Manage Permission`;
+          }
+        });
+      });
+    }
+
+    // Hook to DOMContentLoaded and storage events
+    
+    // Inline Double-Click Cell Editing Handler with Edit Permission Enforcement
+    document.addEventListener('DOMContentLoaded', function() {
+      const tableBody = document.getElementById('deviceTableBody');
+      if (!tableBody) return;
+
+      tableBody.addEventListener('dblclick', function(e) {
+        const cell = e.target.closest('.col-type, .col-mac, .col-name, .col-category, .col-network, .col-trigger, .col-delay, .col-ticket, .col-price');
+        if (!cell || cell.closest('#addNewDeviceRow') || cell.closest('#editingNewRow')) return;
+
+        // Detect column key
+        let colKey = null;
+        DEVICE_COLUMNS_CONFIG.forEach(c => {
+          if (cell.classList.contains('col-' + c.key)) colKey = c.key;
+        });
+        if (!colKey) return;
+
+        const mdPerms = getManageDeviceModulePerms();
+        if (mdPerms.edit === false) {
+          showDeviceToast('Editing devices is restricted by Manage Permission.');
+          return;
+        }
+
+        const perms = getDeviceColumnPerms();
+        if (perms[colKey].edit === false) {
+          const colObj = DEVICE_COLUMNS_CONFIG.find(c => c.key === colKey);
+          const colName = colObj ? colObj.name : colKey;
+          showDeviceToast(`Editing "${colName}" is restricted by Manage Permission.`);
+          return;
+        }
+
+        // Avoid re-creating input if already active
+        if (cell.querySelector('.inline-cell-input')) return;
+
+        const currentVal = cell.textContent.trim();
+        const input = document.createElement('input');
+        input.type = (colKey === 'price' || colKey === 'ticket' || colKey === 'delay' || colKey === 'trigger' || colKey === 'network') ? 'number' : 'text';
+        if (colKey === 'price' || colKey === 'ticket') input.step = '0.01';
+        input.value = currentVal;
+        input.className = 'inline-cell-input';
+        input.style.cssText = 'width: 100%; padding: 3px 6px; font-size: 13.5px; border: 1.5px solid #2563eb; border-radius: 4px; outline: none; background: #ffffff; box-shadow: 0 0 0 2px rgba(37,99,235,0.15);';
+
+        cell.textContent = '';
+        cell.appendChild(input);
+        input.focus();
+        input.select();
+
+        let committed = false;
+        function commitEdit() {
+          if (committed) return;
+          committed = true;
+          const newVal = input.value.trim();
+          cell.textContent = newVal || currentVal;
+
+          const row = cell.closest('tr');
+          if (row && colKey === 'name') row.setAttribute('data-name', newVal);
+          if (row && colKey === 'category') row.setAttribute('data-category', newVal);
+          if (row && colKey === 'mac') row.setAttribute('data-mac', newVal);
+          if (row && colKey === 'type') row.setAttribute('data-type', newVal);
+
+          if (newVal !== currentVal) {
+            const colObj = DEVICE_COLUMNS_CONFIG.find(c => c.key === colKey);
+            const colName = colObj ? colObj.name : colKey;
+            showDeviceToast(`✓ Updated ${colName} to "${newVal}"!`);
+          }
+        }
+
+        input.addEventListener('blur', commitEdit);
+        input.addEventListener('keydown', function(evt) {
+          if (evt.key === 'Enter') {
+            commitEdit();
+          } else if (evt.key === 'Escape') {
+            committed = true;
+            cell.textContent = currentVal;
+          }
+        });
+      });
+    });
+
+    window.addEventListener('DOMContentLoaded', applyDeviceColumnVisibility);
+    window.addEventListener('storage', applyDeviceColumnVisibility);
+
+    window.addEventListener('DOMContentLoaded', function() {
+      applyManageDeviceModulePerms();
+      applyDeviceHeaderPermissions();
+    });
+    window.addEventListener('storage', function() {
+      applyManageDeviceModulePerms();
+      applyDeviceHeaderPermissions();
+    });
+    window.addEventListener('storage', applyDeviceHeaderPermissions);
+    applyDeviceHeaderPermissions();
+  </script>
+
+  <!-- ================= SELECT SYNC OPTIONS MODAL ================= -->
+  <div class="sync-modal-overlay" id="syncOptionsModal" onclick="if(event.target===this) closeSyncModal()">
+    <div class="sync-modal-box">
+      <div class="sync-modal-header">
+        <h3 class="sync-modal-title" id="syncModalTitle">Select Sync Options</h3>
+        <button type="button" class="sync-modal-close" onclick="closeSyncModal()" title="Close">&times;</button>
+      </div>
+
+      <div class="sync-modal-body">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+          <h4 class="sync-fields-heading">Select fields to sync:</h4>
+          <button type="button" class="btn-sync-select-all" id="btnSyncSelectAll" onclick="selectAllSyncFields()" title="Select all fields (excluding Device Type)">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Select All</span>
+          </button>
+        </div>
+
+        <div class="sync-checklist">
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_name" value="Device Name" onchange="updateSelectAllButtonText()" checked>
+            <span>Device Name</span>
+          </label>
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_delay" value="Delay Count" onchange="updateSelectAllButtonText()">
+            <span>Delay Count</span>
+          </label>
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_vipprice" value="VIP Price" onchange="updateSelectAllButtonText()">
+            <span>VIP Price</span>
+          </label>
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_stdprice" value="Standard Price" onchange="updateSelectAllButtonText()" checked>
+            <span>Standard Price</span>
+          </label>
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_trigger" value="Trigger Count" onchange="updateSelectAllButtonText()">
+            <span>Trigger Count</span>
+          </label>
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_network" value="Network Count" onchange="updateSelectAllButtonText()">
+            <span>Network Count</span>
+          </label>
+          <label class="sync-check-item">
+            <input type="checkbox" id="syncField_type" value="Device Type" onchange="updateSelectAllButtonText()">
+            <span>Device Type</span>
+          </label>
+        </div>
+
+        <div class="sync-delay-row">
+          <span>Delay between groups</span>
+          <input type="number" class="sync-delay-input" id="syncDelayBetweenGroups" value="500" min="0" step="50">
+        </div>
+      </div>
+
+      <div class="sync-modal-footer">
+        <button type="button" class="btn-sync-submit" id="btnExecuteSync" onclick="executeSelectedSync()">Sync Selected</button>
+        <button type="button" class="btn-sync-cancel" onclick="closeSyncModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="deviceToast" class="device-toast"></div>
+</body>
+
+</html>

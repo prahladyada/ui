@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Sale</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+
+    :root {
+      --indigo: #4338ca;
+      --indigo-dark: #3730a3;
+      --indigo-light: #eef2ff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --ink-faint: #94a3b8;
+      --line: #e2e8f0;
+      --line-strong: #cbd5e1;
+      --bg: #f8fafc;
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+      --ok: #16a34a;
+      --ok-dark: #15803d;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 13.5px;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0;
+      gap: 0;
+    }
+
+    /* ===== Customer info bar ===== */
+    .info-bar {
+      flex: 0 0 auto;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      margin-bottom: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .info-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-field label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    .info-field input,
+    .info-field select {
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      font-size: 13px;
+      width: 120px;
+      transition: all 0.2s ease;
+    }
+
+    .info-field input:focus {
+      outline: none;
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px var(--indigo-light);
+    }
+
+    .info-field.wide input {
+      width: 150px;
+    }
+
+    .fill-purple {
+      background: #fff;
+    }
+
+    .fill-gray {
+      background: #f8fafc;
+      color: var(--ink-faint);
+      border-color: var(--line);
+    }
+
+    .refresh-btn {
+      margin-left: auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--indigo);
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .refresh-btn:hover {
+      background: var(--indigo-light);
+      border-color: #c7d2fe;
+    }
+
+    .refresh-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+    }
+
+    /* ===== Tabs ===== */
+    .tabs {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 4px;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 0;
+    }
+
+    .tab {
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-bottom: none;
+      background: #eef2f7;
+      color: var(--ink-soft);
+      transition: all 0.2s ease;
+      margin-bottom: -1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: var(--indigo);
+      border-color: var(--line);
+      border-top: 2px solid var(--indigo);
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    /* ===== Main Body ===== */
+    .main-body {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: row;
+      gap: 14px;
+    }
+
+    .col-panel {
+      background: #e2dfdf;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    /* ===== Category Filter Buttons ===== */
+    .ds-group-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #475569;
+      font-weight: 600;
+      font-size: 12.5px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ds-group-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .ds-group-btn.active {
+      background: #4f46e5;
+      color: #fff;
+      border-color: #4f46e5;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    }
+
+    /* ===== Modern Touch Item Cards ===== */
+    /* ===== Modern Clean Item Cards ===== */
+    .items-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(105px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding: 4px 4px 10px 2px;
+      align-content: flex-start;
+      flex: 1 1 0;
+      min-height: 0;
+    }
+
+    .ds-item-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      width: 100%;
+    }
+
+    .ds-item-card:hover {
+      border-color: #6366f1;
+      box-shadow: 0 6px 12px -3px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .ds-item-card:active {
+      transform: translateY(0);
+    }
+
+    .ds-item-img {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12.5px;
+      text-align: center;
+      padding: 3px 6px;
+      line-height: 1.2;
+    }
+
+    .ds-item-info {
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #fff;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .ds-item-info strong {
+      color: #4f46e5;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    /* Stepper Qty Buttons */
+    .qty-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #4338ca;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1;
+      transition: all 0.15s;
+    }
+
+    .qty-btn:hover {
+      border-color: #4338ca;
+      background: #eef2ff;
+      transform: scale(1.05);
+    }
+
+    /* ===== Order Column ===== */
+    .col-order {
+      flex: 0 0 410px;
+      padding: 14px 16px;
+      gap: 10px;
+    }
+
+    .order-table-wrap {
+      flex: 1 1 0;
+      min-height: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+
+    .order-table-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 360px;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #f1f5f9;
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      border-bottom: 2px solid var(--line-strong);
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    tbody td {
+      padding: 8px 10px;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover td {
+      background: #f8fafc;
+    }
+
+    tbody tr.selected-row td {
+      background: #eef2ff !important;
+      color: var(--indigo-dark);
+    }
+
+    .empty-order td {
+      text-align: center;
+      color: var(--ink-faint);
+      padding: 36px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .btn-remove {
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      border-radius: 7px;
+      padding: 9px 0;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-remove:hover {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
+
+    .totals {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .total-row label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
+    .total-row input {
+      width: 110px;
+      height: 30px;
+      padding: 0 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      font-size: 13.5px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .final-input {
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      font-weight: 800 !important;
+      border-color: #c7d2fe !important;
+      font-size: 15px !important;
+    }
+
+    .btn-generate {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-generate:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate:active {
+      transform: translateY(0);
+    }
+
+    /* ===== Available List Tab View Table ===== */
+    .available-list-view {
+      display: none;
+      flex: 1 1 0;
+      min-height: 0;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .available-table-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    @media (max-width: 1100px) {
+      .info-bar {
+        padding: 10px 12px;
+        gap: 8px;
+      }
+
+      .info-row {
+        flex-wrap: nowrap;
+        gap: 6px;
+      }
+
+      .info-field {
+        flex: 1 1 0;
+        min-width: 0;
+        gap: 4px;
+      }
+
+      .info-field label {
+        font-size: 10.5px;
+      }
+
+      .info-field input,
+      .info-field select,
+      .info-field.wide input {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+      }
+
+      .refresh-btn {
+        margin-left: 0;
+      }
+
+      .tabs {
+        flex-wrap: wrap;
+      }
+
+      .tab {
+        flex: 1 1 180px;
+        justify-content: center;
+        padding: 8px 12px;
+        white-space: nowrap;
+      }
+
+      .main-body {
+        gap: 8px;
+      }
+
+      .items-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 8px;
+      }
+
+      .quick-order-header {
+        gap: 8px;
+      }
+
+      .quick-order-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        white-space: nowrap;
+      }
+
+      .quick-order-title h3 {
+        font-size: 13px !important;
+        white-space: nowrap;
+      }
+
+      .quick-order-search {
+        flex: 0 1 180px;
+        width: auto !important;
+        min-width: 120px;
+      }
+
+      #itemGroupsNav {
+        flex-wrap: wrap;
+        gap: 4px !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 8px !important;
+      }
+
+      #itemGroupsNav .ds-group-btn {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+
+      .col-order {
+        flex: 0 1 330px;
+        min-width: 0;
+        padding: 12px;
+      }
+
+      .col-order table {
+        min-width: 0;
+        table-layout: fixed;
+      }
+
+      .order-table-scroll {
+        overflow-x: hidden;
+      }
+
+      .col-order > div:last-child {
+        flex-wrap: wrap;
+      }
+
+      .col-order > div:last-child button {
+        min-width: 0;
+        padding-left: 8px;
+        padding-right: 8px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Customer info bar -->
+    <div class="info-bar">
+      <div class="info-row">
+        <div class="info-field">
+          <label>RFID</label>
+          <input class="fill-purple" type="text" placeholder="Scan / RFID" />
+        </div>
+        <div class="info-field wide">
+          <label>Name</label>
+          <input class="fill-purple" type="text" placeholder="Customer Name" />
+        </div>
+        <div class="info-field">
+          <label>Main pts</label>
+          <input class="fill-gray" type="text" value="0.00" disabled />
+        </div>
+        <div class="info-field">
+          <label>Bonus pts</label>
+          <input class="fill-gray" type="text" value="0.00" disabled />
+        </div>
+        <div class="info-field">
+          <label>Total pts</label>
+          <input class="fill-gray" type="text" value="0.00" disabled />
+        </div>
+
+        <button class="refresh-btn" title="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main body: Left Column (Tabs + Catalog) | Right Column (Your order) -->
+    <div class="main-body">
+
+      <!-- Left Column (Tabs + Catalog) -->
+      <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;">
+        <!-- Tabs -->
+        <div class="tabs">
+          <div class="tab active" id="tabMakeOrder" onclick="switchMainTab('make-order')">
+            <span>Make Order</span>
+          </div>
+          <div class="tab" id="tabAvailableList" onclick="switchMainTab('available-list')">
+            <span>Quick Item Available List</span>
+          </div>
+        </div>
+
+        <!-- 1. Make Order View (Catalog Cards) -->
+        <div class="col-panel" id="makeOrderPanel"
+          style="flex: 1 1 0; min-width: 0; padding: 14px 16px; overflow: hidden; display: flex; flex-direction: column; border-top-left-radius: 0;">
+
+          <!-- Header: Title & Search -->
+          <div class="quick-order-header"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
+            <div class="quick-order-title" style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 700;">Item Groups &amp; Details</h3>
+              <span id="headerTotalBadge"
+                style="background: #eef2ff; color: #4f46e5; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 12px;">12
+                Items</span>
+            </div>
+
+            <div class="quick-order-search" style="position: relative; width: 230px;">
+              <span
+                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; display: flex; align-items: center; pointer-events: none;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="text" id="itemSearchInput" placeholder="Search items by name..."
+                style="width: 100%; padding: 7px 10px 7px 32px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; transition: all 0.2s; background: #f8fafc;"
+                onfocus="this.style.borderColor='#6366f1'; this.style.background='#fff'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'"
+                onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'; this.style.boxShadow='none'" />
+            </div>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div
+            style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0;"
+            id="itemGroupsNav">
+            <button class="ds-group-btn active" data-group="All">All Items</button>
+            <button class="ds-group-btn" data-group="Food">Food</button>
+            <button class="ds-group-btn" data-group="Beverages">Beverages</button>
+            <button class="ds-group-btn" data-group="Snacks">Snacks</button>
+            <button class="ds-group-btn" data-group="Toys">Toys</button>
+            <button class="ds-group-btn" data-group="Soft Play">Soft Play</button>
+            <button class="ds-group-btn" data-group="Activity Tickets">Activity Tickets</button>
+            <button class="ds-group-btn" data-group="Arcades">Arcades</button>
+          </div>
+
+          <!-- Items Cards Grid (Auto-fill balanced sizing) -->
+          <div id="itemsGrid" class="items-cards-grid">
+            <!-- Dynamically Rendered -->
+          </div>
+
+        </div>
+
+        <!-- 2. Quick Item Available List View (Table Format) -->
+        <div class="col-panel available-list-view" id="availableListPanel"
+          style="padding: 14px 16px; border-top-left-radius: 0;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
+            <div>
+              <h3 style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 700;">Quick Item Available List</h3>
+              <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">Real-time inventory and pricing catalog</p>
+            </div>
+            <input type="text" id="availableTableSearch" placeholder="Search available items..."
+              style="width: 220px; padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; background: #f8fafc;"
+              oninput="filterAvailableTable(this.value)" />
+          </div>
+
+          <div class="available-table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 45px; text-align: center;">#</th>
+                  <th>Item Name</th>
+                  <th>Category</th>
+                  <th style="width: 90px;">Price (₹)</th>
+                  <th style="width: 80px;">GST %</th>
+                  <th style="width: 90px; text-align: center;">Status</th>
+                  <th style="width: 110px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="availableTableBody">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Your Order -->
+      <div class="col-panel col-order">
+        <div style="font-size: 15px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            style="color: #4f46e5;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Your order</span>
+        </div>
+
+        <div class="order-table-wrap">
+          <div class="order-table-scroll">
+            <table id="orderTable">
+              <thead>
+                <tr>
+                  <th style="width: 75px; text-align: center;">Unit</th>
+                  <th>Item</th>
+                  <th style="width: 75px;">Price</th>
+                  <th style="width: 50px;">Tax</th>
+                  <th style="width: 75px; text-align: right;">Gross</th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody">
+                <tr class="empty-order">
+                  <td colspan="5">No items added — pick a category and item to start an order.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="totals">
+          <div class="total-row">
+            <label>Subtotal ₹</label>
+            <span id="subtotalDisplay" style="font-weight: 700; color: #1e293b;">₹0.00</span>
+          </div>
+          <div class="total-row">
+            <label>Discount ₹</label>
+            <input type="number" id="discountInput" value="0" min="0" />
+          </div>
+          <div class="total-row" style="border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 2px;">
+            <label style="font-size: 14px; font-weight: 700;">Final ₹</label>
+            <input class="final-input" id="finalAmountInput" type="text" value="0.00" readonly />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 4px;">
+          <button class="btn-remove" id="btnRemoveItem" style="flex: 1;">Remove item</button>
+          <button class="btn-generate" id="btnGenerateBill" style="flex: 2;">Generate &amp; Print Bill</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Product Items Catalog (Total 12 curated items - 6 per row)
+    const itemsCatalog = [
+      { id: 1, name: 'Veg Burger', price: 120, tax: 5, category: 'Food', color: '#4338ca', bg: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)' },
+      { id: 2, name: 'Cheese Pizza', price: 250, tax: 5, category: 'Food', color: '#b91c1c', bg: 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)' },
+      { id: 3, name: 'French Fries', price: 90, tax: 5, category: 'Food', color: '#15803d', bg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)' },
+      { id: 4, name: 'Coffee', price: 80, tax: 5, category: 'Beverages', color: '#4338ca', bg: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)' },
+      { id: 5, name: 'Soda', price: 60, tax: 5, category: 'Beverages', color: '#0369a1', bg: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)' },
+      { id: 6, name: 'Choco Donut', price: 75, tax: 5, category: 'Snacks', color: '#c026d3', bg: 'linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%)' },
+      { id: 7, name: 'Butter Popcorn Tub', price: 110, tax: 5, category: 'Snacks', color: '#b45309', bg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' },
+      { id: 8, name: 'Cheesy Nachos & Dip', price: 140, tax: 5, category: 'Snacks', color: '#c2410c', bg: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)' },
+      { id: 9, name: 'Plush Teddy Bear', price: 220, tax: 12, category: 'Toys', color: '#be185d', bg: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)' },
+      { id: 10, name: 'Soft Play (60 Mins)', price: 250, tax: 18, category: 'Soft Play', color: '#6d28d9', bg: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)' },
+      { id: 11, name: 'VR 360 Ride', price: 120, tax: 18, category: 'Activity Tickets', color: '#4338ca', bg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)' },
+      { id: 12, name: 'Token Pack — 25 Pcs', price: 220, tax: 18, category: 'Arcades', color: '#047857', bg: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)' }
+    ];
+
+    let currentCategory = 'All';
+    let currentQuery = '';
+    let cartItems = [];
+    let selectedRowIndex = -1;
+
+    const itemsGrid = document.getElementById('itemsGrid');
+    const searchInput = document.getElementById('itemSearchInput');
+    const groupBtns = document.querySelectorAll('.ds-group-btn');
+    const orderTableBody = document.getElementById('orderTableBody');
+    const discountInput = document.getElementById('discountInput');
+    const finalAmountInput = document.getElementById('finalAmountInput');
+    const subtotalDisplay = document.getElementById('subtotalDisplay');
+    const btnRemoveItem = document.getElementById('btnRemoveItem');
+    const btnGenerateBill = document.getElementById('btnGenerateBill');
+
+    // Switch between 'Make Order' and 'Quick Item Available List'
+    window.switchMainTab = function (tabKey) {
+      const tabMakeOrder = document.getElementById('tabMakeOrder');
+      const tabAvailableList = document.getElementById('tabAvailableList');
+      const makeOrderPanel = document.getElementById('makeOrderPanel');
+      const availableListPanel = document.getElementById('availableListPanel');
+
+      if (tabKey === 'make-order') {
+        tabMakeOrder.classList.add('active');
+        tabAvailableList.classList.remove('active');
+        makeOrderPanel.style.display = 'flex';
+        availableListPanel.style.display = 'none';
+      } else {
+        tabMakeOrder.classList.remove('active');
+        tabAvailableList.classList.add('active');
+        makeOrderPanel.style.display = 'none';
+        availableListPanel.style.display = 'flex';
+        renderAvailableTable('');
+      }
+    };
+
+    // Render Item Cards
+    function renderItems() {
+      itemsGrid.innerHTML = '';
+      const filtered = itemsCatalog.filter(item => {
+        const matchCat = (currentCategory === 'All') || (item.category.toLowerCase() === currentCategory.toLowerCase());
+        const matchQuery = !currentQuery || item.name.toLowerCase().includes(currentQuery.toLowerCase());
+        return matchCat && matchQuery;
+      });
+
+      const headerTotalBadge = document.getElementById('headerTotalBadge');
+      if (headerTotalBadge) {
+        headerTotalBadge.textContent = `${filtered.length} Items`;
+      }
+
+      if (filtered.length === 0) {
+        itemsGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; color: #94a3b8; padding: 50px 0; font-size: 14px;">
+            <div style="font-weight: 600; color: #475569; font-size: 15px; margin-bottom: 4px;">No items found</div>
+            <div style="font-size: 12px;">Try a different search keyword or category filter.</div>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'ds-item-card';
+        card.innerHTML = `
+          <div class="ds-item-img" style="background: ${item.bg}; color: ${item.color || '#4f46e5'};">${item.name}</div>
+          <div class="ds-item-info"><strong>₹${item.price}</strong></div>
+        `;
+        card.addEventListener('click', () => addItemToCart(item));
+        itemsGrid.appendChild(card);
+      });
+    }
+
+    // Category Switching
+    groupBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        groupBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentCategory = this.getAttribute('data-group');
+        renderItems();
+      });
+    });
+
+    // Search Filtering
+    searchInput.addEventListener('input', function (e) {
+      currentQuery = e.target.value.trim();
+      renderItems();
+    });
+
+    // Available List Table Rendering
+    function renderAvailableTable(query) {
+      const tbody = document.getElementById('availableTableBody');
+      const q = (query || '').toLowerCase().trim();
+      const filtered = itemsCatalog.filter(it => {
+        if (!q) return true;
+        return it.name.toLowerCase().includes(q) || it.category.toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 25px;">No items match the search query.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((it, idx) => `
+        <tr>
+          <td style="text-align: center; color: #94a3b8; font-weight: 600;">${idx + 1}</td>
+          <td style="font-weight: 600; color: #0f172a;">
+            <span>${it.name}</span>
+          </td>
+          <td><span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 600; color: #475569;">${it.category}</span></td>
+          <td style="font-weight: 700; color: #4f46e5;">₹${it.price.toFixed(2)}</td>
+          <td>${it.tax}%</td>
+          <td style="text-align: center;"><span style="color: #059669; font-weight: 600; font-size: 11.5px; background: #ecfdf5; padding: 2px 7px; border-radius: 10px;">In Stock</span></td>
+          <td style="text-align: center;">
+            <button onclick='addItemToCart(${JSON.stringify(it)}); switchMainTab("make-order");'
+              style="padding: 4px 10px; background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+              + Add to Order
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.filterAvailableTable = function (val) {
+      renderAvailableTable(val);
+    };
+
+    // Cart Logic
+    function addItemToCart(item) {
+      const existing = cartItems.find(c => c.id === item.id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cartItems.push({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          tax: item.tax,
+          qty: 1
+        });
+      }
+      renderCart();
+    }
+
+    window.changeItemQty = function (e, id, delta) {
+      e.stopPropagation();
+      const item = cartItems.find(c => c.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cartItems = cartItems.filter(c => c.id !== id);
+      }
+      renderCart();
+    };
+
+    function renderCart() {
+      if (cartItems.length === 0) {
+        orderTableBody.innerHTML = `
+          <tr class="empty-order">
+            <td colspan="5">No items added — pick a category and item to start an order.</td>
+          </tr>
+        `;
+        selectedRowIndex = -1;
+        updateTotals();
+        return;
+      }
+
+      orderTableBody.innerHTML = '';
+      cartItems.forEach((item, index) => {
+        const gross = (item.price * item.qty).toFixed(2);
+        const tr = document.createElement('tr');
+        if (index === selectedRowIndex) {
+          tr.classList.add('selected-row');
+        }
+        tr.innerHTML = `
+          <td style="text-align: center;">
+            <div style="display: inline-flex; align-items: center; gap: 4px;">
+              <button class="qty-btn" onclick="changeItemQty(event, '${item.id}', -1)">-</button>
+              <span style="font-weight: 700; min-width: 16px; text-align: center;">${item.qty}</span>
+              <button class="qty-btn" onclick="changeItemQty(event, '${item.id}', 1)">+</button>
+            </div>
+          </td>
+          <td style="font-weight: 600; color: #1e293b;">${item.name}</td>
+          <td>₹${item.price.toFixed(2)}</td>
+          <td>${item.tax}%</td>
+          <td style="text-align: right; font-weight: 700; color: #0f172a;">₹${gross}</td>
+        `;
+
+        tr.addEventListener('click', function () {
+          const rows = orderTableBody.querySelectorAll('tr');
+          rows.forEach(r => r.classList.remove('selected-row'));
+          if (selectedRowIndex === index) {
+            selectedRowIndex = -1;
+          } else {
+            selectedRowIndex = index;
+            tr.classList.add('selected-row');
+          }
+        });
+
+        orderTableBody.appendChild(tr);
+      });
+
+      updateTotals();
+    }
+
+    function updateTotals() {
+      const subtotal = cartItems.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+      const discount = parseFloat(discountInput.value) || 0;
+      const finalAmt = Math.max(0, subtotal - discount);
+
+      subtotalDisplay.textContent = `₹${subtotal.toFixed(2)}`;
+      finalAmountInput.value = finalAmt.toFixed(2);
+    }
+
+    discountInput.addEventListener('input', updateTotals);
+
+    // Remove Item button
+    btnRemoveItem.addEventListener('click', function () {
+      if (cartItems.length === 0) return;
+      if (selectedRowIndex >= 0 && selectedRowIndex < cartItems.length) {
+        cartItems.splice(selectedRowIndex, 1);
+        selectedRowIndex = -1;
+      } else {
+        cartItems.pop();
+      }
+      renderCart();
+    });
+
+    // Generate & Print Bill button
+    btnGenerateBill.addEventListener('click', function () {
+      if (cartItems.length === 0) {
+        alert('Please add items to the order first.');
+        return;
+      }
+      const total = finalAmountInput.value;
+      alert(`Bill Generated Successfully!\nTotal Amount: ₹${total}\nReceipt sent to printer.`);
+    });
+
+    // Initial Render
+    renderItems();
+  </script>
+</body>
+
+</html>

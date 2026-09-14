@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direct Sale Return Report - Return Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-light: #eef2ff;
+    --bg-page: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --border-dark: #cbd5e1;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --header-bg: #f1f5f9;
+    
+    /* Executive amount accents */
+    --amt-gross-bg: #ecfdf5;
+    --amt-gross-text: #047857;
+    --amt-gross-border: #a7f3d0;
+    
+    --amt-dis-bg: #fffbeb;
+    --amt-dis-text: #b45309;
+    --amt-dis-border: #fde68a;
+    
+    --amt-tax-bg: #fef2f2;
+    --amt-tax-text: #b91c1c;
+    --amt-tax-border: #fecaca;
+    
+    --selected-row: #e0f2fe;
+    --link: #2563eb;
+  }
+
+  * { box-sizing: border-box; }
+  
+  /* Pure Page: strictly 100vh with ZERO page-level scrolling */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* No full-page scroller */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12.5px;
+    background: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.35;
+  }
+
+  .page-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* ===== Top Navigation & Page Title ===== */
+  .page-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    background: var(--surface);
+    border: 1px solid var(--border-dark);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .back-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .title-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-subtitle {
+    margin: 1px 0 0;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 10px;
+    background: var(--surface);
+    border: 1px solid var(--border-dark);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .btn-action:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+  .btn-action.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+  }
+  .btn-action.btn-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  /* ===== KPI Metric Cards ===== */
+  .kpi-grid {
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .kpi-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .kpi-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .kpi-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 1px;
+  }
+  .kpi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .kpi-returns .kpi-icon { background: #e0e7ff; color: #4338ca; }
+  .kpi-qty .kpi-icon { background: #ecfdf5; color: #059669; }
+  .kpi-gross .kpi-icon { background: #fffbeb; color: #d97706; }
+  .kpi-total .kpi-icon { background: #fee2e2; color: #dc2626; }
+
+  /* ===== Toolbar Filters ===== */
+  .toolbar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .filter-group label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .toolbar input[type="date"],
+  .toolbar input[type="text"] {
+    padding: 4px 8px;
+    border: 1px solid var(--border-dark);
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .toolbar input[type="date"]:focus,
+  .toolbar input[type="text"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.12);
+  }
+  .grow { flex: 1; }
+
+  /* ===== Grid Wrap (Fills remaining height, contains list scroller) ===== */
+  .grid-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  
+  .group-bar {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: #f8fafc;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    font-size: 11.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .group-bar.active-drop {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .group-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #e0e7ff;
+    color: #3730a3;
+    border: 1px solid #c7d2fe;
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .group-chip .x {
+    cursor: pointer;
+    color: #ef4444;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+  }
+  .group-chip .x:hover { color: #b91c1c; }
+
+  /* ===== Table Scroll Container: The ONLY scroller on the page ===== */
+  .table-scroll-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  .table-scroll-container::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  .table-scroll-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  .table-scroll-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  .table-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  thead th {
+    background: var(--header-bg);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-dark);
+    padding: 6px 6px;
+    text-align: left;
+    vertical-align: bottom;
+    line-height: 1.2;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    font-weight: 700;
+    color: #334155;
+    user-select: none;
+  }
+  th:last-child { border-right: none; }
+
+  th[draggable="true"] { cursor: grab; }
+  th[draggable="true"]:active { cursor: grabbing; }
+  th.drag-over { outline: 2px dashed var(--primary); outline-offset: -2px; }
+
+  .th-label {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: bottom;
+    color: #334155;
+    transition: color 0.15s ease;
+  }
+  .th-label:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+  .sort-arrow {
+    font-size: 9px;
+    margin-left: 2px;
+    color: var(--primary);
+    vertical-align: bottom;
+    font-weight: 800;
+  }
+
+  /* Filter row directly under headers */
+  .col-filter-row th {
+    background: #fdfdfd;
+    border-right: 1px solid var(--border);
+    border-bottom: 2px solid var(--border-dark);
+    padding: 3px 4px;
+    position: sticky;
+    top: 35px;
+    z-index: 3;
+  }
+  .col-filter-row input, 
+  .col-filter-row select {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 11px;
+    padding: 3px 5px;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--text-main);
+    outline: none;
+    font-family: inherit;
+  }
+  .col-filter-row input:focus, 
+  .col-filter-row select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  }
+
+  /* Table Body */
+  tbody tr.order-row td {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 5px 6px;
+    white-space: nowrap;
+    color: var(--text-main);
+  }
+  tbody tr.order-row td:last-child { border-right: none; }
+  tbody tr.order-row {
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+  }
+  tbody tr.order-row:nth-child(even) {
+    background-color: #fafbfd;
+  }
+  tbody tr.order-row:hover {
+    background-color: #f1f5f9 !important;
+  }
+  tbody tr.order-row.selected {
+    background-color: var(--selected-row) !important;
+  }
+
+  /* Expander button */
+  .expander-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--text-main);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+  .expander-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  /* Action links & Badges */
+  .id-cell {
+    color: #dc2626;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .orig-sale-link {
+    color: var(--link);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    text-decoration: none;
+  }
+  .orig-sale-link:hover {
+    text-decoration: underline;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+  .badge-active {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+  }
+  .badge-active .badge-dot { background: #10b981; }
+  
+  .badge-completed {
+    background: #ecfdf5;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+  .badge-completed .badge-dot { background: #16a34a; }
+  
+  .badge-restocked {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+  }
+  .badge-restocked .badge-dot { background: #2563eb; }
+
+  .badge-writeoff {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+  .badge-writeoff .badge-dot { background: #dc2626; }
+
+  .pay-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .pay-cash { background: #dcfce7; color: #166534; }
+  .pay-card { background: #e0e7ff; color: #3730a3; }
+  .pay-upi { background: #e0f2fe; color: #075985; }
+  .pay-wallet { background: #fae8ff; color: #86198f; }
+
+  .reason-pill {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 500;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Amount cell colors */
+  .amt {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+  }
+  th.amt-green, td.amt-green { background-color: var(--amt-gross-bg); color: var(--amt-gross-text); font-weight: 600; }
+  th.amt-orange, td.amt-orange { background-color: var(--amt-dis-bg); color: var(--amt-dis-text); font-weight: 600; }
+  th.amt-red, td.amt-red { background-color: var(--amt-tax-bg); color: var(--amt-tax-text); font-weight: 600; }
+
+  /* Group header row */
+  .group-header-row td {
+    background: #eef2f6;
+    border-bottom: 1px solid var(--border-dark);
+    padding: 6px 10px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  .group-title-badge {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  /* Child Line Item Detail Table: Fits in Single Page View Without Horizontal Scroll */
+  .detail-row td {
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-bottom: 2px solid var(--border-dark);
+  }
+  .detail-container {
+    position: sticky;
+    left: 8px;
+    max-width: calc(100vw - 44px);
+    width: fit-content;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid #dc2626;
+    border-radius: 6px;
+    overflow: visible;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .detail-header {
+    background: #fef2f2;
+    padding: 4px 8px;
+    border-bottom: 1px solid #fee2e2;
+    font-weight: 700;
+    font-size: 11px;
+    color: #991b1b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .detail-table {
+    width: auto;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    table-layout: auto;
+  }
+  .detail-table th {
+    background: #f1f5f9;
+    padding: 4px 6px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    text-align: left;
+    vertical-align: bottom;
+    color: #475569;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+  .detail-table td {
+    padding: 4px 6px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    color: #334155;
+    background: #fff;
+    white-space: nowrap;
+  }
+  .detail-table tr:last-child td { border-bottom: none; }
+  .detail-table th:last-child, .detail-table td:last-child { border-right: none; }
+
+  /* Footer Totals: Sticky at the bottom of the list scroller */
+  tfoot td {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    border-top: 2px solid var(--border-dark);
+    border-right: 1px solid var(--border);
+    padding: 6px 7px;
+    font-weight: 800;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+  }
+  tfoot td:last-child { border-right: none; }
+
+  /* Pagination Bar */
+  .pager {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px 12px;
+    border-top: 1px solid var(--border);
+    background: #f8fafc;
+  }
+  .pager-left, .pager-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pager button {
+    height: 26px;
+    width: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-dark);
+    background: #fff;
+    border-radius: 5px;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .pager button:hover:not(:disabled) {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .pager button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .pager select {
+    height: 26px;
+    padding: 0 6px;
+    border: 1px solid var(--border-dark);
+    border-radius: 5px;
+    background: #fff;
+    font-size: 11.5px;
+    color: var(--text-main);
+    outline: none;
+  }
+  .pager span {
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+
+  /* Print Stylesheet */
+  @media print {
+    body { padding: 0; background: #fff; height: auto; overflow: visible; }
+    .page-container { height: auto; overflow: visible; padding: 0; }
+    .page-header, .toolbar, .pager, .group-bar, .col-filter-row { display: none !important; }
+    .grid-wrap, .table-scroll-container { border: none; box-shadow: none; overflow: visible !important; height: auto !important; }
+    table { min-width: 100% !important; }
+    thead th, tfoot td { position: static !important; background: #eee !important; color: #000 !important; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+  <!-- Header Bar -->
+  <div class="page-header">
+    <div class="header-left">
+      <button class="back-btn" id="backBtn" title="Back to Reports" onclick="goBackToReports()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Back</span>
+      </button>
+      <div class="title-group">
+        <h1 class="page-title">
+          Direct Sale Return Report
+          <span class="badge badge-active">
+            <span class="badge-dot"></span> Live Return Ledger
+          </span>
+        </h1>
+        <p class="page-subtitle">Real-time item return register, refund breakdown & restocked items</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-action" onclick="exportToExcel()" title="Export CSV file">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Export CSV</span>
+      </button>
+      <button class="btn-action" onclick="window.print()" title="Print this report">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <span>Print</span>
+      </button>
+      <button class="btn-action btn-primary" id="refreshBtn" title="Refresh data">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        <span>Refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Summary Metrics -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-returns">
+      <div class="kpi-info">
+        <span class="kpi-label">Total Returns</span>
+        <span class="kpi-value" id="kpiReturns">0</span>
+      </div>
+      <div class="kpi-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+      </div>
+    </div>
+    <div class="kpi-card kpi-qty">
+      <div class="kpi-info">
+        <span class="kpi-label">Returned Items</span>
+        <span class="kpi-value" id="kpiQty">0</span>
+      </div>
+      <div class="kpi-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      </div>
+    </div>
+    <div class="kpi-card kpi-gross">
+      <div class="kpi-info">
+        <span class="kpi-label">Gross Refund</span>
+        <span class="kpi-value" id="kpiGross">₹0.00</span>
+      </div>
+      <div class="kpi-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+      </div>
+    </div>
+    <div class="kpi-card kpi-total">
+      <div class="kpi-info">
+        <span class="kpi-label">Net Refund Settled</span>
+        <span class="kpi-value" id="kpiTotal">₹0.00</span>
+      </div>
+      <div class="kpi-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Toolbar -->
+  <div class="toolbar">
+    <div class="filter-group">
+      <label for="fromDate">From:</label>
+      <input type="date" id="fromDate" value="2025-01-01" onclick="try{this.showPicker()}catch(e){}">
+    </div>
+    <div class="filter-group">
+      <label for="toDate">To:</label>
+      <input type="date" id="toDate" value="2026-09-13" onclick="try{this.showPicker()}catch(e){}">
+    </div>
+    <div class="filter-group">
+      <label for="nameFilter">Customer:</label>
+      <input type="text" id="nameFilter" placeholder="Search name...">
+    </div>
+    <div class="filter-group">
+      <label for="phoneFilter">Phone:</label>
+      <input type="text" id="phoneFilter" placeholder="Search phone...">
+    </div>
+    <div class="grow"></div>
+    <button class="btn-action btn-primary" id="searchBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Apply Filter</span>
+    </button>
+  </div>
+
+  <!-- Grid Wrapper: Contains the table with inner scroller -->
+  <div class="grid-wrap">
+    <div class="group-bar" id="groupBar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+      <span>Drag any column header here to group records</span>
+    </div>
+    <div class="table-scroll-container">
+      <table id="returnTable">
+        <thead id="returnHead"></thead>
+        <tbody id="returnBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="6" style="text-align:right;">Totals:</td>
+            <td class="amt" id="totQty" style="text-align:center;">0</td>
+            <td class="amt-green amt" id="totGross">₹0.00</td>
+            <td class="amt-orange"></td>
+            <td class="amt-orange amt" id="totDis">₹0.00</td>
+            <td class="amt-red amt" id="totTaxable">₹0.00</td>
+            <td class="amt-red amt" id="totTax">₹0.00</td>
+            <td class="amt-red amt" id="totTotal" style="font-weight:800; color:#dc2626;">₹0.00</td>
+            <td colspan="5"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    
+    <!-- Pagination Bar -->
+    <div class="pager">
+      <div class="pager-left">
+        <button id="firstPage" title="First Page">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
+        </button>
+        <button id="prevPage" title="Previous Page">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <span id="pageInfo" style="font-weight: 600; color: var(--text-main); margin: 0 4px;">Page 1</span>
+        <button id="nextPage" title="Next Page">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <button id="lastPage" title="Last Page">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+        </button>
+      </div>
+      <div class="pager-right">
+        <span>Rows per page:</span>
+        <select id="pageSize">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span id="rowCountInfo" style="font-weight: 600; color: var(--text-main); margin-left: 6px;"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Back to Reports Navigation ----------
+function goBackToReports() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'show-reports' }, '*');
+  } else {
+    history.back();
+  }
+}
+
+// ---------- Column configuration ----------
+const COLUMNS = [
+  {key:"_expander",    label:"",                   plainLabel:"",                  sortable:false, groupable:false, width:"26px"},
+  {key:"returnId",     label:"Return<br>ID",       plainLabel:"Return ID",         type:"text",   cls:"id-cell"},
+  {key:"origSaleId",   label:"Orig.<br>Sale ID",   plainLabel:"Orig. Sale ID",     type:"number", cls:""},
+  {key:"customer",     label:"Customer<br>Name",   plainLabel:"Customer Name",     type:"text",   cls:""},
+  {key:"phone",        label:"Phone",              plainLabel:"Phone",             type:"text",   cls:""},
+  {key:"itemCount",    label:"Item<br>Count",      plainLabel:"Item Count",        type:"number", cls:""},
+  {key:"qty",          label:"Return<br>Qty",      plainLabel:"Return Qty",        type:"number", cls:""},
+  {key:"gross",        label:"Gross<br>Refund",    plainLabel:"Gross Refund",      type:"number", cls:"amt-green"},
+  {key:"disPct",       label:"Dis.<br>%",          plainLabel:"Dis. %",            type:"number", cls:"amt-orange"},
+  {key:"disAmt",       label:"Dis.<br>Reversed",   plainLabel:"Dis. Reversed",     type:"number", cls:"amt-orange"},
+  {key:"taxable",      label:"Taxable<br>Refund",  plainLabel:"Taxable Refund",    type:"number", cls:"amt-red"},
+  {key:"tax",          label:"Tax<br>Refund",      plainLabel:"Tax Refund",        type:"number", cls:"amt-red"},
+  {key:"total",        label:"Net<br>Refund",      plainLabel:"Net Refund",        type:"number", cls:"amt-red"},
+  {key:"refundMode",   label:"Refund<br>Mode",     plainLabel:"Refund Mode",       type:"select", cls:"", options:["Cash","UPI","Card","Store Credit"]},
+  {key:"reason",       label:"Return<br>Reason",   plainLabel:"Return Reason",     type:"select", cls:"", options:["Defective / Damaged","Wrong Item","Customer Changed Mind","Quality Issue","Billing Error"]},
+  {key:"status",       label:"Status",             plainLabel:"Status",            type:"select", cls:"", options:["COMPLETED","RESTOCKED","WRITTEN-OFF"]},
+  {key:"user",         label:"User",               plainLabel:"User",              type:"text",   cls:""},
+  {key:"createdAt",    label:"Return<br>Date & Time", plainLabel:"Return Date & Time", type:"date", cls:""},
+];
+
+// ---------- Sample return records matching Direct Sales ----------
+const returnsData = [
+  {
+    returnId: "RET-2041", origSaleId: 1342, createdAt: "03-Nov-2025 11:20:15 AM", customer: "Walk-in Customer", phone: "-", qty: 1, gross: 40.00, disPct: 0, disAmt: 0.00, taxable: 0.00, tax: 0.00, total: 40.00, refundMode: "Cash", reason: "Defective / Damaged", status: "WRITTEN-OFF", user: "admin",
+    items: [
+      { id: "RITM-801", saleItemId: 1342001, name: "Tomato", qty: 1, price: 40.00, taxPct: 0.00, gross: 40.00, disPct: 0.00, disAmt: 0.00, finalBase: 40.00, finalTax: 0.00, finalGross: 40.00, reason: "Rotten / Damaged item", restockStatus: "Damaged / Discarded" }
+    ]
+  },
+  {
+    returnId: "RET-2040", origSaleId: 1341, createdAt: "29-Oct-2025 10:14:02 AM", customer: "PARTHA VIRAAJ", phone: "9956699667", qty: 1, gross: 30.00, disPct: 0, disAmt: 0.00, taxable: 0.00, tax: 0.00, total: 30.00, refundMode: "UPI", reason: "Wrong Item", status: "RESTOCKED", user: "admin",
+    items: [
+      { id: "RITM-802", saleItemId: 1341002, name: "Carrot", qty: 1, price: 30.00, taxPct: 0.00, gross: 30.00, disPct: 0.00, disAmt: 0.00, finalBase: 30.00, finalTax: 0.00, finalGross: 30.00, reason: "Wrong quantity entered in bill", restockStatus: "Restocked to Shelf" }
+    ]
+  },
+  {
+    returnId: "RET-2039", origSaleId: 1338, createdAt: "29-Oct-2025 04:45:10 PM", customer: "Anita Sharma", phone: "9848022331", qty: 2, gross: 80.00, disPct: 0, disAmt: 0.00, taxable: 0.00, tax: 0.00, total: 80.00, refundMode: "Cash", reason: "Customer Changed Mind", status: "RESTOCKED", user: "cashier1",
+    items: [
+      { id: "RITM-803", saleItemId: 1338001, name: "Apple", qty: 1, price: 50.00, taxPct: 0.00, gross: 50.00, disPct: 0.00, disAmt: 0.00, finalBase: 50.00, finalTax: 0.00, finalGross: 50.00, reason: "Decided not to purchase", restockStatus: "Restocked to Shelf" },
+      { id: "RITM-804", saleItemId: 1338002, name: "Banana", qty: 1, price: 30.00, taxPct: 0.00, gross: 30.00, disPct: 0.00, disAmt: 0.00, finalBase: 30.00, finalTax: 0.00, finalGross: 30.00, reason: "Decided not to purchase", restockStatus: "Restocked to Shelf" }
+    ]
+  },
+  {
+    returnId: "RET-2038", origSaleId: 1336, createdAt: "29-Oct-2025 02:18:44 PM", customer: "Ravi", phone: "7032577651", qty: 1, gross: 20.00, disPct: 0, disAmt: 0.00, taxable: 0.00, tax: 0.00, total: 20.00, refundMode: "Cash", reason: "Quality Issue", status: "WRITTEN-OFF", user: "cashier1",
+    items: [
+      { id: "RITM-805", saleItemId: 1336002, name: "Bread", qty: 1, price: 20.00, taxPct: 0.00, gross: 20.00, disPct: 0.00, disAmt: 0.00, finalBase: 20.00, finalTax: 0.00, finalGross: 20.00, reason: "Near expiry date issue", restockStatus: "Quarantine / Write-off" }
+    ]
+  },
+  {
+    returnId: "RET-2037", origSaleId: 1335, createdAt: "28-Oct-2025 09:12:30 PM", customer: "Ravi", phone: "7032577651", qty: 1, gross: 15.00, disPct: 0, disAmt: 0.00, taxable: 0.00, tax: 0.00, total: 15.00, refundMode: "Cash", reason: "Billing Error", status: "RESTOCKED", user: "admin",
+    items: [
+      { id: "RITM-806", saleItemId: 1335002, name: "Cheese", qty: 1, price: 15.00, taxPct: 0.00, gross: 15.00, disPct: 0.00, disAmt: 0.00, finalBase: 15.00, finalTax: 0.00, finalGross: 15.00, reason: "Billed twice by mistake", restockStatus: "Restocked to Shelf" }
+    ]
+  },
+  {
+    returnId: "RET-2036", origSaleId: 1331, createdAt: "27-Oct-2025 06:22:15 PM", customer: "Vikram Reddy", phone: "9440112233", qty: 3, gross: 120.00, disPct: 5, disAmt: 6.00, taxable: 108.57, tax: 5.43, total: 114.00, refundMode: "UPI", reason: "Wrong Item", status: "RESTOCKED", user: "manager",
+    items: [
+      { id: "RITM-807", saleItemId: 1331001, name: "Juice Bottle 500ml", qty: 2, price: 40.00, taxPct: 5.00, gross: 80.00, disPct: 5.00, disAmt: 4.00, finalBase: 72.38, finalTax: 3.62, finalGross: 76.00, reason: "Customer wanted Mango flavour", restockStatus: "Restocked to Shelf" },
+      { id: "RITM-808", saleItemId: 1331002, name: "Energy Drink", qty: 1, price: 40.00, taxPct: 5.00, gross: 40.00, disPct: 5.00, disAmt: 2.00, finalBase: 36.19, finalTax: 1.81, finalGross: 38.00, reason: "Exchange request", restockStatus: "Restocked to Shelf" }
+    ]
+  },
+  {
+    returnId: "RET-2035", origSaleId: 1328, createdAt: "26-Oct-2025 05:40:00 PM", customer: "Pooja Hegde", phone: "9988776655", qty: 1, gross: 150.00, disPct: 10, disAmt: 15.00, taxable: 128.57, tax: 6.43, total: 135.00, refundMode: "Card", reason: "Defective / Damaged", status: "WRITTEN-OFF", user: "admin",
+    items: [
+      { id: "RITM-809", saleItemId: 1328001, name: "Gaming T-Shirt M", qty: 1, price: 150.00, taxPct: 5.00, gross: 150.00, disPct: 10.00, disAmt: 15.00, finalBase: 128.57, finalTax: 6.43, finalGross: 135.00, reason: "Torn seam packaging", restockStatus: "Damaged / Discarded" }
+    ]
+  },
+  {
+    returnId: "RET-2034", origSaleId: 1322, createdAt: "25-Oct-2025 01:15:30 PM", customer: "Suresh Kumar", phone: "9123456780", qty: 2, gross: 60.00, disPct: 0, disAmt: 0.00, taxable: 0.00, tax: 0.00, total: 60.00, refundMode: "Cash", reason: "Customer Changed Mind", status: "RESTOCKED", user: "cashier2",
+    items: [
+      { id: "RITM-810", saleItemId: 1322001, name: "Mineral Water 1L", qty: 2, price: 30.00, taxPct: 0.00, gross: 60.00, disPct: 0.00, disAmt: 0.00, finalBase: 60.00, finalTax: 0.00, finalGross: 60.00, reason: "Unopened bottles returned", restockStatus: "Restocked to Shelf" }
+    ]
+  }
+];
+
+returnsData.forEach(r => r.itemCount = r.items.length);
+
+const money = n => "₹" + Number(n).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+const plain = n => Number(n).toFixed(2);
+
+// ---------- State ----------
+let filtered = [...returnsData];
+let expandedId = null;
+let selectedId = null;
+let sortKey = null;
+let sortDir = 1; // 1 asc, -1 desc
+let colFilters = {};      // key -> string
+let groupByKey = null;    // key of column currently grouping
+let currentPage = 1;
+let pageSize = 10;
+
+const thead = document.getElementById("returnHead");
+const tbody = document.getElementById("returnBody");
+const groupBar = document.getElementById("groupBar");
+
+// ---------- Header rendering ----------
+function renderHead(){
+  const headRow = document.createElement("tr");
+  COLUMNS.forEach(col => {
+    const th = document.createElement("th");
+    if (col.width) th.style.width = col.width;
+    if (col.cls) th.classList.add(col.cls);
+    if (col.groupable !== false && col.key !== "_expander") {
+      th.draggable = true;
+      th.dataset.key = col.key;
+      th.addEventListener("dragstart", (e) => e.dataTransfer.setData("text/plain", col.key));
+    }
+    if (col.sortable === false) {
+      th.innerHTML = col.label;
+    } else {
+      const arrow = sortKey === col.key ? (sortDir === 1 ? " ▲" : " ▼") : "";
+      th.innerHTML = `<span class="th-label" data-key="${col.key}">${col.label}</span><span class="sort-arrow">${arrow}</span>`;
+    }
+    headRow.appendChild(th);
+  });
+
+  const filterRow = document.createElement("tr");
+  filterRow.className = "col-filter-row";
+  COLUMNS.forEach(col => {
+    const th = document.createElement("th");
+    if (col.type && col.key !== "_expander") {
+      if (col.type === "select") {
+        const sel = document.createElement("select");
+        sel.innerHTML = `<option value="">All</option>` + col.options.map(o=>`<option value="${o}">${o}</option>`).join("");
+        sel.value = colFilters[col.key] || "";
+        sel.addEventListener("change", () => { colFilters[col.key] = sel.value; currentPage = 1; applyFilters(); });
+        th.appendChild(sel);
+      } else {
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.placeholder = "Filter...";
+        inp.value = colFilters[col.key] || "";
+        inp.addEventListener("keyup", () => { colFilters[col.key] = inp.value; currentPage = 1; applyFilters(); });
+        th.appendChild(inp);
+      }
+    }
+    filterRow.appendChild(th);
+  });
+
+  thead.innerHTML = "";
+  thead.appendChild(headRow);
+  thead.appendChild(filterRow);
+
+  // Sort click handlers
+  thead.querySelectorAll(".th-label").forEach(el => {
+    el.addEventListener("click", () => {
+      const key = el.dataset.key;
+      if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+      renderHead();
+      renderRows();
+    });
+  });
+}
+
+// ---------- Group bar (drag & drop) ----------
+groupBar.addEventListener("dragover", (e) => { e.preventDefault(); groupBar.classList.add("active-drop"); });
+groupBar.addEventListener("dragleave", () => groupBar.classList.remove("active-drop"));
+groupBar.addEventListener("drop", (e) => {
+  e.preventDefault();
+  groupBar.classList.remove("active-drop");
+  const key = e.dataTransfer.getData("text/plain");
+  if (key) {
+    groupByKey = key;
+    currentPage = 1;
+    renderGroupBar();
+    renderRows();
+  }
+});
+
+function renderGroupBar(){
+  if (!groupByKey) {
+    groupBar.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg> <span>Drag any column header here to group records</span>`;
+    return;
+  }
+  const col = COLUMNS.find(c => c.key === groupByKey);
+  const cleanLabel = col ? (col.plainLabel || col.label.replace(/<br\s*\/?>/gi, " ")) : groupByKey;
+  groupBar.innerHTML = `<span class="group-chip">Grouped by: ${cleanLabel} <span class="x" id="clearGroup" title="Clear Grouping"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span></span>`;
+  document.getElementById("clearGroup").addEventListener("click", () => {
+    groupByKey = null;
+    currentPage = 1;
+    renderGroupBar();
+    renderRows();
+  });
+}
+
+// ---------- Filtering ----------
+function applyFilters(){
+  const name = document.getElementById("nameFilter").value.trim().toLowerCase();
+  const phone = document.getElementById("phoneFilter").value.trim();
+
+  filtered = returnsData.filter(r => {
+    if (name && !r.customer.toLowerCase().includes(name)) return false;
+    if (phone && !r.phone.includes(phone)) return false;
+    for (const key in colFilters) {
+      const val = (colFilters[key] || "").trim();
+      if (!val) continue;
+      const cellVal = String(r[key] ?? "").toLowerCase();
+      if (!cellVal.includes(val.toLowerCase())) return false;
+    }
+    return true;
+  });
+
+  sortData();
+  renderRows();
+}
+
+function sortData(){
+  if (!sortKey) return;
+  filtered.sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (typeof av === "string") av = av.toLowerCase();
+    if (typeof bv === "string") bv = bv.toLowerCase();
+    if (av < bv) return -1 * sortDir;
+    if (av > bv) return 1 * sortDir;
+    return 0;
+  });
+}
+
+// ---------- Row rendering (with optional grouping + pagination) ----------
+function buildReturnRowHTML(r){
+  let statusBadge = '';
+  if (r.status === 'COMPLETED') {
+    statusBadge = `<span class="badge badge-completed"><span class="badge-dot"></span>COMPLETED</span>`;
+  } else if (r.status === 'RESTOCKED') {
+    statusBadge = `<span class="badge badge-restocked"><span class="badge-dot"></span>RESTOCKED</span>`;
+  } else {
+    statusBadge = `<span class="badge badge-writeoff"><span class="badge-dot"></span>WRITTEN-OFF</span>`;
+  }
+    
+  const payClass = `pay-${(r.refundMode || '').toLowerCase().replace(/\s+/g, '')}`;
+  const payBadge = `<span class="pay-tag ${payClass}">${r.refundMode}</span>`;
+  const reasonPill = `<span class="reason-pill" title="${r.reason}">${r.reason}</span>`;
+
+  const expanderIcon = expandedId === r.returnId
+    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>`
+    : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+
+  return `
+      <td style="text-align:center;"><button class="expander-btn" data-id="${r.returnId}" title="${expandedId === r.returnId ? 'Collapse items' : 'Expand returned items'}">${expanderIcon}</button></td>
+      <td class="id-cell">${r.returnId}</td>
+      <td><a href="javascript:void(0)" class="orig-sale-link" title="Original Sale Bill">#${r.origSaleId}</a></td>
+      <td style="font-weight:600;">${r.customer || '<span style="color:#94a3b8;font-style:italic;">Walk-in</span>'}</td>
+      <td style="color:#475569;">${r.phone || '-'}</td>
+      <td style="text-align:center;">${r.itemCount}</td>
+      <td style="text-align:center;font-weight:700;">${r.qty}</td>
+      <td class="amt-green amt">${plain(r.gross)}</td>
+      <td class="amt-orange amt">${r.disPct}%</td>
+      <td class="amt-orange amt">${plain(r.disAmt)}</td>
+      <td class="amt-red amt">${plain(r.taxable)}</td>
+      <td class="amt-red amt">${plain(r.tax)}</td>
+      <td class="amt-red amt" style="font-weight:800;color:#dc2626;">${plain(r.total)}</td>
+      <td>${payBadge}</td>
+      <td>${reasonPill}</td>
+      <td>${statusBadge}</td>
+      <td style="color:#475569;font-weight:500;">${r.user}</td>
+      <td style="color:#475569;">${r.createdAt}</td>
+  `;
+}
+
+function buildDetailRow(r){
+  const detailTr = document.createElement("tr");
+  detailTr.className = "detail-row";
+  const td = document.createElement("td");
+  td.colSpan = COLUMNS.length;
+  td.innerHTML = `
+    <div class="detail-container">
+      <div class="detail-header">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+        <span>Return Voucher ${r.returnId} &mdash; Returned Line Items (${r.items.length} item${r.items.length > 1 ? 's' : ''}) | Orig Sale #${r.origSaleId}</span>
+      </div>
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>Return Item ID</th>
+            <th>Orig Item ID</th>
+            <th>Item Name</th>
+            <th>Return Qty</th>
+            <th>Unit Price</th>
+            <th>Tax %</th>
+            <th>Gross Refund</th>
+            <th>Dis. %</th>
+            <th>Dis. Reversed</th>
+            <th>Refund Base</th>
+            <th>Refund Tax</th>
+            <th>Net Refund Amt</th>
+            <th>Reason Note</th>
+            <th>Inventory Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${r.items.map(it => `
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:#dc2626;">${it.id}</td>
+              <td style="font-family:'JetBrains Mono',monospace;color:#64748b;">${it.saleItemId}</td>
+              <td style="font-weight:600;color:#0f172a;">${it.name}</td>
+              <td style="text-align:center;font-weight:700;color:#b91c1c;">${it.qty}</td>
+              <td class="amt">${plain(it.price)}</td>
+              <td class="amt">${plain(it.taxPct)}%</td>
+              <td class="amt amt-green">${plain(it.gross)}</td>
+              <td class="amt amt-orange">${plain(it.disPct)}%</td>
+              <td class="amt amt-orange">${plain(it.disAmt)}</td>
+              <td class="amt amt-red">${plain(it.finalBase)}</td>
+              <td class="amt amt-red">${plain(it.finalTax)}</td>
+              <td class="amt amt-red" style="font-weight:800;color:#dc2626;">${plain(it.finalGross)}</td>
+              <td style="color:#475569;font-size:11px;">${it.reason}</td>
+              <td><span style="font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;">${it.restockStatus}</span></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>`;
+  detailTr.appendChild(td);
+  return detailTr;
+}
+
+function renderRows(){
+  tbody.innerHTML = "";
+
+  let paged = filtered;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  if (groupByKey) {
+    const groups = {};
+    filtered.forEach(r => {
+      const gv = String(r[groupByKey] ?? "(blank)") || "(blank)";
+      groups[gv] = groups[gv] || [];
+      groups[gv].push(r);
+    });
+    Object.keys(groups).sort().forEach(gv => {
+      const groupRow = document.createElement("tr");
+      groupRow.className = "group-header-row";
+      const td = document.createElement("td");
+      td.colSpan = COLUMNS.length;
+      const col = COLUMNS.find(c => c.key === groupByKey);
+      const colLabel = col ? (col.plainLabel || col.label.replace(/<br\s*\/?>/gi, " ")) : groupByKey;
+      td.innerHTML = `<span class="group-title-badge">${colLabel}</span> <strong>${gv}</strong> <span style="color:#64748b;font-weight:500;margin-left:6px;">(${groups[gv].length} return${groups[gv].length>1?"s":""})</span>`;
+      groupRow.appendChild(td);
+      tbody.appendChild(groupRow);
+      groups[gv].forEach(r => appendReturnRow(r));
+    });
+  } else {
+    paged = filtered.slice((currentPage-1)*pageSize, currentPage*pageSize);
+    paged.forEach(r => appendReturnRow(r));
+  }
+
+  document.getElementById("pageInfo").textContent = groupByKey ? "All groups shown" : `Page ${currentPage} of ${totalPages}`;
+  document.getElementById("rowCountInfo").textContent = `${filtered.length} return voucher(s)`;
+  document.getElementById("firstPage").disabled = groupByKey || currentPage <= 1;
+  document.getElementById("prevPage").disabled = groupByKey || currentPage <= 1;
+  document.getElementById("nextPage").disabled = groupByKey || currentPage >= totalPages;
+  document.getElementById("lastPage").disabled = groupByKey || currentPage >= totalPages;
+
+  updateTotals();
+}
+
+function appendReturnRow(r){
+  const tr = document.createElement("tr");
+  tr.className = "order-row" + (r.returnId === selectedId ? " selected" : "");
+  tr.dataset.id = r.returnId;
+  tr.innerHTML = buildReturnRowHTML(r);
+  tbody.appendChild(tr);
+  if (expandedId === r.returnId) {
+    tbody.appendChild(buildDetailRow(r));
+  }
+}
+
+function updateTotals(){
+  const count = filtered.length;
+  const qty = filtered.reduce((s,r)=>s+Number(r.qty),0);
+  const g = filtered.reduce((s,r)=>s+Number(r.gross),0);
+  const d = filtered.reduce((s,r)=>s+Number(r.disAmt),0);
+  const t = filtered.reduce((s,r)=>s+Number(r.taxable),0);
+  const tx = filtered.reduce((s,r)=>s+Number(r.tax),0);
+  const tot = filtered.reduce((s,r)=>s+Number(r.total),0);
+
+  // Footer Totals
+  document.getElementById("totQty").textContent = qty;
+  document.getElementById("totGross").textContent = money(g);
+  document.getElementById("totDis").textContent = money(d);
+  document.getElementById("totTaxable").textContent = money(t);
+  document.getElementById("totTax").textContent = money(tx);
+  document.getElementById("totTotal").textContent = money(tot);
+
+  // Top KPI Metric Cards
+  document.getElementById("kpiReturns").textContent = count;
+  document.getElementById("kpiQty").textContent = qty;
+  document.getElementById("kpiGross").textContent = money(g);
+  document.getElementById("kpiTotal").textContent = money(tot);
+}
+
+// ---------- Export to CSV ----------
+function exportToExcel(){
+  const exportCols = COLUMNS.filter(c => c.key !== '_expander');
+  const headers = exportCols.map(c => `"${c.plainLabel || c.label}"`).join(',');
+  const rows = filtered.map(r => {
+    return exportCols.map(c => {
+      const val = r[c.key] ?? '';
+      return `"${String(val).replace(/"/g, '""')}"`;
+    }).join(',');
+  });
+  
+  const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `Direct_Sale_Return_Report_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// ---------- Row interactions ----------
+tbody.addEventListener("click", (e) => {
+  const expander = e.target.closest(".expander-btn");
+  if (expander) {
+    const id = expander.dataset.id;
+    expandedId = (expandedId === id) ? null : id;
+    renderRows();
+    return;
+  }
+  const row = e.target.closest(".order-row");
+  if (row) {
+    selectedId = row.dataset.id;
+    renderRows();
+  }
+});
+
+// ---------- Toolbar ----------
+document.getElementById("searchBtn").addEventListener("click", () => { currentPage = 1; applyFilters(); });
+document.getElementById("nameFilter").addEventListener("keyup", (e)=>{ if(e.key==="Enter") { currentPage = 1; applyFilters(); } });
+document.getElementById("phoneFilter").addEventListener("keyup", (e)=>{ if(e.key==="Enter") { currentPage = 1; applyFilters(); } });
+document.getElementById("refreshBtn").addEventListener("click", () => {
+  document.getElementById("nameFilter").value = "";
+  document.getElementById("phoneFilter").value = "";
+  colFilters = {};
+  groupByKey = null;
+  sortKey = null; sortDir = 1;
+  expandedId = null;
+  selectedId = null;
+  currentPage = 1;
+  filtered = [...returnsData];
+  renderGroupBar();
+  renderHead();
+  renderRows();
+});
+
+// ---------- Pagination ----------
+document.getElementById("firstPage").addEventListener("click", () => { currentPage = 1; renderRows(); });
+document.getElementById("prevPage").addEventListener("click", () => { if (currentPage>1) currentPage--; renderRows(); });
+document.getElementById("nextPage").addEventListener("click", () => { currentPage++; renderRows(); });
+document.getElementById("lastPage").addEventListener("click", () => { currentPage = Math.ceil(filtered.length/pageSize) || 1; renderRows(); });
+document.getElementById("pageSize").addEventListener("change", (e) => {
+  pageSize = Number(e.target.value);
+  currentPage = 1;
+  renderRows();
+});
+
+// ---------- Init ----------
+renderGroupBar();
+renderHead();
+renderRows();
+</script>
+</body>
+</html>

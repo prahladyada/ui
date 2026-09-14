@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bandung - Dago Store | POS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            background: #f3f4f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #111827;
+            font-size: 13.5px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* ================= HEADER ================= */
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: #eef2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4f46e5;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .store-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #111827;
+            cursor: pointer;
+        }
+
+        .store-select .chev {
+            color: #9ca3af;
+            font-size: 10px;
+        }
+
+        .status-dot {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #16a34a;
+            margin-left: 4px;
+        }
+
+        .status-dot .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #16a34a;
+        }
+
+        .search-wrap {
+            flex: 1;
+            max-width: 340px;
+            margin-left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 8px 14px;
+        }
+
+        .search-wrap input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            color: #111827;
+        }
+
+        .search-wrap .icon {
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .add-order-btn {
+            background: #4f46e5;
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .add-order-btn:hover {
+            background: #4338ca;
+        }
+
+        .icon-round {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .icon-round:hover {
+            background: #e5e7eb;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+
+        /* ================= LAYOUT ================= */
+        .layout {
+            display: flex;
+            align-items: flex-start;
+            padding: 0;
+            gap: 20px;
+        }
+
+        .main-col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .side-col {
+            width: 320px;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            padding: 18px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .section-head .count {
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        /* ---- table selection grid ---- */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .table-card {
+            height: 64px;
+            border-radius: 12px;
+            border: 1.5px solid #e5e7eb;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.15s ease;
+        }
+
+        .table-card:hover {
+            border-color: #c7d2fe;
+            background: #f5f3ff;
+        }
+
+        .table-card .seats {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        .table-card.occupied {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .table-card.occupied .seats {
+            color: #f87171;
+        }
+
+        .table-card.selected {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: #fff;
+        }
+
+        .table-card.selected .seats {
+            color: #c7d2fe;
+        }
+
+        /* ---- menu filter tabs ---- */
+        .menu-tabs {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .tab-list span {
+            cursor: pointer;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-list span:hover {
+            color: #111827;
+        }
+
+        .tab-list span.active {
+            color: #4f46e5;
+            border-bottom-color: #4f46e5;
+        }
+
+        .tab-tools {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-toggle {
+            display: flex;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-toggle button {
+            width: 34px;
+            height: 32px;
+            border: none;
+            background: #fff;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+
+        .view-toggle button.active {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .filter-btn,
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover,
+        .sort-btn:hover {
+            background: #f9fafb;
+        }
+
+        /* ---- menu grid ---- */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .menu-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .menu-card:hover {
+            border-color: #c7d2fe;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-card.unavailable {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .menu-card.unavailable:hover {
+            border-color: #e5e7eb;
+            box-shadow: none;
+        }
+
+        .menu-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: #f3f4f6;
+            flex-shrink: 0;
+        }
+
+        .menu-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .menu-name {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+
+        .menu-cat {
+            font-size: 11.5px;
+            color: #9ca3af;
+        }
+
+        .menu-price {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #111827;
+            white-space: nowrap;
+        }
+
+        .menu-price.unavail-text {
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .menu-card-add {
+            background: #fafafa;
+            border: 1.5px dashed #d1d5db;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            min-height: 74px;
+        }
+
+        .menu-card-add:hover {
+            background: #f3f4f6;
+        }
+
+        /* ================= ORDER DETAILS SIDE PANEL ================= */
+        .order-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .order-head h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .order-type-toggle {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 3px;
+        }
+
+        .order-type-toggle button {
+            border: none;
+            background: transparent;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .order-type-toggle button.active {
+            background: #fff;
+            color: #111827;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .customer-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 16px;
+        }
+
+        .customer-row input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 13px;
+            background: transparent;
+        }
+
+        .select-table-link {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4f46e5;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .order-items-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 10px;
+        }
+
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .cart-thumb {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .cart-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .cart-note {
+            font-size: 11.5px;
+            color: #9ca3af;
+            margin-top: 1px;
+        }
+
+        .cart-price {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 3px;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .qty-control button {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #4f46e5;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .qty-control button:hover {
+            background: #eef2ff;
+        }
+
+        .qty-control .qty-val {
+            font-weight: 700;
+            font-size: 13px;
+            min-width: 14px;
+            text-align: center;
+        }
+
+        .summary-box {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 14px;
+        }
+
+        .summary-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 10px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 7px;
+        }
+
+        .summary-row.discount {
+            color: #dc2626;
+        }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 15px;
+            color: #111827;
+            border-top: 1px dashed #e5e7eb;
+            padding-top: 10px;
+            margin-top: 6px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 11px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+        }
+
+        .btn-place {
+            flex: 2;
+            padding: 11px;
+            border-radius: 8px;
+            border: none;
+            background: #4f46e5;
+            color: #fff;
+            font-weight: 700;
+            font-size: 13.5px;
+            cursor: pointer;
+        }
+
+        .btn-place:hover {
+            background: #4338ca;
+        }
+
+        @media (max-width:1100px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .side-col {
+                width: 100%;
+            }
+
+            .table-grid,
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+    <!-- Main layout -->
+    <div class="layout">
+        <div class="main-col">
+
+            <div class="section-head">&#127859; Table <span class="count">15</span></div>
+            <div class="table-grid" id="tableGrid">
+                <div class="table-card" data-table="T1"><span class="name">T1</span><span class="seats">4 seats</span>
+                </div>
+                <div class="table-card" data-table="T2"><span class="name">T2</span><span class="seats">4 seats</span>
+                </div>
+                <div class="table-card occupied" data-table="T3"><span class="name">T3</span><span
+                        class="seats">Occupied</span></div>
+                <div class="table-card" data-table="T4"><span class="name">T4</span><span class="seats">2 seats</span>
+                </div>
+                <div class="table-card" data-table="T5"><span class="name">T5</span><span class="seats">2 seats</span>
+                </div>
+                <div class="table-card occupied" data-table="T6"><span class="name">T6</span><span
+                        class="seats">Occupied</span></div>
+                <div class="table-card" data-table="T7"><span class="name">T7</span><span class="seats">4 seats</span>
+                </div>
+                <div class="table-card" data-table="T8"><span class="name">T8</span><span class="seats">6 seats</span>
+                </div>
+                <div class="table-card" data-table="T9"><span class="name">T9</span><span class="seats">4 seats</span>
+                </div>
+                <div class="table-card occupied" data-table="T10"><span class="name">T10</span><span
+                        class="seats">Occupied</span></div>
+                <div class="table-card" data-table="T11"><span class="name">T11</span><span class="seats">4 seats</span>
+                </div>
+                <div class="table-card" data-table="T12"><span class="name">T12</span><span class="seats">6 seats</span>
+                </div>
+                <div class="table-card" data-table="T13"><span class="name">T13</span><span class="seats">2 seats</span>
+                </div>
+                <div class="table-card" data-table="T14"><span class="name">T14</span><span class="seats">4 seats</span>
+                </div>
+                <div class="table-card" data-table="T15"><span class="name">T15</span><span class="seats">2 seats</span>
+                </div>
+            </div>
+
+            <div class="section-head">&#127860; Menu <span class="count">70</span></div>
+            <div class="menu-tabs">
+                <div class="tab-list">
+                    <span class="active" data-filter="All">All</span>
+                    <span data-filter="Appetizer">Appetizer</span>
+                    <span data-filter="Soup">Soup</span>
+                    <span data-filter="Salad">Salad</span>
+                    <span data-filter="Main Course">Main Course</span>
+                    <span data-filter="Side Dish">Side Dish</span>
+                    <span data-filter="Dessert">Dessert</span>
+                    <span data-filter="Beverage">Beverage</span>
+                </div>
+                <div class="tab-tools">
+                    <div class="view-toggle">
+                        <button class="active" title="Grid view">&#9638;</button>
+                        <button title="List view">&#9776;</button>
+                    </div>
+                    <button class="filter-btn">&#9660; Filter</button>
+                    <button class="sort-btn">&#8597; Sort By</button>
+                </div>
+            </div>
+
+            <div class="menu-grid" id="menuGrid">
+                <div class="menu-card-add">+ Add</div>
+
+                <div class="menu-card" data-name="Caramel Latte" data-price="5.50" data-cat="Beverage"
+                    data-icon="&#9749;">
+                    <div class="menu-thumb">&#9749;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Caramel Latte</div>
+                        <div class="menu-cat">Beverage</div>
+                    </div>
+                    <div class="menu-price">$5.50</div>
+                </div>
+
+                <div class="menu-card" data-name="Cranberry Cheese Bread" data-price="4.35" data-cat="Appetizer"
+                    data-icon="&#127859;">
+                    <div class="menu-thumb">&#127859;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Cranberry Cheese Bread</div>
+                        <div class="menu-cat">Appetizer</div>
+                    </div>
+                    <div class="menu-price">$4.35</div>
+                </div>
+
+                <div class="menu-card" data-name="Matcha Latte" data-price="6.00" data-cat="Beverage"
+                    data-icon="&#127861;">
+                    <div class="menu-thumb">&#127861;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Matcha Latte</div>
+                        <div class="menu-cat">Beverage</div>
+                    </div>
+                    <div class="menu-price">$6.00</div>
+                </div>
+
+                <div class="menu-card" data-name="Chicken Wings" data-price="8.90" data-cat="Appetizer"
+                    data-icon="&#127831;">
+                    <div class="menu-thumb">&#127831;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Chicken Wings</div>
+                        <div class="menu-cat">Appetizer</div>
+                    </div>
+                    <div class="menu-price">$8.90</div>
+                </div>
+
+                <div class="menu-card" data-name="Mushroom Soup" data-price="5.80" data-cat="Soup"
+                    data-icon="&#127858;">
+                    <div class="menu-thumb">&#127858;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Mushroom Soup</div>
+                        <div class="menu-cat">Soup</div>
+                    </div>
+                    <div class="menu-price">$5.80</div>
+                </div>
+
+                <div class="menu-card" data-name="Beef Ramen" data-price="12.90" data-cat="Main Course"
+                    data-icon="&#127837;">
+                    <div class="menu-thumb">&#127837;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Beef Ramen</div>
+                        <div class="menu-cat">Main Course</div>
+                    </div>
+                    <div class="menu-price">$12.90</div>
+                </div>
+
+                <div class="menu-card" data-name="Chocolate Lava Cake" data-price="7.00" data-cat="Dessert"
+                    data-icon="&#127856;">
+                    <div class="menu-thumb">&#127856;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Chocolate Lava Cake</div>
+                        <div class="menu-cat">Dessert</div>
+                    </div>
+                    <div class="menu-price">$7.00</div>
+                </div>
+
+                <div class="menu-card unavailable" data-name="Grilled Salmon" data-price="18.50" data-cat="Main Course"
+                    data-icon="&#127763;" data-unavailable="true">
+                    <div class="menu-thumb">&#127763;</div>
+                    <div class="menu-info">
+                        <div class="menu-name">Grilled Salmon</div>
+                        <div class="menu-cat">Main Course</div>
+                    </div>
+                    <div class="menu-price unavail-text">Unavailable</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order details side panel -->
+        <div class="side-col">
+            <div class="order-head">
+                <h3>Order Details</h3>
+                <div class="order-type-toggle">
+                    <button class="active" data-type="dinein">Dine In</button>
+                    <button data-type="takeaway">Takeaway</button>
+                </div>
+            </div>
+
+            <div class="customer-row">
+                <input type="text" placeholder="Customer Name" id="customerName" />
+                <span class="select-table-link">&#9776; Select Table &#8250;</span>
+            </div>
+
+            <div class="order-items-label">Order Items</div>
+            <div class="cart-list" id="cartList"></div>
+
+            <div class="summary-box">
+                <div class="summary-label">Payment Summary</div>
+                <div class="summary-row"><span id="subtotalLabel">Subtotal (0 items)</span><span
+                        id="subtotalVal">$0.00</span></div>
+                <div class="summary-row discount"><span>Member discount (10%)</span><span id="discountVal">-$0.00</span>
+                </div>
+                <div class="summary-row"><span>Tax (11%)</span><span id="taxVal">$0.00</span></div>
+                <div class="summary-row total"><span>Total</span><span id="totalVal">$0.00</span></div>
+            </div>
+
+            <div class="order-actions">
+                <button class="btn-cancel" id="cancelBtn">Cancel</button>
+                <button class="btn-place" id="placeBtn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---- cart state ----
+        var cart = {}; // key: name -> { name, price, qty, cat, icon }
+
+        // seed initial cart items to match the screenshot
+        function seed(name, price, cat, icon, qty, note) {
+            cart[name] = { name: name, price: price, qty: qty, cat: cat, icon: icon, note: note || '' };
+        }
+        seed('Caramel Latte', 5.50, 'Beverage', '&#9749;', 1, 'Hot, No Sugar');
+        seed('Beef Ramen', 25.80, 'Main Course', '&#127837;', 2, 'Spicy, Soft-Boiled Egg');
+        seed('Matcha Latte', 18.00, 'Beverage', '&#127861;', 3, 'No Sugar, Ceremonial');
+        seed('Mushroom Soup', 5.80, 'Soup', '&#127858;', 1, 'Add Notes');
+
+        var cartList = document.getElementById('cartList');
+        var subtotalLabel = document.getElementById('subtotalLabel');
+        var subtotalVal = document.getElementById('subtotalVal');
+        var discountVal = document.getElementById('discountVal');
+        var taxVal = document.getElementById('taxVal');
+        var totalVal = document.getElementById('totalVal');
+
+        function fmt(n) { return '$' + n.toFixed(2); }
+
+        function renderCart() {
+            cartList.innerHTML = '';
+            var itemCount = 0;
+            var subtotal = 0;
+
+            Object.keys(cart).forEach(function (key) {
+                var item = cart[key];
+                if (item.qty <= 0) return;
+                itemCount += item.qty;
+                subtotal += item.price * item.qty;
+
+                var row = document.createElement('div');
+                row.className = 'cart-item';
+                row.innerHTML =
+                    '<div class="cart-thumb">' + item.icon + '</div>' +
+                    '<div class="cart-info">' +
+                    '<div class="cart-name">' + item.name + '</div>' +
+                    (item.note ? '<div class="cart-note">' + item.note + '</div>' : '') +
+                    '<div class="cart-price">' + fmt(item.price) + '</div>' +
+                    '</div>' +
+                    '<div class="qty-control">' +
+                    '<button data-action="dec" data-key="' + key + '">&#8722;</button>' +
+                    '<span class="qty-val">' + item.qty + '</span>' +
+                    '<button data-action="inc" data-key="' + key + '">+</button>' +
+                    '</div>';
+                cartList.appendChild(row);
+            });
+
+            var discountRate = 0.10;
+            var taxRate = 0.11;
+            var discount = subtotal * discountRate;
+            var taxable = subtotal - discount;
+            var tax = taxable * taxRate;
+            var total = taxable + tax;
+
+            subtotalLabel.textContent = 'Subtotal (' + itemCount + ' item' + (itemCount === 1 ? '' : 's') + ')';
+            subtotalVal.textContent = fmt(subtotal);
+            discountVal.textContent = '-' + fmt(discount);
+            taxVal.textContent = fmt(tax);
+            totalVal.textContent = fmt(total);
+        }
+
+        cartList.addEventListener('click', function (e) {
+            var btn = e.target.closest('button');
+            if (!btn) return;
+            var key = btn.getAttribute('data-key');
+            var action = btn.getAttribute('data-action');
+            if (!cart[key]) return;
+            if (action === 'inc') cart[key].qty += 1;
+            if (action === 'dec') cart[key].qty = Math.max(0, cart[key].qty - 1);
+            renderCart();
+        });
+
+        // ---- menu card click adds to cart ----
+        var menuGrid = document.getElementById('menuGrid');
+        menuGrid.addEventListener('click', function (e) {
+            var card = e.target.closest('.menu-card');
+            if (!card || card.classList.contains('unavailable')) return;
+            var name = card.getAttribute('data-name');
+            var price = parseFloat(card.getAttribute('data-price'));
+            var cat = card.getAttribute('data-cat');
+            var icon = card.getAttribute('data-icon');
+
+            if (cart[name]) {
+                cart[name].qty += 1;
+            } else {
+                cart[name] = { name: name, price: price, qty: 1, cat: cat, icon: icon, note: '' };
+            }
+            renderCart();
+        });
+
+        // ---- table card click selects a table ----
+        var selectedTableEl = document.querySelector('.select-table-link');
+        document.querySelectorAll('.table-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                if (card.classList.contains('occupied')) return;
+                document.querySelectorAll('.table-card').forEach(function (c) { c.classList.remove('selected'); });
+                card.classList.add('selected');
+                var tableName = card.getAttribute('data-table');
+                if (selectedTableEl) selectedTableEl.innerHTML = '&#9776; ' + tableName + ' &#8250;';
+            });
+        });
+
+        // ---- menu filter tabs ----
+        document.querySelectorAll('.tab-list span').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.tab-list span').forEach(function (t) { t.classList.remove('active'); });
+                tab.classList.add('active');
+                filterMenu(tab.getAttribute('data-filter'));
+            });
+        });
+
+        function filterMenu(filter) {
+            document.querySelectorAll('.menu-card').forEach(function (card) {
+                if (filter === 'All' || card.getAttribute('data-cat') === filter) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // ---- order type toggle ----
+        document.querySelectorAll('.order-type-toggle button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.order-type-toggle button').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+            });
+        });
+
+        // ---- view toggle ----
+        document.querySelectorAll('.view-toggle button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.view-toggle button').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+            });
+        });
+
+        // ---- cancel / place order ----
+        document.getElementById('cancelBtn').addEventListener('click', function () {
+            cart = {};
+            document.getElementById('customerName').value = '';
+            renderCart();
+        });
+        document.getElementById('placeBtn').addEventListener('click', function () {
+            var itemCount = Object.values(cart).reduce(function (s, i) { return s + i.qty; }, 0);
+            if (itemCount === 0) { alert('Add at least one item to the order.'); return; }
+            alert('Order placed for ' + (document.getElementById('customerName').value || 'Guest') + ' — total ' + totalVal.textContent);
+        });
+
+        renderCart();
+    </script>
+
+</body>
+
+</html>

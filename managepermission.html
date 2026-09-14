@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage User Permissions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-ring: rgba(79, 70, 229, 0.2);
+
+      --violet: #7c3aed;
+      --violet-light: #f5f3ff;
+
+      --ink-dark: #0f172a;
+      --ink: #1e293b;
+      --ink-soft: #475569;
+      --ink-faint: #94a3b8;
+
+      --line: #e2e8f0;
+      --line-strong: #cbd5e1;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+
+      --info: #0284c7;
+      --info-bg: #f0f9ff;
+      --info-border: #bae6fd;
+
+      --ok: #16a34a;
+      --ok-bg: #f0fdf4;
+      --ok-border: #bbf7d0;
+
+      --radius: 12px;
+      --radius-sm: 8px;
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--ink);
+      font-size: 13.5px;
+      letter-spacing: -0.01em;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0;
+      gap: 14px;
+    }
+
+    /* ===== Page Header ===== */
+    .pr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .pr-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-title-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.28);
+    }
+
+    .pr-title-text h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--ink-dark);
+      line-height: 1.2;
+    }
+
+    .pr-title-text p {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-top: 2px;
+    }
+
+    .stats-pills {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .stat-badge {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-badge svg {
+      color: #4f46e5;
+    }
+
+    .stat-badge .val {
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stat-badge .lbl {
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    /* ===== Topbar Controls Card ===== */
+    .topbar {
+      flex: 0 0 auto;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .field select {
+      height: 38px;
+      padding: 0 32px 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--ink);
+      background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat calc(100% - 10px) center;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      min-width: 220px;
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .field select:focus {
+      border-color: var(--primary);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px var(--primary-ring);
+    }
+
+    .search-box {
+      flex: 1 1 220px;
+      max-width: 320px;
+      position: relative;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--ink-faint);
+      pointer-events: none;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px 0 36px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--ink);
+      background: #f8fafc;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px var(--primary-ring);
+    }
+
+    .topbar-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chip-btn {
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink-soft);
+      font-size: 12.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chip-btn svg {
+      color: var(--primary);
+    }
+
+    .chip-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #c7d2fe;
+      transform: translateY(-1px);
+    }
+
+    .chip-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ===== Main Body Panel ===== */
+    .body-panel {
+      flex: 1 1 0;
+      min-height: 0;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .body-scroll {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* Section Accordion */
+    .section {
+      border-bottom: 1px solid var(--line);
+      transition: background-color 0.15s ease;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 18px;
+      cursor: pointer;
+      background: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      user-select: none;
+      border-bottom: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .section-head:hover {
+      background: #f1f5f9;
+    }
+
+    .section:not(.collapsed) .section-head {
+      border-bottom-color: var(--line);
+      background: #f1f5f9;
+    }
+
+    .section-head .chevron {
+      width: 18px;
+      height: 18px;
+      color: var(--primary);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+
+    .section.collapsed .chevron {
+      transform: rotate(-90deg);
+    }
+
+    /* Premium Icon Badge Container */
+    .section-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      border: 1px solid transparent;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      flex: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .section-count {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .section-quick-toggle {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid var(--line-strong);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .section-quick-toggle svg {
+      color: var(--primary);
+    }
+
+    .section-quick-toggle:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #c7d2fe;
+    }
+
+    /* Section Grid Body */
+    .section-body {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      padding: 0;
+    }
+
+    .section.collapsed .section-body {
+      display: none;
+    }
+
+    .module-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+      transition: background 0.15s ease;
+    }
+
+    .module-row:nth-child(2n) {
+      border-right: none;
+    }
+
+    .module-row:hover {
+      background: #f8fafc;
+    }
+
+    .module-name {
+      width: 175px;
+      flex: 0 0 175px;
+      color: var(--ink-dark);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .module-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #94a3b8;
+      flex-shrink: 0;
+    }
+
+    .module-row:hover .module-dot {
+      background: var(--primary);
+    }
+
+    .perm-cells {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex: 1;
+      align-items: center;
+    }
+
+    .perm-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      user-select: none;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: background-color 0.15s ease;
+    }
+
+    .perm-cell:hover {
+      background: #f1f5f9;
+    }
+
+    .perm-cell input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .perm-cell label {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      cursor: pointer;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s ease;
+    }
+
+    .perm-cell svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      color: var(--ink-faint);
+    }
+
+    .perm-cell:hover label {
+      color: var(--ink-dark);
+    }
+
+    /* Delete Permission Accent */
+    .perm-cell.delete input[type="checkbox"] {
+      accent-color: var(--danger);
+    }
+
+    .perm-cell.delete label {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .perm-cell.delete svg {
+      color: var(--danger);
+    }
+
+    /* Export / Print Permission Accent */
+    .perm-cell.export input[type="checkbox"],
+    .perm-cell.print input[type="checkbox"] {
+      accent-color: var(--info);
+    }
+
+    .perm-cell.export label,
+    .perm-cell.print label {
+      color: var(--info);
+      font-weight: 600;
+    }
+
+    .perm-cell.export svg,
+    .perm-cell.print svg {
+      color: var(--info);
+    }
+
+    .hidden-row {
+      display: none !important;
+    }
+
+    /* Empty search result */
+    .empty-search-state {
+      padding: 50px 20px;
+      text-align: center;
+      color: var(--ink-faint);
+    }
+
+    /* ===== Footer Bar ===== */
+    .footer-bar {
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      padding-top: 4px;
+    }
+
+    .btn {
+      height: 40px;
+      padding: 0 24px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-save:hover {
+      background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-save:active {
+      transform: translateY(0);
+    }
+
+    .btn-exit {
+      background: #ffffff;
+      border-color: var(--line-strong);
+      color: var(--ink-soft);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-exit:hover {
+      background: #f1f5f9;
+      color: var(--ink-dark);
+      border-color: #94a3b8;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 18px;
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 200;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      color: #34d399;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Standard Header with Shield Badge -->
+    <div class="pr-header">
+      <div class="pr-title-group">
+        <div class="pr-title-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="pr-title-text">
+          <h1>Manage Permissions</h1>
+          <p>Role-based privileges, module permissions & user access control matrix</p>
+        </div>
+      </div>
+
+      <div class="stats-pills">
+        <div class="stat-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span class="lbl">Modules:</span>
+          <span class="val" id="totalSectionsCount">12</span>
+        </div>
+        <div class="stat-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span class="lbl">Active Privileges:</span>
+          <span class="val" id="totalPermissionsCount">0</span>
+        </div>
+        <button type="button" class="btn btn-secondary" style="height: 36px; padding: 0 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Master</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Top bar Controls -->
+    <div class="topbar">
+      <div class="field">
+        <label for="userSelect">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Select User
+        </label>
+        <select id="userSelect" onchange="handleUserChange()">
+          <option value="admin">admin</option>
+          <option value="staff">staff</option>
+          <option value="manager">manager</option>
+          <option value="cashier">cashier</option>
+          <option value="user">user</option>
+        </select>
+      </div>
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search modules by name..." oninput="filterModules()" />
+      </div>
+
+      <div class="topbar-actions">
+        <button class="chip-btn" onclick="toggleAllSections(true)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="7 11 12 6 17 11"></polyline>
+            <polyline points="7 18 12 13 17 18"></polyline>
+          </svg>
+          <span>Expand all</span>
+        </button>
+        <button class="chip-btn" onclick="toggleAllSections(false)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="7 13 12 18 17 13"></polyline>
+            <polyline points="7 6 12 11 17 6"></polyline>
+          </svg>
+          <span>Collapse all</span>
+        </button>
+        <button class="chip-btn" onclick="setAllChecks(true)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Check all</span>
+        </button>
+        <button class="chip-btn" onclick="setAllChecks(false)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span>Uncheck all</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Body Panel -->
+    <div class="body-panel">
+      <div class="body-scroll" id="bodyScroll">
+        <!-- Sections injected by JS -->
+      </div>
+    </div>
+
+    <!-- Footer Bar -->
+    <div class="footer-bar">
+      <button class="btn btn-save" onclick="saveModules()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Save Modules</span>
+      </button>
+      <button class="btn btn-exit" onclick="handleExit()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Exit</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastNotification">
+    <span class="toast-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </span>
+    <span id="toastMessage">Permissions saved successfully</span>
+  </div>
+
+  <script>
+    // Permission display labels
+    const PERM_LABELS = {
+      view: 'View',
+      edit: 'Edit',
+      list: 'List',
+      entry: 'Entry',
+      delete: 'Delete',
+      export: 'Export',
+      print: 'Print',
+      manageStock: 'Manage Stock',
+      report: 'Report',
+      allowDiscount: 'Allow Discount',
+      allowCustomBonus: 'Allow custom bonus on recharge',
+      allowCustomManualRecharge: 'Allow custom manual recharge',
+      makeRefund: 'Make Refund',
+      makeReturn: 'Make Return'
+    };
+
+    // Micro SVG Icons for Permission Actions
+    const PERM_ICONS = {
+      view: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+      edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>',
+      list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>',
+      entry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+      delete: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+      export: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+      print: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>',
+      manageStock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>',
+      report: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+      allowDiscount: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>',
+      allowCustomBonus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+      allowCustomManualRecharge: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="12" y1="14" x2="12" y2="18"></line><line x1="10" y1="16" x2="14" y2="16"></line></svg>',
+      makeRefund: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>',
+      makeReturn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>'
+    };
+
+    // Premium Bespoke Vector Icons & Theme Colors for All 12 Sections
+    const SECTION_METADATA = {
+      'Manage Device Headers': {
+        bg: '#eff6ff',
+        border: '#bfdbfe',
+        color: '#2563eb',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5v15m6-15v15m-10.875 0h17.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" /></svg>'
+      },
+
+      'System Setup': {
+        bg: '#eef2ff',
+        border: '#c7d2fe',
+        color: '#4338ca',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>'
+      },
+      'Master': {
+        bg: '#f5f3ff',
+        border: '#ddd6fe',
+        color: '#7c3aed',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>'
+      },
+      'Customer Management': {
+        bg: '#f0f9ff',
+        border: '#bae6fd',
+        color: '#0284c7',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'
+      },
+      'Direct Sales / Billing': {
+        bg: '#ecfdf5',
+        border: '#a7f3d0',
+        color: '#059669',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>'
+      },
+      'Food Cafe': {
+        bg: '#fff7ed',
+        border: '#fed7aa',
+        color: '#ea580c',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>'
+      },
+      'Softplay': {
+        bg: '#fdf2f8',
+        border: '#fbcfe8',
+        color: '#db2777',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>'
+      },
+      'Reports': {
+        bg: '#ecfeff',
+        border: '#a5f3fc',
+        color: '#0891b2',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>'
+      },
+      'Declaration Form': {
+        bg: '#f0fdfa',
+        border: '#99f6e4',
+        color: '#0d9488',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="m9 14 2 2 4-4"></path></svg>'
+      },
+      'Backup': {
+        bg: '#f1f5f9',
+        border: '#cbd5e1',
+        color: '#475569',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>'
+      },
+      'Quick Billing': {
+        bg: '#fef3c7',
+        border: '#fde68a',
+        color: '#d97706',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>'
+      },
+      'Activity': {
+        bg: '#fff1f2',
+        border: '#fecdd3',
+        color: '#e11d48',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>'
+      },
+      'Transaction': {
+        bg: '#ecfdf5',
+        border: '#a7f3d0',
+        color: '#059669',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>'
+      },
+      'Daily Report': {
+        bg: '#f0f9ff',
+        border: '#bae6fd',
+        color: '#0284c7',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>'
+      }
+    };
+
+    // Complete Data Model
+    const DATA = [
+      {
+        title: 'System Setup',
+        modules: [
+          { name: 'Arcade', perms: ['view', 'edit'] },
+          { name: 'Food Cafe', perms: ['view', 'edit'] },
+          { name: 'Printer', perms: ['view', 'edit'] },
+          { name: 'POS Setup', perms: ['view'] }
+        ]
+      },
+      {
+        title: 'Master',
+        modules: [
+          { name: 'Game Group', perms: ['list', 'entry', 'edit', 'delete'] },
+          { key: 'manage-device', name: 'Manage Device', perms: ['list', 'entry', 'edit', 'delete'] },
+          { key: 'manage-device-header', name: 'Manage Device Header', perms: ['view', 'edit'] },
+          { name: 'Setup', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Bonus', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Allowed Game Bonuses', perms: ['list', 'edit'] },
+          { name: 'Game Pricing Scheduler', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Happy Hour Scheduler', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Package Settings', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'User', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Tech Staff Card', perms: ['view'] },
+          { name: 'Bulk Device Setup', perms: ['view'] },
+          { name: 'Validity Plans', perms: ['view'] },
+          { name: 'Shift Schedule & Automation', perms: ['list', 'entry', 'edit', 'delete'] }
+        ]
+      },
+      {
+        title: 'Manage Device Headers',
+        modules: [
+          { key: 'dev-col-type', name: 'Type', perms: ['view', 'edit'] },
+          { key: 'dev-col-mac', name: 'Device MAC', perms: ['view', 'edit'] },
+          { key: 'dev-col-name', name: 'Game Name', perms: ['view', 'edit'] },
+          { key: 'dev-col-category', name: 'Category', perms: ['view', 'edit'] },
+          { key: 'dev-col-network', name: 'Network', perms: ['view', 'edit'] },
+          { key: 'dev-col-trigger', name: 'Trigger', perms: ['view', 'edit'] },
+          { key: 'dev-col-delay', name: 'Delay', perms: ['view', 'edit'] },
+          { key: 'dev-col-ticket', name: 'Random Ticket', perms: ['view', 'edit'] },
+          { key: 'dev-col-price', name: 'Price', perms: ['view', 'edit'] },
+          { key: 'dev-col-bonus', name: 'Allowed Bonus', perms: ['view', 'edit'] },
+          { key: 'dev-col-points', name: 'Allowed Points', perms: ['view', 'edit'] },
+          { key: 'dev-col-sync', name: 'Sync Action', perms: ['view', 'edit'] }
+        ]
+      },
+      {
+        title: 'Customer Management',
+        modules: [
+          { name: 'POS / Billing', perms: ['allowDiscount', 'allowCustomBonus', 'allowCustomManualRecharge'] },
+          { name: 'Customer List', perms: ['list', 'export'] },
+          { name: 'Payment Adjustment', perms: ['view'] }
+        ]
+      },
+      {
+        title: 'Direct Sales / Billing',
+        modules: [
+          { name: 'Item Group', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Items', perms: ['list', 'entry', 'edit', 'delete', 'manageStock'] },
+          { name: 'POS / Billing', perms: ['entry', 'list', 'delete'] }
+        ]
+      },
+      {
+        title: 'Food Cafe',
+        modules: [
+          { name: 'Item Group', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Items', perms: ['list', 'entry', 'edit', 'delete', 'manageStock'] },
+          { name: 'POS / Billing', perms: ['entry', 'list', 'delete'] },
+          { name: 'Report', perms: ['list', 'export', 'delete'] }
+        ]
+      },
+      {
+        title: 'Softplay',
+        modules: [
+          { name: 'Setting', perms: ['view', 'edit'] },
+          { name: 'POS / Billing', perms: ['entry', 'list', 'delete'] },
+          { name: 'Live Report', perms: ['list', 'report'] },
+          { name: 'Report', perms: ['list', 'export', 'delete'] },
+          { name: 'Card Punch Log', perms: ['list', 'export', 'delete'] },
+          { name: 'Slot Booking', perms: ['view'] },
+          { name: 'Time Schedule', perms: ['view'] },
+          { name: 'Manage Games', perms: ['view'] },
+          { name: 'Live Screen', perms: ['view'] }
+        ]
+      },
+      {
+        title: 'Reports',
+        modules: [
+          { name: 'Payment', perms: ['list', 'export', 'print', 'delete'] },
+          { name: 'Game', perms: ['list', 'export', 'print', 'delete'] },
+          { name: 'Direct Billing', perms: ['list', 'export', 'print', 'delete'] },
+          { name: 'Direct Sale Return', perms: ['list', 'export', 'print', 'delete'] },
+          { name: 'Monthly Reports', perms: ['list', 'export', 'print'] },
+          { name: 'Customer Balance', perms: ['list', 'export', 'print'] },
+          { name: 'Customer Package', perms: ['list', 'export', 'print'] },
+          { name: 'Payment Mode Report', perms: ['list', 'export', 'print'] },
+          { name: 'Tax Breakdown Report', perms: ['list', 'export', 'print'] },
+          { name: 'User-wise Payment', perms: ['list', 'export', 'print'] },
+          { name: 'POS Wise Report', perms: ['list', 'export', 'print'] },
+          { name: 'Token Redeem', perms: ['list', 'export', 'print', 'delete'] },
+          { name: 'Daily Report', perms: ['list', 'export', 'print'] },
+          { name: 'Game Refund', perms: ['list', 'export', 'print'] },
+          { name: 'Declaration form Report', perms: ['list', 'export', 'print'] },
+          { name: 'Tech Card Report', perms: ['view'] },
+          { name: 'Lost Card Report', perms: ['view'] },
+          { name: 'Token Redeem Log', perms: ['view'] },
+          { name: 'Quick Billing Report', perms: ['list', 'export', 'print', 'delete'] },
+          { name: 'Quick Sale Return', perms: ['list', 'export', 'print', 'delete'] }
+        ]
+      },
+      {
+        title: 'Declaration Form',
+        modules: [
+          { name: 'Setting', perms: ['view', 'edit'] },
+          { name: 'Report', perms: ['list', 'export', 'delete'] }
+        ]
+      },
+      {
+        title: 'Backup',
+        modules: [
+          { name: 'Setting', perms: ['view', 'edit'] }
+        ]
+      },
+      {
+        title: 'Quick Billing',
+        modules: [
+          { name: 'Item Group', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Items', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Quick Sale', perms: ['entry', 'list', 'delete'] }
+        ]
+      },
+      {
+        title: 'Activity',
+        modules: [
+          { name: 'Manage Customer Activity', perms: ['view'] },
+          { name: 'Customer Activity Report', perms: ['view'] },
+          { name: 'Manage Activity Type', perms: ['view'] }
+        ]
+      },
+      {
+        title: 'Transaction',
+        modules: [
+          { name: 'Permission', perms: ['makeRefund', 'makeReturn'] }
+        ]
+      },
+      {
+        title: 'Daily Report',
+        modules: [
+          { key: 'hero-opening-cash', name: 'Opening Cash (KPI Card)', perms: ['view'] },
+          { key: 'hero-card-collection', name: 'Card Collection (KPI Card)', perms: ['view'] },
+          { key: 'hero-direct-sale', name: 'Direct Sale (KPI Card)', perms: ['view'] },
+          { key: 'hero-change-card', name: 'Change Card (KPI Card)', perms: ['view'] },
+          { key: 'hero-returns', name: 'Returns (KPI Card)', perms: ['view'] },
+          { key: 'hero-grand-total', name: 'Grand Total (KPI Card)', perms: ['view'] },
+          { key: 'kpi-new-recharge', name: 'New Recharge (KPI Card)', perms: ['view'] },
+          { key: 'kpi-old-recharge', name: 'Old Recharge (KPI Card)', perms: ['view'] },
+          { key: 'kpi-techcard-punch', name: 'Techcard Punch (KPI Card)', perms: ['view'] },
+          { key: 'kpi-zero-card', name: 'Zero Card (KPI Card)', perms: ['view'] },
+          { key: 'kpi-walking-customer', name: 'Walking Customer (KPI Card)', perms: ['view'] },
+          { key: 'kpi-generated-qr', name: 'Generated QR (KPI Card)', perms: ['view'] },
+          { key: 'kpi-clear-card', name: 'Clear Card (KPI Card)', perms: ['view'] },
+          { key: 'kpi-redeem-gifts', name: 'Redeem Gifts (KPI Card)', perms: ['view'] },
+          { key: 'kpi-item-sell', name: 'Item Sell (KPI Card)', perms: ['view'] },
+          { key: 'kpi-game-play-amount', name: 'Game Play Amount (KPI Card)', perms: ['view'] },
+          { key: 'report-card-inventory', name: 'Card Inventory Summary (Card)', perms: ['view'] },
+          { key: 'report-card-collection', name: 'Card Collection Report (Card)', perms: ['view'] },
+          { key: 'report-direct-billing', name: 'Direct Billing Report (Card)', perms: ['view'] },
+          { key: 'report-total-collection', name: 'Total Collection Report (Card)', perms: ['view'] },
+          { key: 'report-quick-payment', name: 'Quick Payment Report (Card)', perms: ['view'] },
+          { key: 'report-old-new-card', name: 'Old / New Card Payment Report (Card)', perms: ['view'] },
+          { key: 'report-game-report', name: 'Game Report (Card)', perms: ['view'] },
+          { key: 'report-direct-items', name: 'Direct Items Report (Card)', perms: ['view'] },
+          { key: 'report-points-consumption', name: 'Points Consumption Summary (Card)', perms: ['view'] },
+          { key: 'report-card-billing', name: 'Card Quick Billing Summary (Card)', perms: ['view'] },
+          { key: 'report-direct-return', name: 'Direct Sale Return Summary (Card)', perms: ['view'] },
+          { key: 'report-quick-return', name: 'Quick Sale Return Summary (Card)', perms: ['view'] },
+          { key: 'report-tech-by-card', name: 'TechCard By Card Summary (Card)', perms: ['view'] },
+          { key: 'report-tech-by-game', name: 'TechCard By Game Summary (Card)', perms: ['view'] }
+        ]
+      }
+    ];
+
+    function buildUI() {
+      const container = document.getElementById('bodyScroll');
+      let html = '';
+
+      DATA.forEach((section, si) => {
+        const sectionId = 'sec-' + si;
+        const meta = SECTION_METADATA[section.title] || {
+          bg: '#f1f5f9',
+          border: '#e2e8f0',
+          color: '#4f46e5',
+          svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>'
+        };
+
+        html += `<div class="section" id="${sectionId}">`;
+        html += `<div class="section-head" onclick="toggleSection('${sectionId}')">`;
+        html += `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+        html += `<div class="section-icon-badge" style="background:${meta.bg}; border-color:${meta.border}; color:${meta.color};">${meta.svg}</div>`;
+        html += `<span class="section-title">${section.title}</span>`;
+        html += `<span class="section-count">${section.modules.length} modules</span>`;
+        html += `<button type="button" class="section-quick-toggle" onclick="toggleSectionChecks(event, '${sectionId}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Toggle Section</span>
+        </button>`;
+        html += `</div>`;
+
+        html += `<div class="section-body">`;
+        section.modules.forEach((mod, mi) => {
+          const rowId = `row-${si}-${mi}`;
+          html += `<div class="module-row" id="${rowId}" data-name="${mod.name.toLowerCase()}">`;
+          html += `<div class="module-name"><span class="module-dot"></span><span>${mod.name}</span></div>`;
+          html += `<div class="perm-cells">`;
+          mod.perms.forEach(p => {
+            const cbId = `cb-${si}-${mi}-${p}`;
+            const extraClass = (p === 'delete') ? 'delete' : (p === 'export' || p === 'print') ? 'export' : '';
+            const microIcon = PERM_ICONS[p] || '';
+            const cardKeyAttr = mod.key ? ` data-card-key="${mod.key}"` : '';
+            html += `<div class="perm-cell ${extraClass}">
+              <input type="checkbox" id="${cbId}"${cardKeyAttr} checked data-perm="${p}" onchange="updateCounts()" />
+              <label for="${cbId}">${microIcon}<span>${PERM_LABELS[p] || p}</span></label>
+            </div>`;
+          });
+          html += `</div>`;
+          html += `</div>`;
+        });
+        html += `</div>`;
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+      updateCounts();
+    }
+
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('collapsed');
+    }
+
+    function toggleAllSections(expand) {
+      document.querySelectorAll('.section').forEach(s => {
+        if (expand) s.classList.remove('collapsed');
+        else s.classList.add('collapsed');
+      });
+    }
+
+    function setAllChecks(checked) {
+      document.querySelectorAll('.perm-cell input[type="checkbox"]').forEach(cb => {
+        cb.checked = checked;
+      });
+      updateCounts();
+    }
+
+    function toggleSectionChecks(event, sectionId) {
+      event.stopPropagation();
+      const sec = document.getElementById(sectionId);
+      if (!sec) return;
+      const cbs = sec.querySelectorAll('.perm-cell input[type="checkbox"]');
+      const anyChecked = Array.from(cbs).some(cb => cb.checked);
+      cbs.forEach(cb => cb.checked = !anyChecked);
+      updateCounts();
+    }
+
+    function filterModules(query) {
+      const q = (query !== undefined && query !== null ? query : document.getElementById('searchInput').value).toLowerCase().trim();
+      const sections = document.querySelectorAll('.section');
+
+      sections.forEach(section => {
+        const rows = section.querySelectorAll('.module-row');
+        let anyVisible = false;
+
+        rows.forEach(row => {
+          const name = row.dataset.name || '';
+          const match = !q || name.includes(q);
+          row.classList.toggle('hidden-row', !match);
+          if (match) anyVisible = true;
+        });
+        section.classList.toggle('hidden-row', !anyVisible);
+        if (q && anyVisible) section.classList.remove('collapsed');
+      });
+    }
+
+    function updateCounts() {
+      const checkedBoxes = document.querySelectorAll('.perm-cell input[type="checkbox"]:checked');
+      const totalBadge = document.getElementById('totalPermissionsCount');
+      if (totalBadge) {
+        totalBadge.textContent = checkedBoxes.length;
+      }
+    }
+
+    // User Role definitions and presets
+    const USER_ROLES = {
+      'admin': {
+        preset: 'all'
+      },
+      'staff': {
+        preset: 'staff'
+      },
+      'manager': {
+        preset: 'manager'
+      },
+      'cashier': {
+        preset: 'cashier'
+      },
+      'user': {
+        preset: 'user'
+      }
+    };
+
+    function syncUserOptions() {
+      const sel = document.getElementById('userSelect');
+      if (!sel) return;
+      try {
+        const stored = localStorage.getItem('pos_users');
+        if (stored) {
+          const users = JSON.parse(stored);
+          const existingValues = Array.from(sel.options).map(o => o.value.toLowerCase());
+          users.forEach(u => {
+            const uname = (typeof u === 'string') ? u : (u.username || u.name);
+            if (uname && !existingValues.includes(uname.toLowerCase())) {
+              const opt = document.createElement('option');
+              opt.value = uname.toLowerCase();
+              opt.textContent = uname;
+              sel.appendChild(opt);
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Sync users notice:', e);
+      }
+    }
+
+    function applyPresetForUser(username) {
+      const info = USER_ROLES[username] || { preset: 'user' };
+      const role = info.preset;
+      const allCbs = document.querySelectorAll('.perm-cell input[type="checkbox"]');
+
+      allCbs.forEach(cb => {
+        const perm = cb.dataset.perm;
+        const section = cb.closest('.section');
+        const sectionTitle = section ? section.querySelector('.section-title').textContent.trim() : '';
+
+        if (role === 'all') {
+          // Admin: Everything enabled
+          cb.checked = true;
+        } else if (role === 'manager') {
+          // Manager: All operational & managerial permissions except deleting system setup or backups
+          if (perm === 'delete' && (sectionTitle === 'System Setup' || sectionTitle === 'Backup')) {
+            cb.checked = false;
+          } else {
+            cb.checked = true;
+          }
+        } else if (role === 'staff') {
+          // Staff: Front-counter & operations (no delete, no system setup/backup modifications)
+          if (perm === 'delete') {
+            cb.checked = false;
+          } else if (sectionTitle === 'System Setup' || sectionTitle === 'Backup') {
+            cb.checked = false;
+          } else {
+            cb.checked = true;
+          }
+        } else if (role === 'cashier') {
+          // Cashier: Sales, food, quick billing, customer discount, reports view/print, refunds
+          if (sectionTitle === 'Direct Sales / Billing' || sectionTitle === 'Food Cafe' || sectionTitle === 'Quick Billing' || sectionTitle === 'Softplay') {
+            cb.checked = (perm === 'entry' || perm === 'list');
+          } else if (sectionTitle === 'Customer Management') {
+            cb.checked = (perm === 'list' || perm === 'allowDiscount');
+          } else if (sectionTitle === 'Reports') {
+            cb.checked = (perm === 'list' || perm === 'print');
+          } else if (sectionTitle === 'Daily Report') {
+            cb.checked = (perm === 'view');
+          } else if (sectionTitle === 'Transaction') {
+            cb.checked = (perm === 'makeRefund');
+          } else {
+            cb.checked = false;
+          }
+        } else {
+          // Standard User: View and list only
+          cb.checked = (perm === 'view' || perm === 'list');
+        }
+      });
+
+      updateCounts();
+    }
+
+    function loadUserPermissions(username) {
+      const storageKey = 'pos_perms_' + username;
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          const checkedIds = JSON.parse(saved);
+          const allCbs = document.querySelectorAll('.perm-cell input[type="checkbox"]');
+          allCbs.forEach(cb => {
+            cb.checked = checkedIds.includes(cb.id);
+          });
+
+          // Also synchronize card-specific permissions if available
+          const cardPermsRaw = localStorage.getItem('pos_dailyreport_perms_' + username);
+          if (cardPermsRaw) {
+            const cardPerms = JSON.parse(cardPermsRaw);
+            document.querySelectorAll('input[data-card-key]').forEach(cb => {
+              const k = cb.dataset.cardKey;
+              if (k in cardPerms) {
+                cb.checked = cardPerms[k];
+              }
+            });
+          }
+
+          // Synchronize Manage Device module permissions if available (list, entry, edit, delete)
+          const mdRaw = localStorage.getItem('pos_manage_device_perms_' + username) || localStorage.getItem('pos_manage_device_perms');
+          if (mdRaw) {
+            try {
+              const mdPerms = JSON.parse(mdRaw);
+              document.querySelectorAll('input[data-card-key="manage-device"]').forEach(cb => {
+                const perm = cb.dataset.perm;
+                if (perm && perm in mdPerms) {
+                  cb.checked = mdPerms[perm];
+                }
+              });
+            } catch (err) { }
+          }
+
+          // Synchronize Manage Device Header permissions if available
+          const dhRaw = localStorage.getItem('pos_device_header_perms_' + username);
+          if (dhRaw) {
+            try {
+              const dh = JSON.parse(dhRaw);
+              const vCb = document.querySelector('input[data-card-key="manage-device-header"][data-perm="view"]');
+              const eCb = document.querySelector('input[data-card-key="manage-device-header"][data-perm="edit"]');
+              if (vCb && 'view' in dh) vCb.checked = dh.view;
+              if (eCb && 'edit' in dh) eCb.checked = dh.edit;
+            } catch (err) { }
+          }
+
+
+          // Synchronize Manage Device Column permissions if available (View & Edit)
+          const colPermsRaw = localStorage.getItem('pos_device_column_perms_' + username) || localStorage.getItem('pos_device_column_perms');
+          if (colPermsRaw) {
+            try {
+              const colPerms = JSON.parse(colPermsRaw);
+              document.querySelectorAll('input[data-card-key^="dev-col-"]').forEach(cb => {
+                const colKey = cb.dataset.cardKey.replace('dev-col-', '');
+                const perm = cb.dataset.perm || 'view';
+                if (colKey in colPerms) {
+                  if (typeof colPerms[colKey] === 'object' && colPerms[colKey] !== null && perm in colPerms[colKey]) {
+                    cb.checked = colPerms[colKey][perm];
+                  } else if (typeof colPerms[colKey] === 'boolean' && perm === 'view') {
+                    cb.checked = colPerms[colKey];
+                  }
+                }
+              });
+            } catch (err) { }
+          }
+
+          updateCounts();
+          return;
+        }
+      } catch (e) {
+        console.warn('Could not load perms for user', username, e);
+      }
+
+      // If no saved perms, load role default preset
+      applyPresetForUser(username);
+    }
+
+    function handleUserChange() {
+      const sel = document.getElementById('userSelect');
+      const currentUser = sel.value;
+
+      // Load specific user permissions
+      loadUserPermissions(currentUser);
+
+      const activeCount = document.querySelectorAll('.perm-cell input[type="checkbox"]:checked').length;
+      showToast(`Switched to "${currentUser}" (${activeCount} active privileges)`);
+    }
+
+    function saveModules() {
+      const sel = document.getElementById('userSelect');
+      const currentUser = sel.value;
+      const checkedBoxes = document.querySelectorAll('.perm-cell input[type="checkbox"]:checked');
+      const checkedIds = Array.from(checkedBoxes).map(cb => cb.id);
+
+      // Collect Daily Report card permissions
+      const cardPerms = {};
+      document.querySelectorAll('input[data-card-key]').forEach(cb => {
+        cardPerms[cb.dataset.cardKey] = cb.checked;
+      });
+
+      // Collect Manage Device Header permissions (View & Edit)
+      const dhViewCb = document.querySelector('input[data-card-key="manage-device-header"][data-perm="view"]');
+      const dhEditCb = document.querySelector('input[data-card-key="manage-device-header"][data-perm="edit"]');
+      const deviceHeaderPerms = {
+        view: dhViewCb ? dhViewCb.checked : true,
+        edit: dhEditCb ? dhEditCb.checked : true
+      };
+
+      try {
+        localStorage.setItem('pos_perms_' + currentUser, JSON.stringify(checkedIds));
+        localStorage.setItem('pos_dailyreport_perms_' + currentUser, JSON.stringify(cardPerms));
+        localStorage.setItem('pos_device_header_perms_' + currentUser, JSON.stringify(deviceHeaderPerms));
+        localStorage.setItem('pos_device_header_perms', JSON.stringify(deviceHeaderPerms));
+        // Collect Manage Device module permissions (list, entry, edit, delete)
+        const manageDevicePerms = {};
+        document.querySelectorAll('input[data-card-key="manage-device"]').forEach(cb => {
+          const perm = cb.dataset.perm;
+          if (perm) manageDevicePerms[perm] = cb.checked;
+        });
+        localStorage.setItem('pos_manage_device_perms_' + currentUser, JSON.stringify(manageDevicePerms));
+        localStorage.setItem('pos_manage_device_perms', JSON.stringify(manageDevicePerms));
+
+
+        // Collect Manage Device Column permissions (Header & List fields: View & Edit)
+        const deviceColPerms = {};
+        document.querySelectorAll('input[data-card-key^="dev-col-"]').forEach(cb => {
+          const colKey = cb.dataset.cardKey.replace('dev-col-', '');
+          const perm = cb.dataset.perm || 'view';
+          if (!deviceColPerms[colKey]) deviceColPerms[colKey] = {};
+          deviceColPerms[colKey][perm] = cb.checked;
+        });
+        localStorage.setItem('pos_device_column_perms_' + currentUser, JSON.stringify(deviceColPerms));
+        localStorage.setItem('pos_device_column_perms', JSON.stringify(deviceColPerms));
+
+        showToast(`✓ Permissions saved for "${currentUser}"! (${checkedIds.length} active privileges)`);
+      } catch (e) {
+        showToast(`✓ Modules saved successfully! (${checkedIds.length} active privileges)`);
+      }
+    }
+
+    function handleExit() {
+      if (window.parent && window.parent.document) {
+        const masterContent = window.parent.document.getElementById('masterContent');
+        const managePermissionContent = window.parent.document.getElementById('managePermissionContent');
+        if (managePermissionContent && masterContent) {
+          managePermissionContent.style.display = 'none';
+          masterContent.style.display = 'block';
+          return;
+        }
+      }
+      showToast('Navigating back to Master Configurations');
+    }
+
+    // Toast Notification helper
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initial build
+    buildUI();
+    syncUserOptions();
+    handleUserChange();
+  </script>
+</body>
+
+</html>
