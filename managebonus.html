@@ -418,6 +418,10 @@
   <div class="panel form-panel">
     <div class="form-row">
       <div class="field">
+        <label for="nameInput">Name</label>
+        <input type="text" id="nameInput" placeholder="e.g. Regular Pack" />
+      </div>
+      <div class="field">
         <label for="amountInput">Amount</label>
         <input type="number" id="amountInput" placeholder="e.g. 1000" step="any" />
       </div>
@@ -442,10 +446,6 @@
         <label for="vipCheck">Is VIP</label>
       </div>
       <div class="vip-check">
-        <input type="checkbox" id="mcardCheck" />
-        <label for="mcardCheck">Is MCard</label>
-      </div>
-      <div class="vip-check">
         <input type="checkbox" id="cosmosCheck" />
         <label for="cosmosCheck">Is Cosmos</label>
       </div>
@@ -460,13 +460,13 @@
         <thead>
           <tr>
             <th class="edit-col">Edit</th>
+            <th>Name</th>
             <th>Amount</th>
             <th>Taxable Amt</th>
             <th>GST (18%)</th>
             <th>Bonus</th>
             <th>Final Amount</th>
             <th>Is VIP</th>
-            <th>Is MCard</th>
             <th>Is Cosmos</th>
             <th>Allowed games</th>
             <th>Manage bonus games</th>
@@ -482,12 +482,12 @@
                 </svg>
               </button>
             </td>
+            <td>Regular Pack</td>
             <td class="amount-cell">₹1.00</td>
             <td>₹0.85</td>
             <td>₹0.15</td>
             <td style="font-weight: 600; color: #16a34a;">₹100.00</td>
             <td style="font-weight: 700; color: #4f46e5;">₹101.00</td>
-            <td><span class="pill pill-no">No</span></td>
             <td><span class="pill pill-no">No</span></td>
             <td><span class="pill pill-no">No</span></td>
             <td>2</td>
@@ -510,12 +510,12 @@
                 </svg>
               </button>
             </td>
+            <td>Premium Pack</td>
             <td class="amount-cell">₹2000.00</td>
             <td>₹1694.92</td>
             <td>₹305.08</td>
             <td style="font-weight: 600; color: #16a34a;">₹0.00</td>
             <td style="font-weight: 700; color: #4f46e5;">₹2000.00</td>
-            <td><span class="pill pill-no">No</span></td>
             <td><span class="pill pill-no">No</span></td>
             <td><span class="pill pill-no">No</span></td>
             <td>22</td>
@@ -684,12 +684,12 @@
       amountEl.focus();
       return;
     }
+    var name = document.getElementById('nameInput').value.trim() || '—';
     var taxable = taxableEl.value || (amt / 1.18).toFixed(2);
     var gst = gstEl.value || (amt - parseFloat(taxable)).toFixed(2);
     var bonus = bonusEl.value !== '' ? parseFloat(bonusEl.value) : (parseFloat(finalEl.value || amt) - parseFloat(taxable));
     var finalAmt = finalEl.value !== '' ? parseFloat(finalEl.value) : (parseFloat(taxable) + bonus);
     var isVip = document.getElementById('vipCheck').checked;
-    var isMcard = document.getElementById('mcardCheck').checked;
     var isCosmos = document.getElementById('cosmosCheck').checked;
 
     var bonusColor = bonus < 0 ? '#ef4444' : (bonus > 0 ? '#16a34a' : '#64748b');
@@ -705,13 +705,13 @@
           </svg>
         </button>
       </td>
+      <td>${name}</td>
       <td class="amount-cell">₹${amt.toFixed(2)}</td>
       <td>₹${taxable}</td>
       <td>₹${gst}</td>
       <td style="font-weight:700; color:${bonusColor};">₹${bonus.toFixed(2)}</td>
       <td style="font-weight:700; color:#4f46e5;">₹${finalAmt.toFixed(2)}</td>
       <td><span class="pill ${isVip ? 'pill-yes' : 'pill-no'}">${isVip ? 'Yes' : 'No'}</span></td>
-      <td><span class="pill ${isMcard ? 'pill-yes' : 'pill-no'}">${isMcard ? 'Yes' : 'No'}</span></td>
       <td><span class="pill ${isCosmos ? 'pill-yes' : 'pill-no'}">${isCosmos ? 'Yes' : 'No'}</span></td>
       <td>0</td>
       <td>
@@ -727,6 +727,7 @@
     tbody.insertBefore(tr, tbody.firstChild);
 
     // reset fields
+    document.getElementById('nameInput').value = '';
     amountEl.value = '';
     taxableEl.value = '';
     gstEl.value = '';
@@ -734,7 +735,6 @@
     finalEl.value = '';
     updateBonusVisuals();
     document.getElementById('vipCheck').checked = false;
-    document.getElementById('mcardCheck').checked = false;
     document.getElementById('cosmosCheck').checked = false;
   }
 </script>

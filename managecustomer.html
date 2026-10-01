@@ -825,6 +825,7 @@
       width: 140px;
       background: #ffffff;
     }
+
     .bmc-sno-input:focus {
       border-color: #0284c7;
       box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
@@ -835,6 +836,7 @@
       background: #f3e8ff;
       border-color: #d8b4fe;
     }
+
     .bmc-rfid-input:focus {
       background: #faf5ff;
       border-color: #a855f7;
@@ -856,6 +858,7 @@
       gap: 6px;
       transition: background 0.15s;
     }
+
     .bmc-add-btn:hover {
       background: #0069d9;
     }
@@ -886,6 +889,7 @@
       top: 0;
       z-index: 2;
     }
+
     .bmc-table thead th:last-child {
       border-right: none;
     }
@@ -898,9 +902,11 @@
       vertical-align: middle;
       font-family: inherit;
     }
+
     .bmc-table tbody td:last-child {
       border-right: none;
     }
+
     .bmc-table tbody tr:hover {
       background: #f8fafc;
     }
@@ -954,6 +960,7 @@
       cursor: pointer;
       transition: background 0.15s;
     }
+
     .bmc-cancel-btn:hover {
       background: #374151;
     }
@@ -970,6 +977,7 @@
       cursor: pointer;
       transition: background 0.15s;
     }
+
     .bmc-issue-btn:hover {
       background: #15803d;
     }
@@ -1503,17 +1511,50 @@
       color: #e11d48 !important;
     }
 
-    .mc-item-card.green {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    .mc-direct-sale-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      height: 40px;
     }
 
-    .mc-item-card.green.selected {
-      box-shadow: 0 0 0 5px #059669, 0 16px 30px -4px rgba(5, 150, 105, 0.55) !important;
+    .mc-direct-sale-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      color: #1e293b;
+      transform: translateY(-1px);
     }
 
-    .mc-item-card.green.selected::after {
-      color: #059669 !important;
+    .mc-direct-sale-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
     }
+
+    .mc-item-card.blue {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    }
+
+    .mc-item-card.blue.selected {
+      box-shadow: 0 0 0 5px #0284c7, 0 16px 30px -4px rgba(2, 132, 199, 0.55) !important;
+    }
+
+    .mc-item-card.blue.selected::after {
+      color: #0284c7 !important;
+    }
+
 
     /* ===== Ticket Balance View Switcher (List / Grid) ===== */
     .redeem-view-toggle-btn {
@@ -1974,6 +2015,183 @@
       background: #4f46e5;
       color: #fff;
       border-color: #4f46e5;
+    }
+
+    /* ===== Modern Confirmation & Success Modal ===== */
+    .mc-action-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      animation: mcFadeIn 0.2s ease-out;
+    }
+
+    .mc-action-modal-card {
+      background: #ffffff;
+      border-radius: 18px;
+      width: 90%;
+      max-width: 410px;
+      padding: 28px 24px 24px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      animation: mcPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    @keyframes mcFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes mcPopIn {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .mc-action-icon-wrap {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .mc-action-icon-wrap.confirm-warn {
+      background: #fef3c7;
+      color: #d97706;
+      box-shadow: 0 0 0 8px rgba(254, 243, 199, 0.5);
+    }
+
+    .mc-action-icon-wrap.confirm-info {
+      background: #e0f2fe;
+      color: #0284c7;
+      box-shadow: 0 0 0 8px rgba(224, 242, 254, 0.5);
+    }
+
+    .mc-action-icon-wrap.confirm-danger {
+      background: #fee2e2;
+      color: #ef4444;
+      box-shadow: 0 0 0 8px rgba(254, 226, 226, 0.5);
+    }
+
+    .mc-action-icon-wrap.success {
+      background: #dcfce7;
+      color: #16a34a;
+      box-shadow: 0 0 0 8px rgba(220, 252, 231, 0.6);
+      animation: pulseSuccessIcon 1.6s infinite;
+    }
+
+    @keyframes pulseSuccessIcon {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 8px rgba(220, 252, 231, 0.6);
+      }
+
+      50% {
+        box-shadow: 0 0 0 14px rgba(220, 252, 231, 0.2);
+      }
+    }
+
+    .mc-action-title {
+      margin: 0 0 8px;
+      font-size: 19px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .mc-action-desc {
+      margin: 0 0 22px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #64748b;
+    }
+
+    .mc-action-btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .mc-act-btn {
+      flex: 1;
+      height: 42px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mc-act-btn-cancel {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
+    .mc-act-btn-cancel:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .mc-act-btn-confirm {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+    }
+
+    .mc-act-btn-confirm:hover {
+      background: #4338ca;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .mc-act-btn-confirm.danger {
+      background: #ef4444;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+    }
+
+    .mc-act-btn-confirm.danger:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .mc-act-btn-success {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+      min-width: 140px;
+    }
+
+    .mc-act-btn-success:hover {
+      background: #15803d;
+      transform: translateY(-1px);
     }
 
     /* =========================================================
@@ -2834,6 +3052,24 @@
           </div>
         </div>
 
+        <!-- Apply Coupon Input Row -->
+        <div class="mc-subtotal-row"
+          style="flex-direction: column; align-items: stretch; gap: 5px; margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span
+              style="font-size: 11.5px; font-weight: 700; color: #475569; display: flex; align-items: center; gap: 4px;">
+
+              Coupon:
+            </span>
+            <span id="couponDiscountTag"
+              style="display: none; font-size: 11px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 1px 6px; border-radius: 4px; border: 1px solid #a7f3d0;"></span>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <input type="text" id="billingCouponInput" placeholder="Enter Coupon Code" oninput="handleAutoCheckCoupon()"
+              style="width: 100%; height: 32px; padding: 4px 10px; font-size: 12.5px; font-weight: 700; text-transform: uppercase; border: 1.5px solid #cbd5e1; border-radius: 6px; outline: none; background: #ffffff; transition: all 0.2s ease;" />
+          </div>
+        </div>
+
         <div class="mc-subtotal-row"><span>Total Pay:</span><span id="mcTotalPay"
             style="color: #0f172a; font-size: 18px; font-weight: 700;">0.00</span>
         </div>
@@ -2917,9 +3153,11 @@
               </label>
               <div style="display: flex; gap: 8px; align-items: center;">
                 <input type="text" placeholder="Enter Card No" style="flex: 1;" />
-                <button type="button" id="btnToggleMoreFields" class="mc-btn-more" onclick="toggleMoreCustomerFields()" title="Show/Hide more customer fields">
+                <button type="button" id="btnToggleMoreFields" class="mc-btn-more" onclick="toggleMoreCustomerFields()"
+                  title="Show/Hide more customer fields">
                   <span id="moreBtnText">More</span>
-                  <svg id="moreBtnIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition: transform 0.2s ease;">
+                  <svg id="moreBtnIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" style="transition: transform 0.2s ease;">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
@@ -3017,7 +3255,8 @@
           <div class="mc-form-actions"
             style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: center; align-items: center; gap: 14px;">
             <button class="mc-register-btn" id="btnContinue" style="white-space: nowrap;">&#10003; Continue</button>
-            <button class="mc-batch-btn" id="btnBatchCard" onclick="handleBatchCardClick()" style="white-space: nowrap;">
+            <button class="mc-batch-btn" id="btnBatchCard" onclick="handleBatchCardClick()"
+              style="white-space: nowrap;">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                 <line x1="2" y1="10" x2="22" y2="10"></line>
@@ -3187,7 +3426,7 @@
               Return Card
             </button>
 
-            <button class="mc-pill-btn" onclick="openUpdateInfoModal()"
+            <button class="mc-pill-btn" onclick="handleUpdateInfoClick()"
               style="height: 38px; padding: 0 22px; font-size: 13.5px; font-weight: 600; color: white; background: #0284c7; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 6px rgba(2,132,199,0.25); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: all 0.2s ease;"
               onmouseover="this.style.background='#0369a1'; this.style.transform='translateY(-1px)';"
               onmouseout="this.style.background='#0284c7'; this.style.transform='translateY(0)';">
@@ -3329,9 +3568,15 @@
               <option value="all">All Categories</option>
               <option value="recharge">Recharge</option>
               <option value="packages">Packages</option>
-              <option value="mpoint">M Point</option>
+              <option value="direct_sale">Direct Sale</option>
             </select>
           </div>
+          <button type="button" class="mc-direct-sale-btn" id="btnDirectSale" onclick="toggleDirectSale(this)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            Direct Sale
+          </button>
         </div>
 
         <div class="mc-item-grid">
@@ -3394,17 +3639,16 @@
           <div class="mc-item-card pink" data-category="packages" data-price="1000" onclick="selectRechargeCard(this)">
             INDEPENDENCE @ 1000</div>
 
-          <!-- Recharge MPoint (Green) -->
-          <div class="mc-item-card green" data-category="mpoint" data-price="150" onclick="selectRechargeCard(this)">
-            Special ABC @ 150</div>
-          <div class="mc-item-card green" data-category="mpoint" data-price="600" onclick="selectRechargeCard(this)">
-            Power Play @ 600</div>
-          <div class="mc-item-card green" data-category="mpoint" data-price="800" onclick="selectRechargeCard(this)">
-            Gold Plan @ 800</div>
-          <div class="mc-item-card green" data-category="mpoint" data-price="500" onclick="selectRechargeCard(this)">
-            Complete Combo @ 500</div>
-          <div class="mc-item-card green" data-category="mpoint" data-price="1000" onclick="selectRechargeCard(this)">
-            Mega Bonus @ 1000</div>
+          <!-- Direct Sale (Blue) -->
+          <div class="mc-item-card blue" data-category="direct_sale" data-price="50" onclick="selectRechargeCard(this)">
+            Socks @ 50</div>
+          <div class="mc-item-card blue" data-category="direct_sale" data-price="20" onclick="selectRechargeCard(this)">
+            Water Bottle @ 20</div>
+          <div class="mc-item-card blue" data-category="direct_sale" data-price="30" onclick="selectRechargeCard(this)">
+            Wristband @ 30</div>
+          <div class="mc-item-card blue" data-category="direct_sale" data-price="40" onclick="selectRechargeCard(this)">
+            Cold Drink @ 40</div>
+
         </div>
       </div>
 
@@ -4652,6 +4896,108 @@
     </div>
   </div>
 
+  <!-- Global Action Confirmation & Success Popup Modal -->
+  <div id="mcActionConfirmModal" class="mc-action-modal-overlay" style="display: none;"
+    onclick="if(event.target === this) closeActionConfirmModal();">
+    <div class="mc-action-modal-card">
+      <div class="mc-action-icon-wrap" id="mcActionIconWrap"></div>
+      <h3 class="mc-action-title" id="mcActionTitle">Confirmation</h3>
+      <p class="mc-action-desc" id="mcActionDesc">Are you sure you want to proceed?</p>
+
+      <!-- Confirmation Buttons -->
+      <div class="mc-action-btn-row" id="mcActionConfirmBtns">
+        <button type="button" class="mc-act-btn mc-act-btn-cancel" onclick="closeActionConfirmModal()">Cancel</button>
+        <button type="button" class="mc-act-btn mc-act-btn-confirm" id="mcActionConfirmSubmitBtn">Confirm</button>
+      </div>
+
+      <!-- Success Buttons -->
+      <div class="mc-action-btn-row" id="mcActionSuccessBtns" style="display: none;">
+        <button type="button" class="mc-act-btn mc-act-btn-success" onclick="closeActionConfirmModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Return Card Modal with OTP Verification -->
+  <div class="ui-modal-overlay" id="returnCardModal" style="display: none;"
+    onclick="handleReturnCardBackdropClick(event)">
+    <div class="ui-modal-card" style="width: 500px; max-width: 95vw;">
+      <div class="ui-modal-header">
+        <div>
+          <h3 class="ui-modal-title">
+            <svg width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24">
+              <polyline points="9 14 4 9 9 4"></polyline>
+              <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+            </svg>
+            Return Card &amp; Refund
+          </h3>
+          <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Approve card return and refund processing with
+            OTP verification</div>
+        </div>
+        <button class="ui-modal-close" onclick="closeReturnCardModal()" title="Close">&times;</button>
+      </div>
+
+      <div class="ui-modal-body">
+        <!-- Card & Refund Summary Card -->
+        <div
+          style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 8px;">
+            <div>
+              <span
+                style="font-size: 11.5px; color: #64748b; font-weight: 600; text-transform: uppercase;">Customer</span>
+              <div style="font-weight: 700; color: #0f172a; font-size: 14.5px;" id="rcHolderDisplay">Mohit Sharma</div>
+              <div style="font-size: 12px; color: #64748b;" id="rcMobileDisplay">+91 98765 43210</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 11.5px; color: #64748b; font-weight: 600; text-transform: uppercase;">Card
+                No</span>
+              <div style="font-weight: 800; color: #4f46e5; font-size: 16px;" id="rcCardDisplay">#108429</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+            <span style="color: #475569; font-weight: 600;">Refund Processing Amount:</span>
+            <span style="font-size: 16px; font-weight: 800; color: #16a34a;">₹130.00</span>
+          </div>
+        </div>
+
+        <!-- OTP Approval Section -->
+        <div class="ui-otp-card">
+          <div class="ui-otp-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg width="18" height="18" fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span style="font-weight: 700; color: #0f172a; font-size: 13px;">OTP Approval</span>
+            </div>
+            <span id="rcOtpBadge" class="ui-otp-badge pending">Approval Pending</span>
+          </div>
+
+          <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">
+            Enter the one-time password sent to customer's registered mobile number to authorize this card return &amp;
+            refund.
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="rcOtpInput" class="ui-otp-input" placeholder="Enter 4-digit OTP" maxlength="6"
+              autocomplete="off" />
+            <button type="button" class="ui-btn-send-otp" id="rcBtnSendOtp" onclick="handleSendReturnCardOtp()">Send
+              OTP</button>
+          </div>
+          <div id="rcOtpNotice" style="font-size: 11.5px; color: #d97706; margin-top: 6px; display: none;"></div>
+        </div>
+      </div>
+
+      <div class="ui-modal-footer">
+        <button type="button" class="ui-btn-cancel" onclick="closeReturnCardModal()">Cancel</button>
+        <button type="button" class="ui-btn-save" style="background: #f59e0b;"
+          onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'"
+          onclick="handleConfirmReturnCardWithOtp()">Yes, Return Card</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Payment Breakup Modal Popup -->
   <div class="pb-modal-overlay" id="paymentBreakupModal" style="display: none;"
     onclick="handlePaymentBreakupBackdrop(event)">
@@ -5065,7 +5411,107 @@
     var selectedChangeCustomer = null;
     var demoChangeCardOtp = '5821';
 
+    // Global Confirmation & Success Popup Handlers
+    function showSuccessPopup(title, message) {
+      var modal = document.getElementById('mcActionConfirmModal');
+      var iconWrap = document.getElementById('mcActionIconWrap');
+      var titleEl = document.getElementById('mcActionTitle');
+      var descEl = document.getElementById('mcActionDesc');
+      var confirmBtns = document.getElementById('mcActionConfirmBtns');
+      var successBtns = document.getElementById('mcActionSuccessBtns');
+
+      iconWrap.className = 'mc-action-icon-wrap success';
+      iconWrap.innerHTML = `
+        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+        </svg>
+      `;
+
+      titleEl.textContent = title || 'Credentials Saved Successfully';
+      descEl.textContent = message || 'Your credentials and card information have been updated.';
+      confirmBtns.style.display = 'none';
+      successBtns.style.display = 'flex';
+
+      modal.style.display = 'flex';
+    }
+
+    function showConfirmPopup(options) {
+      var modal = document.getElementById('mcActionConfirmModal');
+      var iconWrap = document.getElementById('mcActionIconWrap');
+      var titleEl = document.getElementById('mcActionTitle');
+      var descEl = document.getElementById('mcActionDesc');
+      var confirmBtns = document.getElementById('mcActionConfirmBtns');
+      var successBtns = document.getElementById('mcActionSuccessBtns');
+      var submitBtn = document.getElementById('mcActionConfirmSubmitBtn');
+
+      var iconClass = 'confirm-info';
+      var svgHtml = `
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      `;
+
+      if (options.iconType === 'danger') {
+        iconClass = 'confirm-danger';
+        svgHtml = `
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        `;
+      } else if (options.iconType === 'warn') {
+        iconClass = 'confirm-warn';
+        svgHtml = `
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        `;
+      }
+
+      iconWrap.className = 'mc-action-icon-wrap ' + iconClass;
+      iconWrap.innerHTML = svgHtml;
+
+      titleEl.textContent = options.title || 'Are you sure?';
+      descEl.textContent = options.message || 'Please confirm to proceed.';
+      confirmBtns.style.display = 'flex';
+      successBtns.style.display = 'none';
+
+      submitBtn.textContent = options.confirmText || 'Confirm';
+      submitBtn.className = 'mc-act-btn mc-act-btn-confirm ' + (options.confirmClass || '');
+
+      submitBtn.onclick = function () {
+        closeActionConfirmModal();
+        if (typeof options.onConfirm === 'function') {
+          options.onConfirm();
+        }
+      };
+
+      modal.style.display = 'flex';
+    }
+
+    function closeActionConfirmModal() {
+      var modal = document.getElementById('mcActionConfirmModal');
+      if (modal) modal.style.display = 'none';
+    }
+
     function handleChangeCard() {
+      var cardNo = document.getElementById('cardInquiryInput') ? document.getElementById('cardInquiryInput').value.trim() : '108429';
+      var holder = document.getElementById('ciHolderName') ? document.getElementById('ciHolderName').textContent.trim() : 'Mohit Sharma';
+
+      showConfirmPopup({
+        iconType: 'info',
+        title: 'Confirm Change Card',
+        message: 'Are you sure you want to change or transfer Card #' + (cardNo || '108429') + ' for ' + holder + '?',
+        confirmText: 'Proceed',
+        confirmClass: '',
+        onConfirm: function () {
+          openChangeCardActualModal();
+        }
+      });
+    }
+
+    function openChangeCardActualModal() {
       var cardNo = document.getElementById('cardInquiryInput') ? document.getElementById('cardInquiryInput').value.trim() : '108429';
       var holder = document.getElementById('ciHolderName') ? document.getElementById('ciHolderName').textContent.trim() : 'Mohit Sharma';
 
@@ -5259,20 +5705,129 @@
       }
 
       closeChangeCardModal();
-      alert('Card successfully assigned to ' + selectedChangeCustomer.name + ' with OTP approval!');
+      showSuccessPopup('Credentials Saved Successfully', 'Card successfully assigned to ' + selectedChangeCustomer.name + ' with OTP approval!');
     }
 
+    var demoReturnCardOtp = '6142';
+
     function handleReturnCard() {
-      var cardNo = document.getElementById('cardInquiryInput') ? document.getElementById('cardInquiryInput').value : '108429';
-      if (confirm('Are you sure you want to return Card #' + (cardNo || '108429') + ' and process refund?')) {
-        alert('Card #' + (cardNo || '108429') + ' marked as returned. Refund amount processed: ₹130.00.');
+      openReturnCardModal();
+    }
+
+    function openReturnCardModal() {
+      var cardNo = document.getElementById('cardInquiryInput') ? document.getElementById('cardInquiryInput').value.trim() : '108429';
+      var holder = document.getElementById('ciHolderName') ? document.getElementById('ciHolderName').textContent.trim() : 'Mohit Sharma';
+      var mobile = document.getElementById('ciHolderMobile') ? document.getElementById('ciHolderMobile').textContent.trim() : '+91 98765 43210';
+
+      if (document.getElementById('rcCardDisplay')) document.getElementById('rcCardDisplay').textContent = '#' + (cardNo || '108429');
+      if (document.getElementById('rcHolderDisplay')) document.getElementById('rcHolderDisplay').textContent = holder;
+      if (document.getElementById('rcMobileDisplay')) document.getElementById('rcMobileDisplay').textContent = mobile;
+
+      var otpInp = document.getElementById('rcOtpInput');
+      if (otpInp) otpInp.value = '';
+      var notice = document.getElementById('rcOtpNotice');
+      if (notice) { notice.style.display = 'none'; notice.textContent = ''; }
+      var badge = document.getElementById('rcOtpBadge');
+      if (badge) {
+        badge.textContent = 'Approval Pending';
+        badge.className = 'ui-otp-badge pending';
+      }
+
+      var modal = document.getElementById('returnCardModal');
+      if (modal) modal.style.display = 'flex';
+      setTimeout(function () {
+        if (otpInp) otpInp.focus();
+      }, 60);
+    }
+
+    function closeReturnCardModal() {
+      var modal = document.getElementById('returnCardModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function handleReturnCardBackdropClick(e) {
+      if (e.target && e.target.id === 'returnCardModal') {
+        closeReturnCardModal();
       }
     }
 
+    function handleSendReturnCardOtp() {
+      demoReturnCardOtp = '6142';
+      var notice = document.getElementById('rcOtpNotice');
+      var mobile = document.getElementById('rcMobileDisplay') ? document.getElementById('rcMobileDisplay').textContent.trim() : '+91 98765 43210';
+      if (notice) {
+        notice.style.display = 'block';
+        notice.innerHTML = '&#10003; OTP sent to ' + mobile + '. <strong>Demo OTP: ' + demoReturnCardOtp + '</strong>';
+      }
+      var otpInp = document.getElementById('rcOtpInput');
+      if (otpInp) otpInp.focus();
+    }
+
+    function handleConfirmReturnCardWithOtp() {
+      var otpInp = document.getElementById('rcOtpInput');
+      var entered = otpInp ? otpInp.value.trim() : '';
+      var notice = document.getElementById('rcOtpNotice');
+
+      if (!entered) {
+        if (notice) {
+          notice.style.display = 'block';
+          notice.style.color = '#ef4444';
+          notice.textContent = 'Please enter the 4-digit OTP to authorize return (Click "Send OTP" for demo code).';
+        }
+        if (otpInp) otpInp.focus();
+        return;
+      }
+
+      if (entered !== demoReturnCardOtp) {
+        if (notice) {
+          notice.style.display = 'block';
+          notice.style.color = '#ef4444';
+          notice.textContent = 'Invalid OTP entered. Please enter correct OTP (Demo OTP: ' + demoReturnCardOtp + ').';
+        }
+        if (otpInp) otpInp.focus();
+        return;
+      }
+
+      // OTP Approved
+      var badge = document.getElementById('rcOtpBadge');
+      if (badge) {
+        badge.textContent = 'Approved ✓';
+        badge.className = 'ui-otp-badge approved';
+      }
+
+      var cardNo = document.getElementById('cardInquiryInput') ? document.getElementById('cardInquiryInput').value.trim() : '108429';
+
+      closeReturnCardModal();
+      showSuccessPopup('Card Returned Successfully', 'Card #' + (cardNo || '108429') + ' has been verified with OTP, marked as returned, and refund of ₹130.00 processed successfully!');
+    }
+
+    function handleUpdateInfoClick() {
+      showConfirmPopup({
+        iconType: 'info',
+        title: 'Confirm Update Info',
+        message: 'Do you want to update customer credentials, contact details, and card information?',
+        confirmText: 'Proceed',
+        confirmClass: '',
+        onConfirm: function () {
+          openUpdateInfoModal();
+        }
+      });
+    }
+
     function handleClearCard() {
-      var input = document.getElementById('cardInquiryInput');
-      if (input) input.value = '';
-      alert('Card cleared from inquiry.');
+      var cardNo = document.getElementById('cardInquiryInput') ? document.getElementById('cardInquiryInput').value : '108429';
+      showConfirmPopup({
+        iconType: 'danger',
+        title: 'Confirm Clear Card',
+        message: 'Are you sure you want to clear Card #' + (cardNo || '108429') + ' from inquiry?',
+        confirmText: 'Yes, Clear',
+        confirmClass: 'danger',
+        onConfirm: function () {
+          var input = document.getElementById('cardInquiryInput');
+          if (input) input.value = '';
+          showSuccessPopup('Card Cleared Successfully', 'Card inquiry details have been cleared.');
+        }
+      });
     }
 
     // Update Customer Info Modal & OTP Handlers
@@ -5411,11 +5966,19 @@
       }
 
       closeUpdateInfoModal();
-      alert('Customer information successfully updated with OTP approval!');
+      showSuccessPopup('Credentials Saved Successfully', 'Customer information & credentials successfully updated with OTP approval!');
     }
 
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
+        var rcModal = document.getElementById('returnCardModal');
+        if (rcModal && rcModal.style.display === 'flex') {
+          closeReturnCardModal();
+        }
+        var actModal = document.getElementById('mcActionConfirmModal');
+        if (actModal && actModal.style.display === 'flex') {
+          closeActionConfirmModal();
+        }
         var modal = document.getElementById('updateInfoModal');
         if (modal && modal.style.display === 'flex') {
           closeUpdateInfoModal();
@@ -5976,7 +6539,7 @@
           '<td style="text-align: right; font-weight: 700; font-family: monospace;">' + card.amount.toFixed(2) + '</td>',
           '<td style="text-align: right; color: #16a34a; font-weight: 700; font-family: monospace;">' + card.bonus.toFixed(2) + '</td>',
           '<td style="text-align: center;">' +
-            '<button type="button" style="background:#fee2e2; border:1px solid #fca5a5; color:#dc2626; border-radius:4px; padding:2px 8px; cursor:pointer; font-weight:700; font-size:12px;" onclick="removeBatchCardItem(' + card.id + ')">Remove</button>' +
+          '<button type="button" style="background:#fee2e2; border:1px solid #fca5a5; color:#dc2626; border-radius:4px; padding:2px 8px; cursor:pointer; font-weight:700; font-size:12px;" onclick="removeBatchCardItem(' + card.id + ')">Remove</button>' +
           '</td>'
         ].join('');
         tbody.appendChild(tr);
@@ -6200,16 +6763,157 @@
 
     // Recharge Items Selection Handler
     var currentBaseRechargeAmount = 0;
+    var appliedBillingCoupon = null;
+
+    function handleAutoCheckCoupon() {
+      var input = document.getElementById('billingCouponInput');
+      var tag = document.getElementById('couponDiscountTag');
+      if (!input) return;
+
+      var code = input.value.trim().toUpperCase();
+
+      // If empty, reset to neutral state
+      if (!code) {
+        appliedBillingCoupon = null;
+        input.style.borderColor = '#cbd5e1';
+        input.style.boxShadow = 'none';
+        if (tag) tag.style.display = 'none';
+        handleBonusDiscountChange();
+        return;
+      }
+
+      var coupons = [];
+      try {
+        var raw = localStorage.getItem('pos_coupons');
+        if (raw) coupons = JSON.parse(raw);
+      } catch (e) { }
+
+      var coupon = coupons.find(function (c) {
+        return c.code && c.code.toUpperCase() === code;
+      });
+
+      // 1. Coupon does not exist
+      if (!coupon) {
+        appliedBillingCoupon = null;
+        input.style.borderColor = '#ef4444';
+        input.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+        if (tag) {
+          tag.textContent = 'Invalid';
+          tag.style.color = '#dc2626';
+          tag.style.background = '#fef2f2';
+          tag.style.borderColor = '#fecaca';
+          tag.style.display = 'inline-block';
+        }
+        handleBonusDiscountChange();
+        return;
+      }
+
+      // 2. Check if Expired
+      var isExpired = false;
+      if (coupon.expiry) {
+        var expDate = new Date(coupon.expiry);
+        var now = new Date();
+        expDate.setHours(23, 59, 59, 999);
+        if (expDate < now) isExpired = true;
+      }
+
+      if (isExpired) {
+        appliedBillingCoupon = null;
+        input.style.borderColor = '#ef4444';
+        input.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+        if (tag) {
+          tag.textContent = 'Expired';
+          tag.style.color = '#dc2626';
+          tag.style.background = '#fef2f2';
+          tag.style.borderColor = '#fecaca';
+          tag.style.display = 'inline-block';
+        }
+        handleBonusDiscountChange();
+        return;
+      }
+
+      // 3. Check if Inactive or Min Recharge not met
+      var minRecharge = parseFloat(coupon.minBill) || 0;
+      var meetsMin = (currentBaseRechargeAmount >= minRecharge);
+      var isActive = (coupon.status === 'active');
+
+      if (!isActive || !meetsMin) {
+        appliedBillingCoupon = null;
+        input.style.borderColor = '#ef4444';
+        input.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+        if (tag) {
+          tag.textContent = 'Invalid';
+          tag.style.color = '#dc2626';
+          tag.style.background = '#fef2f2';
+          tag.style.borderColor = '#fecaca';
+          tag.style.display = 'inline-block';
+        }
+        handleBonusDiscountChange();
+        return;
+      }
+
+      // 4. VALID COUPON: Apply & Green border
+      input.style.borderColor = '#10b981';
+      input.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.2)';
+
+      var discountAmt = 0;
+      if (coupon.type === 'percent') {
+        discountAmt = (currentBaseRechargeAmount * (parseFloat(coupon.value) || 0)) / 100;
+        var maxCap = parseFloat(coupon.maxDiscount) || 0;
+        if (maxCap > 0 && discountAmt > maxCap) {
+          discountAmt = maxCap;
+        }
+      } else {
+        discountAmt = parseFloat(coupon.value) || 0;
+      }
+
+      appliedBillingCoupon = {
+        code: coupon.code,
+        type: coupon.type,
+        value: coupon.value,
+        discountAmt: Math.min(discountAmt, currentBaseRechargeAmount)
+      };
+
+      if (tag) {
+        tag.textContent = '-₹' + appliedBillingCoupon.discountAmt.toFixed(2) + ' OFF';
+        tag.style.color = '#059669';
+        tag.style.background = '#ecfdf5';
+        tag.style.borderColor = '#a7f3d0';
+        tag.style.display = 'inline-block';
+      }
+
+      handleBonusDiscountChange();
+    }
 
     function handleBonusDiscountChange() {
+      if (appliedBillingCoupon) {
+        if (appliedBillingCoupon.type === 'percent') {
+          var dAmt = (currentBaseRechargeAmount * (parseFloat(appliedBillingCoupon.value) || 0)) / 100;
+          appliedBillingCoupon.discountAmt = Math.min(dAmt, currentBaseRechargeAmount);
+        } else {
+          appliedBillingCoupon.discountAmt = Math.min(parseFloat(appliedBillingCoupon.value) || 0, currentBaseRechargeAmount);
+        }
+        var tag = document.getElementById('couponDiscountTag');
+        if (tag) {
+          tag.textContent = '-₹' + appliedBillingCoupon.discountAmt.toFixed(2) + ' OFF';
+          tag.style.color = '#059669';
+          tag.style.background = '#ecfdf5';
+          tag.style.borderColor = '#a7f3d0';
+          tag.style.display = 'inline-block';
+        }
+      }
+
       var discElem = document.getElementById('mcDiscountInput');
       var discVal = discElem ? (parseFloat(discElem.value) || 0) : 0;
       if (discVal < 0) discVal = 0;
       if (discVal > 100) discVal = 100;
-      var discountAmt = (currentBaseRechargeAmount * discVal) / 100;
+      var manualDiscountAmt = (currentBaseRechargeAmount * discVal) / 100;
+      var couponDiscountAmt = appliedBillingCoupon ? appliedBillingCoupon.discountAmt : 0;
+      var totalDiscount = manualDiscountAmt + couponDiscountAmt;
+
       var totalPayElem = document.getElementById('mcTotalPay');
       if (totalPayElem) {
-        var finalPay = Math.max(0, currentBaseRechargeAmount - discountAmt);
+        var finalPay = Math.max(0, currentBaseRechargeAmount - totalDiscount);
         totalPayElem.textContent = finalPay.toFixed(2);
         if (finalPay > 0) {
           totalPayElem.style.color = '#10b981';
@@ -6242,14 +6946,27 @@
         if (bonusInput) {
           bonusInput.value = parseFloat(bonus) > 0 ? parseFloat(bonus).toFixed(2) : '0.00';
         }
+        handleAutoCheckCoupon();
         handleBonusDiscountChange();
       } else {
         currentBaseRechargeAmount = 0;
         if (bonusInput) {
           bonusInput.value = '0.00';
         }
+        handleAutoCheckCoupon();
         handleBonusDiscountChange();
       }
+    }
+
+    function toggleDirectSale(btn) {
+      var catFilter = document.getElementById('rechargeCategoryFilter');
+      if (!catFilter) return;
+      if (catFilter.value === 'direct_sale') {
+        catFilter.value = 'all';
+      } else {
+        catFilter.value = 'direct_sale';
+      }
+      filterRechargeItems();
     }
 
     function filterRechargeItems() {
@@ -6258,6 +6975,15 @@
       var search = (searchInput ? searchInput.value : '').toLowerCase().trim();
       var category = (catFilter ? catFilter.value : 'all').toLowerCase();
       var cards = document.querySelectorAll('.mc-item-card');
+
+      var directSaleBtn = document.getElementById('btnDirectSale');
+      if (directSaleBtn) {
+        if (category === 'direct_sale') {
+          directSaleBtn.classList.add('active');
+        } else {
+          directSaleBtn.classList.remove('active');
+        }
+      }
 
       cards.forEach(function (card) {
         var text = card.textContent.toLowerCase();
@@ -6330,7 +7056,8 @@
         </div>
         <div class="bmc-footer-right">
           <button type="button" class="bmc-cancel-btn" onclick="closeBatchCardModal()">Cancel</button>
-          <button type="button" class="bmc-issue-btn" id="btnIssueBatch" onclick="handleIssueBatchPrint()">Issue Batch Print (0)</button>
+          <button type="button" class="bmc-issue-btn" id="btnIssueBatch" onclick="handleIssueBatchPrint()">Issue Batch
+            Print (0)</button>
         </div>
       </div>
     </div>

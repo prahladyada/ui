@@ -690,7 +690,10 @@
           <span class="lbl">Active Privileges:</span>
           <span class="val" id="totalPermissionsCount">0</span>
         </div>
-        <button type="button" class="btn btn-secondary" style="height: 36px; padding: 0 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}" title="Return to Master Dashboard">
+        <button type="button" class="btn btn-secondary"
+          style="height: 36px; padding: 0 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;"
+          onclick="if(window.parent&&window.parent!==window){window.parent.postMessage({type:'show-master'},'*');}else{history.back();}"
+          title="Return to Master Dashboard">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
@@ -834,7 +837,13 @@
 
     // Premium Bespoke Vector Icons & Theme Colors for All 12 Sections
     const SECTION_METADATA = {
-      'Manage Device Headers': {
+      'Manage Device - Headers & Items Permission': {
+        bg: '#eff6ff',
+        border: '#bfdbfe',
+        color: '#2563eb',
+        svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5v15m6-15v15m-10.875 0h17.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" /></svg>'
+      },
+      'Manage Device Headers (Columns & Fields)': {
         bg: '#eff6ff',
         border: '#bfdbfe',
         color: '#2563eb',
@@ -936,8 +945,7 @@
         title: 'Master',
         modules: [
           { name: 'Game Group', perms: ['list', 'entry', 'edit', 'delete'] },
-          { key: 'manage-device', name: 'Manage Device', perms: ['list', 'entry', 'edit', 'delete'] },
-          { key: 'manage-device-header', name: 'Manage Device Header', perms: ['view', 'edit'] },
+          { key: 'manage-device', name: 'Manage Device (Main Module Access)', perms: ['list', 'entry', 'edit', 'delete'] },
           { name: 'Setup', perms: ['list', 'entry', 'edit', 'delete'] },
           { name: 'Bonus', perms: ['list', 'entry', 'edit', 'delete'] },
           { name: 'Allowed Game Bonuses', perms: ['list', 'edit'] },
@@ -948,11 +956,12 @@
           { name: 'Tech Staff Card', perms: ['view'] },
           { name: 'Bulk Device Setup', perms: ['view'] },
           { name: 'Validity Plans', perms: ['view'] },
-          { name: 'Shift Schedule & Automation', perms: ['list', 'entry', 'edit', 'delete'] }
+          { name: 'Shift Schedule & Automation', perms: ['list', 'entry', 'edit', 'delete'] },
+          { name: 'Coupons', perms: ['list', 'entry', 'edit', 'delete'] }
         ]
       },
       {
-        title: 'Manage Device Headers',
+        title: 'Manage Device - Items Permission',
         modules: [
           { key: 'dev-col-type', name: 'Type', perms: ['view', 'edit'] },
           { key: 'dev-col-mac', name: 'Device MAC', perms: ['view', 'edit'] },
@@ -1132,17 +1141,24 @@
         html += `<div class="section-body">`;
         section.modules.forEach((mod, mi) => {
           const rowId = `row-${si}-${mi}`;
-          html += `<div class="module-row" id="${rowId}" data-name="${mod.name.toLowerCase()}">`;
+          const isDeviceCol = mod.key && mod.key.startsWith('dev-col-');
+          const searchKeywords = isDeviceCol
+            ? `device manage device header column field ${mod.name.toLowerCase()} type mac device mac game name category network trigger delay ticket random ticket price bonus allowed bonus points allowed points sync action`
+            : mod.name.toLowerCase();
+
+          html += `<div class="module-row" id="${rowId}" data-name="${mod.name.toLowerCase()}" data-keywords="${searchKeywords}">`;
           html += `<div class="module-name"><span class="module-dot"></span><span>${mod.name}</span></div>`;
+
           html += `<div class="perm-cells">`;
           mod.perms.forEach(p => {
             const cbId = `cb-${si}-${mi}-${p}`;
             const extraClass = (p === 'delete') ? 'delete' : (p === 'export' || p === 'print') ? 'export' : '';
             const microIcon = PERM_ICONS[p] || '';
             const cardKeyAttr = mod.key ? ` data-card-key="${mod.key}"` : '';
+            const labelText = isDeviceCol ? (p === 'view' ? 'Show Column' : (p === 'edit' ? 'Allow Edit' : (PERM_LABELS[p] || p))) : (PERM_LABELS[p] || p);
             html += `<div class="perm-cell ${extraClass}">
               <input type="checkbox" id="${cbId}"${cardKeyAttr} checked data-perm="${p}" onchange="updateCounts()" />
-              <label for="${cbId}">${microIcon}<span>${PERM_LABELS[p] || p}</span></label>
+              <label for="${cbId}">${microIcon}<span>${labelText}</span></label>
             </div>`;
           });
           html += `</div>`;
@@ -1189,12 +1205,16 @@
       const sections = document.querySelectorAll('.section');
 
       sections.forEach(section => {
+        const titleEl = section.querySelector('.section-title');
+        const sectionTitle = titleEl ? titleEl.textContent.toLowerCase() : '';
+        const sectionMatches = q && (sectionTitle.includes(q) || (q.includes('device') && sectionTitle.includes('device')));
         const rows = section.querySelectorAll('.module-row');
         let anyVisible = false;
 
         rows.forEach(row => {
-          const name = row.dataset.name || '';
-          const match = !q || name.includes(q);
+          const name = (row.dataset.name || '').toLowerCase();
+          const keywords = (row.dataset.keywords || '').toLowerCase();
+          const match = !q || sectionMatches || name.includes(q) || keywords.includes(q);
           row.classList.toggle('hidden-row', !match);
           if (match) anyVisible = true;
         });
@@ -1279,6 +1299,8 @@
             cb.checked = false;
           } else if (sectionTitle === 'System Setup' || sectionTitle === 'Backup') {
             cb.checked = false;
+          } else if (sectionTitle.includes('Device') && perm === 'edit') {
+            cb.checked = false;
           } else {
             cb.checked = true;
           }
@@ -1294,6 +1316,8 @@
             cb.checked = (perm === 'view');
           } else if (sectionTitle === 'Transaction') {
             cb.checked = (perm === 'makeRefund');
+          } else if (sectionTitle.includes('Device')) {
+            cb.checked = (perm === 'view');
           } else {
             cb.checked = false;
           }
@@ -1357,23 +1381,7 @@
 
 
           // Synchronize Manage Device Column permissions if available (View & Edit)
-          const colPermsRaw = localStorage.getItem('pos_device_column_perms_' + username) || localStorage.getItem('pos_device_column_perms');
-          if (colPermsRaw) {
-            try {
-              const colPerms = JSON.parse(colPermsRaw);
-              document.querySelectorAll('input[data-card-key^="dev-col-"]').forEach(cb => {
-                const colKey = cb.dataset.cardKey.replace('dev-col-', '');
-                const perm = cb.dataset.perm || 'view';
-                if (colKey in colPerms) {
-                  if (typeof colPerms[colKey] === 'object' && colPerms[colKey] !== null && perm in colPerms[colKey]) {
-                    cb.checked = colPerms[colKey][perm];
-                  } else if (typeof colPerms[colKey] === 'boolean' && perm === 'view') {
-                    cb.checked = colPerms[colKey];
-                  }
-                }
-              });
-            } catch (err) { }
-          }
+          syncDeviceColumnChecks(username);
 
           updateCounts();
           return;
@@ -1384,6 +1392,27 @@
 
       // If no saved perms, load role default preset
       applyPresetForUser(username);
+      syncDeviceColumnChecks(username);
+    }
+
+    function syncDeviceColumnChecks(username) {
+      const colPermsRaw = localStorage.getItem('pos_device_column_perms_' + username) || localStorage.getItem('pos_device_column_perms');
+      if (colPermsRaw) {
+        try {
+          const colPerms = JSON.parse(colPermsRaw);
+          document.querySelectorAll('input[data-card-key^="dev-col-"]').forEach(cb => {
+            const colKey = cb.dataset.cardKey.replace('dev-col-', '');
+            const perm = cb.dataset.perm || 'view';
+            if (colKey in colPerms) {
+              if (typeof colPerms[colKey] === 'object' && colPerms[colKey] !== null && perm in colPerms[colKey]) {
+                cb.checked = colPerms[colKey][perm] !== false;
+              } else if (typeof colPerms[colKey] === 'boolean' && perm === 'view') {
+                cb.checked = colPerms[colKey];
+              }
+            }
+          });
+        } catch (err) { }
+      }
     }
 
     function handleUserChange() {

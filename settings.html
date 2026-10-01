@@ -275,6 +275,7 @@
         opacity: 0;
         transform: translateY(6px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -524,11 +525,11 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
-    input:checked + .slider {
+    input:checked+.slider {
       background-color: #2563eb;
     }
 
-    input:checked + .slider:before {
+    input:checked+.slider:before {
       transform: translateX(18px);
     }
 
@@ -588,6 +589,115 @@
       accent-color: #4f46e5;
       margin: 0;
       cursor: pointer;
+    }
+
+    /* Sub-selection Box for GST Calculation Type */
+    .gst-calc-subpanel {
+      margin-top: 6px;
+      margin-bottom: 2px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1.5px dashed #93c5fd;
+      border-radius: var(--radius-sm);
+      animation: fadeInGst 0.2s ease-out;
+    }
+
+    @keyframes fadeInGst {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .gst-sub-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gst-mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .gst-mode-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .gst-mode-card:hover {
+      border-color: #93c5fd;
+      background: #f8fafc;
+    }
+
+    .gst-mode-card.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 0 0 1px #2563eb;
+    }
+
+    .gst-mode-card input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2563eb;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .gst-mode-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .gst-mode-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gst-mode-desc {
+      font-size: 11px;
+      color: var(--ink-muted);
+      line-height: 1.35;
+    }
+
+    .gst-mode-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .gst-mode-tag.plus {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .gst-mode-tag.minus {
+      background: #fef3c7;
+      color: #92400e;
     }
 
     /* Printer Grid Layout */
@@ -803,19 +913,24 @@
     <header class="settings-header">
       <div class="settings-title-group">
         <div class="settings-icon-badge">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"
+            stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
           </svg>
         </div>
         <div>
           <h1 class="settings-title">Billing Settings</h1>
-          <p class="settings-subtitle">Configure arcade tax rates, food cafe invoicing, RFID cards, and thermal receipt printers</p>
+          <p class="settings-subtitle">Configure arcade tax rates, food cafe invoicing, RFID cards, and thermal receipt
+            printers</p>
         </div>
       </div>
 
       <div class="settings-header-actions">
-        <button type="button" class="btn-action btn-back" onclick="handleBackToMaster()" title="Return to Master Dashboard">
+        <button type="button" class="btn-action btn-back" onclick="handleBackToMaster()"
+          title="Return to Master Dashboard">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
@@ -823,7 +938,8 @@
         </button>
         <button type="button" class="btn-action btn-primary-save" onclick="saveSettings()" title="Save all changes">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
           </svg>
           <span>Save Configuration</span>
         </button>
@@ -886,7 +1002,9 @@
               <div class="card-header-left">
                 <div class="card-header-icon">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                    </path>
                   </svg>
                 </div>
                 <div>
@@ -901,9 +1019,12 @@
                 <label class="form-label" for="arcade_company">Company Name</label>
                 <div class="input-with-icon">
                   <span class="input-icon-prefix">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
                   </span>
-                  <input type="text" id="arcade_company" class="form-control" value="elesof" placeholder="Enter arcade business name" />
+                  <input type="text" id="arcade_company" class="form-control"
+                    placeholder="e.g. FunSquare Entertainment" />
                 </div>
               </div>
 
@@ -912,9 +1033,14 @@
                   <label class="form-label" for="arcade_phone">Phone Number</label>
                   <div class="input-with-icon">
                     <span class="input-icon-prefix">
-                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path
+                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                        </path>
+                      </svg>
                     </span>
-                    <input type="text" id="arcade_phone" class="form-control" value="9876543210" placeholder="Contact number" />
+                    <input type="text" id="arcade_phone" class="form-control" placeholder="e.g. +91 98765 43210" />
                   </div>
                 </div>
 
@@ -922,21 +1048,27 @@
                   <label class="form-label" for="arcade_gst">GST Registration No</label>
                   <div class="input-with-icon">
                     <span class="input-icon-prefix">
-                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
                     </span>
-                    <input type="text" id="arcade_gst" class="form-control" value="gst no 12344567" placeholder="GST identification number" />
+                    <input type="text" id="arcade_gst" class="form-control" placeholder="e.g. 27AAAAA0000A1Z5" />
                   </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="arcade_address">Store Address</label>
-                <textarea id="arcade_address" class="form-control" placeholder="Complete address printed on receipts">123 Test Street, Tech City</textarea>
+                <textarea id="arcade_address" class="form-control"
+                  placeholder="Complete address printed on receipts"></textarea>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="arcade_footer">Footer Message on Bill</label>
-                <textarea id="arcade_footer" class="form-control" placeholder="e.g. !!Thanks Visit Again!!">!!Thanks!!</textarea>
+                <textarea id="arcade_footer" class="form-control"
+                  placeholder="e.g. Thank you for visiting! Please visit again."></textarea>
               </div>
             </div>
           </div>
@@ -947,7 +1079,9 @@
               <div class="card-header-left">
                 <div class="card-header-icon emerald">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z">
+                    </path>
                   </svg>
                 </div>
                 <div>
@@ -999,10 +1133,46 @@
                     <span class="toggle-desc">Calculate tax on top of recharge amount (e.g. ₹100 + 18% GST)</span>
                   </div>
                   <div class="switch">
-                    <input type="checkbox" id="a-gstextra" />
+                    <input type="checkbox" id="a-gstextra" onchange="toggleArcadeGstType()" />
                     <span class="slider"></span>
                   </div>
                 </label>
+
+                <!-- GST Calculation Type (Shown when GST Extra is checked) -->
+                <div id="arcade-gst-type-box" class="gst-calc-subpanel" style="display: none;">
+                  <div class="gst-sub-title">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4m0-4h.01"></path>
+                    </svg>
+                    GST Calculation Mode
+                  </div>
+                  <div class="gst-mode-grid">
+                    <label class="gst-mode-card active" id="arcade_mode_plus_card"
+                      onclick="setArcadeGstMode('amount_plus_gst')">
+                      <input type="radio" name="arcade_gst_calc_type" id="arcade_gst_mode_plus" value="amount_plus_gst"
+                        checked />
+                      <div class="gst-mode-details">
+                        <span class="gst-mode-name">
+                          Amount + GST
+                          <span class="gst-mode-tag plus">Exclusive</span>
+                        </span>
+                      </div>
+                    </label>
+
+                    <label class="gst-mode-card" id="arcade_mode_minus_card"
+                      onclick="setArcadeGstMode('amount_minus_gst')">
+                      <input type="radio" name="arcade_gst_calc_type" id="arcade_gst_mode_minus"
+                        value="amount_minus_gst" />
+                      <div class="gst-mode-details">
+                        <span class="gst-mode-name">
+                          Amount - GST
+                          <span class="gst-mode-tag minus">Inclusive</span>
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
 
                 <label class="toggle-row" for="a-invoice">
                   <div class="toggle-info">
@@ -1018,7 +1188,8 @@
                 <label class="toggle-row" for="a-rfidmask">
                   <div class="toggle-info">
                     <span class="toggle-title">RFID Card Masking</span>
-                    <span class="toggle-desc">Mask confidential card serial digits on printed receipts (e.g. ****1234)</span>
+                    <span class="toggle-desc">Mask confidential card serial digits on printed receipts (e.g.
+                      ****1234)</span>
                   </div>
                   <div class="switch">
                     <input type="checkbox" id="a-rfidmask" checked />
@@ -1042,7 +1213,9 @@
               <div class="card-header-left">
                 <div class="card-header-icon amber">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
                   </svg>
                 </div>
                 <div>
@@ -1057,9 +1230,12 @@
                 <label class="form-label" for="food_company">Cafe / Restaurant Name</label>
                 <div class="input-with-icon">
                   <span class="input-icon-prefix">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                      <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                    </svg>
                   </span>
-                  <input type="text" id="food_company" class="form-control" value="YOUR FOOD COMPANY NAME" placeholder="Cafe business name" />
+                  <input type="text" id="food_company" class="form-control" placeholder="e.g. FunSquare Food Cafe" />
                 </div>
               </div>
 
@@ -1068,9 +1244,14 @@
                   <label class="form-label" for="food_phone">Phone Number</label>
                   <div class="input-with-icon">
                     <span class="input-icon-prefix">
-                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path
+                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                        </path>
+                      </svg>
                     </span>
-                    <input type="text" id="food_phone" class="form-control" value="9876543210" placeholder="Counter phone number" />
+                    <input type="text" id="food_phone" class="form-control" placeholder="e.g. +91 98765 43210" />
                   </div>
                 </div>
 
@@ -1078,21 +1259,26 @@
                   <label class="form-label" for="food_fssai">FSSAI License No</label>
                   <div class="input-with-icon">
                     <span class="input-icon-prefix">
-                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
                     </span>
-                    <input type="text" id="food_fssai" class="form-control" value="FSSAI-YOUR COMPANY" placeholder="Mandatory FSSAI license" />
+                    <input type="text" id="food_fssai" class="form-control" placeholder="e.g. 10019022009876" />
                   </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="food_address">Cafe Location / Address</label>
-                <textarea id="food_address" class="form-control" placeholder="Food counter address">YOUR FOOD CENTER NAME</textarea>
+                <textarea id="food_address" class="form-control"
+                  placeholder="Food counter address printed on receipts"></textarea>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="food_footer">Bill Footer Note</label>
-                <textarea id="food_footer" class="form-control" placeholder="Special note e.g. Please check your order before leaving."></textarea>
+                <textarea id="food_footer" class="form-control"
+                  placeholder="e.g. Please collect your token and check order before leaving."></textarea>
               </div>
             </div>
           </div>
@@ -1103,7 +1289,9 @@
               <div class="card-header-left">
                 <div class="card-header-icon emerald">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                    </path>
                   </svg>
                 </div>
                 <div>
@@ -1118,9 +1306,12 @@
                 <label class="form-label" for="food_gst">Food GST Number</label>
                 <div class="input-with-icon">
                   <span class="input-icon-prefix">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
                   </span>
-                  <input type="text" id="food_gst" class="form-control" value="YOUR COMPANY GST" placeholder="Food GST Registration No" />
+                  <input type="text" id="food_gst" class="form-control" placeholder="e.g. 27AAAAA0000A1Z5" />
                 </div>
               </div>
 
@@ -1153,10 +1344,44 @@
                     <span class="toggle-desc">Add GST over and above menu price (e.g. ₹100 + 5% GST)</span>
                   </div>
                   <div class="switch">
-                    <input type="checkbox" id="f-gstextra" checked />
+                    <input type="checkbox" id="f-gstextra" checked onchange="toggleFoodGstType()" />
                     <span class="slider"></span>
                   </div>
                 </label>
+
+                <!-- Food GST Calculation Type (Shown when Food GST Extra is checked) -->
+                <div id="food-gst-type-box" class="gst-calc-subpanel" style="display: none;">
+                  <div class="gst-sub-title">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4m0-4h.01"></path>
+                    </svg>
+                    Food GST Calculation Mode
+                  </div>
+                  <div class="gst-mode-grid">
+                    <label class="gst-mode-card active" id="food_mode_plus_card"
+                      onclick="setFoodGstMode('amount_plus_gst')">
+                      <input type="radio" name="food_gst_calc_type" id="food_gst_mode_plus" value="amount_plus_gst"
+                        checked />
+                      <div class="gst-mode-details">
+                        <span class="gst-mode-name">
+                          Amount + GST
+                          <span class="gst-mode-tag plus">Exclusive</span>
+                        </span>
+                      </div>
+                    </label>
+
+                    <label class="gst-mode-card" id="food_mode_minus_card" onclick="setFoodGstMode('amount_minus_gst')">
+                      <input type="radio" name="food_gst_calc_type" id="food_gst_mode_minus" value="amount_minus_gst" />
+                      <div class="gst-mode-details">
+                        <span class="gst-mode-name">
+                          Amount - GST
+                          <span class="gst-mode-tag minus">Inclusive</span>
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
 
                 <label class="toggle-row" for="f-invoice">
                   <div class="toggle-info">
@@ -1201,7 +1426,11 @@
                 <label class="form-label" for="rfid_vip_discount">VIP Member Discount (%)</label>
                 <div class="input-with-icon" style="max-width: 220px;">
                   <span class="input-icon-prefix">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                      </polygon>
+                    </svg>
                   </span>
                   <input type="number" id="rfid_vip_discount" class="form-control" value="0" min="0" max="100" />
                 </div>
@@ -1216,9 +1445,11 @@
                       <input type="radio" name="cardmode" id="cardmode_lock" />
                       <span>1. Card Lock Deposit</span>
                     </div>
-                    <p style="margin: 0; font-size: 11.5px; color: var(--ink-muted);">Refundable security deposit balance</p>
+                    <p style="margin: 0; font-size: 11.5px; color: var(--ink-muted);">Refundable security deposit
+                      balance</p>
                     <div style="margin-top: 6px;">
-                      <input type="number" id="rfid_lock_amt" class="form-control" value="0" placeholder="Lock Amt (₹)" disabled />
+                      <input type="number" id="rfid_lock_amt" class="form-control" value="0" placeholder="Lock Amt (₹)"
+                        disabled />
                     </div>
                   </label>
 
@@ -1227,9 +1458,11 @@
                       <input type="radio" name="cardmode" id="cardmode_price" checked />
                       <span>2. Card Sale Price</span>
                     </div>
-                    <p style="margin: 0; font-size: 11.5px; color: var(--ink-muted);">One-time purchase price per card</p>
+                    <p style="margin: 0; font-size: 11.5px; color: var(--ink-muted);">One-time purchase price per card
+                    </p>
                     <div style="margin-top: 6px;">
-                      <input type="number" id="rfid_card_price" class="form-control" value="30" placeholder="Price (₹)" />
+                      <input type="number" id="rfid_card_price" class="form-control" value="30"
+                        placeholder="Price (₹)" />
                     </div>
                   </label>
 
@@ -1287,9 +1520,14 @@
                 </label>
                 <div class="input-with-icon" style="max-width: 220px;">
                   <span class="input-icon-prefix">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path
+                        d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83">
+                      </path>
+                    </svg>
                   </span>
-                  <input type="number" id="rfid_punch_days" class="form-control" value="365" min="1" placeholder="Days" />
+                  <input type="number" id="rfid_punch_days" class="form-control" value="365" min="1"
+                    placeholder="Days" />
                 </div>
               </div>
             </div>
@@ -1326,9 +1564,12 @@
                 <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
                 <option value="POS-80">POS-80 Series</option>
               </select>
-              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)"
+                title="Refresh device list">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
             </div>
@@ -1339,8 +1580,10 @@
                 <input type="number" id="prn_arcade_copies" class="form-control" value="1" min="1" max="5" />
               </div>
               <div class="printer-checks-group">
-                <label class="mini-check"><input type="checkbox" id="prn_arcade_allow" checked /><span>Allow print</span></label>
-                <label class="mini-check"><input type="checkbox" id="prn_arcade_reprint" /><span>Allow re-print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_arcade_allow" checked /><span>Allow
+                    print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_arcade_reprint" /><span>Allow
+                    re-print</span></label>
               </div>
             </div>
           </div>
@@ -1351,7 +1594,8 @@
               <div class="printer-identity">
                 <div class="printer-badge-icon emerald">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
                   </svg>
                 </div>
                 <div>
@@ -1367,9 +1611,12 @@
                 <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
                 <option value="POS-80">POS-80 Series</option>
               </select>
-              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)"
+                title="Refresh device list">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
             </div>
@@ -1380,8 +1627,10 @@
                 <input type="number" id="prn_food_copies" class="form-control" value="1" min="1" max="5" />
               </div>
               <div class="printer-checks-group">
-                <label class="mini-check"><input type="checkbox" id="prn_food_allow" checked /><span>Allow print</span></label>
-                <label class="mini-check"><input type="checkbox" id="prn_food_reprint" /><span>Allow re-print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_food_allow" checked /><span>Allow
+                    print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_food_reprint" /><span>Allow
+                    re-print</span></label>
               </div>
             </div>
           </div>
@@ -1392,7 +1641,9 @@
               <div class="printer-identity">
                 <div class="printer-badge-icon amber">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                    </path>
                   </svg>
                 </div>
                 <div>
@@ -1408,9 +1659,12 @@
                 <option value="Kitchen Printer 1" selected>Kitchen Printer 1</option>
                 <option value="Kitchen Printer 2">Kitchen Printer 2</option>
               </select>
-              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)"
+                title="Refresh device list">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
             </div>
@@ -1421,8 +1675,10 @@
                 <input type="number" id="prn_kot_copies" class="form-control" value="1" min="1" max="5" />
               </div>
               <div class="printer-checks-group">
-                <label class="mini-check"><input type="checkbox" id="prn_kot_allow" checked /><span>Allow KOT print</span></label>
-                <label class="mini-check"><input type="checkbox" id="prn_kot_reprint" /><span>Allow KOT re-print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_kot_allow" checked /><span>Allow KOT
+                    print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_kot_reprint" /><span>Allow KOT
+                    re-print</span></label>
               </div>
             </div>
           </div>
@@ -1449,9 +1705,12 @@
                 <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
                 <option value="POS-80">POS-80 Series</option>
               </select>
-              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)"
+                title="Refresh device list">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
             </div>
@@ -1462,8 +1721,10 @@
                 <input type="number" id="prn_quick_copies" class="form-control" value="1" min="1" max="5" />
               </div>
               <div class="printer-checks-group">
-                <label class="mini-check"><input type="checkbox" id="prn_quick_allow" checked /><span>Allow print</span></label>
-                <label class="mini-check"><input type="checkbox" id="prn_quick_reprint" /><span>Allow re-print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_quick_allow" checked /><span>Allow
+                    print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_quick_reprint" /><span>Allow
+                    re-print</span></label>
               </div>
             </div>
           </div>
@@ -1491,9 +1752,12 @@
                 <option value="Epson TM-T88" selected>Epson TM-T88 (Thermal)</option>
                 <option value="POS-80">POS-80 Series</option>
               </select>
-              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)"
+                title="Refresh device list">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
             </div>
@@ -1504,8 +1768,10 @@
                 <input type="number" id="prn_direct_copies" class="form-control" value="1" min="1" max="5" />
               </div>
               <div class="printer-checks-group">
-                <label class="mini-check"><input type="checkbox" id="prn_direct_allow" checked /><span>Allow print</span></label>
-                <label class="mini-check"><input type="checkbox" id="prn_direct_reprint" /><span>Allow re-print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_direct_allow" checked /><span>Allow
+                    print</span></label>
+                <label class="mini-check"><input type="checkbox" id="prn_direct_reprint" /><span>Allow
+                    re-print</span></label>
               </div>
             </div>
           </div>
@@ -1516,7 +1782,9 @@
               <div class="printer-identity">
                 <div class="printer-badge-icon emerald">
                   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                    </path>
                   </svg>
                 </div>
                 <div>
@@ -1532,17 +1800,22 @@
                 <option value="Zebra ZD220" selected>Zebra ZD220 (Thermal Transfer)</option>
                 <option value="TSC TE200">TSC TE200</option>
               </select>
-              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)" title="Refresh device list">
+              <button type="button" class="btn-printer-refresh" onclick="refreshPrinterAnimation(this)"
+                title="Refresh device list">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
             </div>
 
             <div class="printer-options-row">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <label for="prn_label_size" style="font-size: 12px; font-weight: 600; color: var(--ink-muted);">Label Size:</label>
-                <select id="prn_label_size" class="form-control" style="width: 95px; height: 32px; padding: 0 8px; font-size: 12px;">
+                <label for="prn_label_size" style="font-size: 12px; font-weight: 600; color: var(--ink-muted);">Label
+                  Size:</label>
+                <select id="prn_label_size" class="form-control"
+                  style="width: 95px; height: 32px; padding: 0 8px; font-size: 12px;">
                   <option value="1 X 4">1 X 4</option>
                   <option value="2 X 4" selected>2 X 4</option>
                   <option value="4 X 6">4 X 6</option>
@@ -1675,6 +1948,58 @@
       showToast('Navigating back to Master...');
     }
 
+    // Toggle Arcade GST Type subpanel based on checkbox
+    function toggleArcadeGstType() {
+      const isChecked = document.getElementById('a-gstextra')?.checked ?? false;
+      const box = document.getElementById('arcade-gst-type-box');
+      if (box) {
+        box.style.display = isChecked ? 'block' : 'none';
+      }
+    }
+
+    // Set Arcade GST Calculation Mode (Amount + GST vs Amount - GST)
+    function setArcadeGstMode(mode) {
+      const plusRadio = document.getElementById('arcade_gst_mode_plus');
+      const minusRadio = document.getElementById('arcade_gst_mode_minus');
+      const plusCard = document.getElementById('arcade_mode_plus_card');
+      const minusCard = document.getElementById('arcade_mode_minus_card');
+      if (mode === 'amount_minus_gst') {
+        if (minusRadio) minusRadio.checked = true;
+        plusCard?.classList.remove('active');
+        minusCard?.classList.add('active');
+      } else {
+        if (plusRadio) plusRadio.checked = true;
+        plusCard?.classList.add('active');
+        minusCard?.classList.remove('active');
+      }
+    }
+
+    // Toggle Food GST Type subpanel based on checkbox
+    function toggleFoodGstType() {
+      const isChecked = document.getElementById('f-gstextra')?.checked ?? false;
+      const box = document.getElementById('food-gst-type-box');
+      if (box) {
+        box.style.display = isChecked ? 'block' : 'none';
+      }
+    }
+
+    // Set Food GST Calculation Mode (Amount + GST vs Amount - GST)
+    function setFoodGstMode(mode) {
+      const plusRadio = document.getElementById('food_gst_mode_plus');
+      const minusRadio = document.getElementById('food_gst_mode_minus');
+      const plusCard = document.getElementById('food_mode_plus_card');
+      const minusCard = document.getElementById('food_mode_minus_card');
+      if (mode === 'amount_minus_gst') {
+        if (minusRadio) minusRadio.checked = true;
+        plusCard?.classList.remove('active');
+        minusCard?.classList.add('active');
+      } else {
+        if (plusRadio) plusRadio.checked = true;
+        plusCard?.classList.add('active');
+        minusCard?.classList.remove('active');
+      }
+    }
+
     // Save configuration to localStorage
     function saveSettings() {
       const settings = {
@@ -1690,6 +2015,7 @@
           qrHours: document.getElementById('arcade_qr_hours')?.value || '1',
           qrMins: document.getElementById('arcade_qr_mins')?.value || '0',
           gstExtra: document.getElementById('a-gstextra')?.checked ?? false,
+          gstCalcType: document.querySelector('input[name="arcade_gst_calc_type"]:checked')?.value || 'amount_plus_gst',
           invoice: document.getElementById('a-invoice')?.checked ?? true,
           rfidMask: document.getElementById('a-rfidmask')?.checked ?? true
         },
@@ -1704,6 +2030,7 @@
           sgst: parseFloat(document.getElementById('food_sgst')?.value || 2.5),
           gstApp: document.getElementById('f-gstapp')?.checked ?? true,
           gstExtra: document.getElementById('f-gstextra')?.checked ?? true,
+          gstCalcType: document.querySelector('input[name="food_gst_calc_type"]:checked')?.value || 'amount_plus_gst',
           invoice: document.getElementById('f-invoice')?.checked ?? false
         },
         rfid: {
@@ -1770,35 +2097,54 @@
         if (!raw) return;
         const s = JSON.parse(raw);
 
+        const isDummy = (val) => {
+          if (!val) return false;
+          const dummyList = [
+            'elesof',
+            '123 test street, tech city',
+            'gst no 12344567',
+            '!!thanks!!',
+            'your food company name',
+            'fssai-your company',
+            'your food center name',
+            'your company gst'
+          ];
+          return dummyList.includes(val.trim().toLowerCase());
+        };
+
         // Arcade
         if (s.arcade) {
-          if (s.arcade.company) document.getElementById('arcade_company').value = s.arcade.company;
-          if (s.arcade.phone) document.getElementById('arcade_phone').value = s.arcade.phone;
-          if (s.arcade.gst) document.getElementById('arcade_gst').value = s.arcade.gst;
-          if (s.arcade.address) document.getElementById('arcade_address').value = s.arcade.address;
-          if (s.arcade.footer) document.getElementById('arcade_footer').value = s.arcade.footer;
+          if (s.arcade.company && !isDummy(s.arcade.company)) document.getElementById('arcade_company').value = s.arcade.company;
+          if (s.arcade.phone && s.arcade.phone !== '9876543210') document.getElementById('arcade_phone').value = s.arcade.phone;
+          if (s.arcade.gst && !isDummy(s.arcade.gst)) document.getElementById('arcade_gst').value = s.arcade.gst;
+          if (s.arcade.address && !isDummy(s.arcade.address)) document.getElementById('arcade_address').value = s.arcade.address;
+          if (s.arcade.footer && !isDummy(s.arcade.footer)) document.getElementById('arcade_footer').value = s.arcade.footer;
           if (s.arcade.cgst !== undefined) document.getElementById('arcade_cgst').value = s.arcade.cgst;
           if (s.arcade.sgst !== undefined) document.getElementById('arcade_sgst').value = s.arcade.sgst;
           if (s.arcade.qrDays) document.getElementById('arcade_qr_days').value = s.arcade.qrDays;
           if (s.arcade.qrHours) document.getElementById('arcade_qr_hours').value = s.arcade.qrHours;
           if (s.arcade.qrMins) document.getElementById('arcade_qr_mins').value = s.arcade.qrMins;
           if (s.arcade.gstExtra !== undefined) document.getElementById('a-gstextra').checked = s.arcade.gstExtra;
+          if (s.arcade.gstCalcType) setArcadeGstMode(s.arcade.gstCalcType);
+          toggleArcadeGstType();
           if (s.arcade.invoice !== undefined) document.getElementById('a-invoice').checked = s.arcade.invoice;
           if (s.arcade.rfidMask !== undefined) document.getElementById('a-rfidmask').checked = s.arcade.rfidMask;
         }
 
         // Food
         if (s.food) {
-          if (s.food.company) document.getElementById('food_company').value = s.food.company;
-          if (s.food.phone) document.getElementById('food_phone').value = s.food.phone;
-          if (s.food.fssai) document.getElementById('food_fssai').value = s.food.fssai;
-          if (s.food.address) document.getElementById('food_address').value = s.food.address;
+          if (s.food.company && !isDummy(s.food.company)) document.getElementById('food_company').value = s.food.company;
+          if (s.food.phone && s.food.phone !== '9876543210') document.getElementById('food_phone').value = s.food.phone;
+          if (s.food.fssai && !isDummy(s.food.fssai)) document.getElementById('food_fssai').value = s.food.fssai;
+          if (s.food.address && !isDummy(s.food.address)) document.getElementById('food_address').value = s.food.address;
           if (s.food.footer) document.getElementById('food_footer').value = s.food.footer;
-          if (s.food.gst) document.getElementById('food_gst').value = s.food.gst;
+          if (s.food.gst && !isDummy(s.food.gst)) document.getElementById('food_gst').value = s.food.gst;
           if (s.food.cgst !== undefined) document.getElementById('food_cgst').value = s.food.cgst;
           if (s.food.sgst !== undefined) document.getElementById('food_sgst').value = s.food.sgst;
           if (s.food.gstApp !== undefined) document.getElementById('f-gstapp').checked = s.food.gstApp;
           if (s.food.gstExtra !== undefined) document.getElementById('f-gstextra').checked = s.food.gstExtra;
+          if (s.food.gstCalcType) setFoodGstMode(s.food.gstCalcType);
+          toggleFoodGstType();
           if (s.food.invoice !== undefined) document.getElementById('f-invoice').checked = s.food.invoice;
         }
 
@@ -1865,6 +2211,8 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedSettings();
       syncExpireState();
+      toggleArcadeGstType();
+      toggleFoodGstType();
     });
   </script>
 </body>

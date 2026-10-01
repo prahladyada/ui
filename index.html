@@ -193,7 +193,31 @@
       display: flex;
       align-items: center;
       padding-right: 4px;
-      gap: 6px;
+      gap: 8px;
+    }
+
+    .user-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      line-height: 1.15;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .user-meta-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .user-meta-server {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.2;
     }
 
     /* ===== license alert badge ===== */
@@ -203,8 +227,6 @@
       gap: 6px;
       padding: 3px 10px;
       margin-right: 6px;
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(245, 158, 11, 0.28) 100%);
-      border: 1px solid rgba(253, 224, 71, 0.55);
       border-radius: 20px;
       color: #fef08a;
       font-size: 11.5px;
@@ -239,10 +261,12 @@
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.85);
       }
+
       70% {
         transform: scale(1.15);
         box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
       }
+
       100% {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
@@ -2626,12 +2650,12 @@
         gap: 8px;
       }
 
-      .ms-modal-header > div:first-child {
+      .ms-modal-header>div:first-child {
         min-width: 0;
         gap: 8px !important;
       }
 
-      .ms-modal-header > div:first-child > div:first-child {
+      .ms-modal-header>div:first-child>div:first-child {
         width: 30px !important;
         height: 30px !important;
         flex: 0 0 30px;
@@ -2642,7 +2666,7 @@
         white-space: nowrap;
       }
 
-      .ms-modal-header > div:last-child {
+      .ms-modal-header>div:last-child {
         flex: 0 0 auto;
         gap: 6px !important;
       }
@@ -2897,9 +2921,21 @@
     }
 
     @keyframes recShake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-6px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(6px);
+      }
     }
 
     .reconcile-toggle-pwd {
@@ -2987,10 +3023,22 @@
     }
 
     @keyframes recCardPulse {
-      0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6); transform: scale(0.98); }
-      50% { box-shadow: 0 0 0 12px rgba(244, 63, 94, 0); transform: scale(1.02); }
-      100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); transform: scale(1); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6);
+        transform: scale(0.98);
+      }
+
+      50% {
+        box-shadow: 0 0 0 12px rgba(244, 63, 94, 0);
+        transform: scale(1.02);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+        transform: scale(1);
+      }
     }
+
     .reconcile-card-highlight {
       animation: recCardPulse 1.2s cubic-bezier(0, 0, 0.2, 1) 2;
     }
@@ -3008,20 +3056,25 @@
     <div class="menu-item" id="reportMenuBtn">Report</div>
     <div class="menu-item" id="foodMenuBtn">Food</div>
     <div class="menu-item">SoftPlay</div>
-    <div class="menu-item">Declaration Form</div>
+    <div class="menu-item" id="declarationFormMenuBtn">Declaration Form</div>
 
     <div class="menu-item" id="backupSchedulerBtn" style="cursor: pointer;">Backup Scheduler</div>
     <div class="user-menu-container">
-      <div class="license-alert-badge" id="licenseAlertBadge" title="License expiring in 6 days" onclick="alert('License Alert:\nYour licence is expiring in 6 days. Please contact support or renew your license.')">
+      <div class="license-alert-badge" id="licenseAlertBadge" title="License expiring in 6 days"
+        onclick="alert('License Alert:\nYour licence is expiring in 6 days. Please contact support or renew your license.')">
         <span class="license-alert-pulse"></span>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
         <span>Your licence expiring in 6 days</span>
       </div>
-      <div class="menu-item">Admin</div>
+      <div class="user-meta" onclick="document.getElementById('userIcon').click()">
+        <span class="user-meta-name">Admin</span>
+        <span class="user-meta-server">server</span>
+      </div>
       <div class="user-icon" id="userIcon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
@@ -3051,6 +3104,8 @@
             src="img/password.png" style="width: 18px; height: 18px; margin-right: 8px;"> Change password</div>
         <div class="dropdown-item" id="aboutUsBtn" style="display: flex; align-items: center;"><img
             src="img/aboutus.png" style="width: 18px; height: 18px; margin-right: 8px;"> About US</div>
+        <div class="dropdown-item" id="supportBtn" style="display: flex; align-items: center;"><img
+            src="img/customer-service.png" style="width: 18px; height: 18px; margin-right: 8px;"> Support</div>
         <div class="dropdown-item" style="display: flex; align-items: center;"><img src="img/logout.png"
             style="width: 18px; height: 18px; margin-right: 8px;"> Logout</div>
         <div class="dropdown-item" style="display: flex; align-items: center; gap: 8px;">
@@ -3413,7 +3468,8 @@
 
             <!-- 13. Reconcile (Unlocked via Ctrl+Shift+R) -->
             <div class="master-card card-rose" id="reconcileCard" style="display: none; cursor: pointer;">
-              <div class="master-icon" style="background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); color: #ffffff;">
+              <div class="master-icon"
+                style="background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); color: #ffffff;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -3436,7 +3492,8 @@
 
             <!-- 14. Shift Schedule -->
             <div class="master-card card-indigo" id="shiftScheduleCard" style="cursor: pointer;">
-              <div class="master-icon" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff;">
+              <div class="master-icon"
+                style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -3446,6 +3503,31 @@
               <div class="master-info">
                 <h3>Shift Schedule</h3>
                 <p>Automated opening &amp; closing time, rules &amp; schedule</p>
+              </div>
+              <div class="master-arrow">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <!-- 15. Manage Coupons -->
+            <div class="master-card card-purple" id="manageCouponsCard" style="cursor: pointer;">
+              <div class="master-icon"
+                style="background: linear-gradient(135deg, #ec4899 0%, #d946ef 100%); color: #ffffff;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M21 5H3a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 0-2-2z">
+                  </path>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                  <circle cx="9.5" cy="14.5" r=".5" fill="currentColor"></circle>
+                  <circle cx="14.5" cy="9.5" r=".5" fill="currentColor"></circle>
+                </svg>
+              </div>
+              <div class="master-info">
+                <h3>Manage Coupons</h3>
+                <p>Create &amp; manage discount coupons &amp; promo codes</p>
               </div>
               <div class="master-arrow">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -3535,6 +3617,156 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Support View -->
+      <div id="supportContent"
+        style="display: none; height: 100%; align-items: center; justify-content: center; background: #f1f5f9;  overflow-y: auto;">
+        <div
+          style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 5px 36px; max-width: 600px; width: 100%; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); position: relative;">
+
+          <!-- Close Button -->
+          <button onclick="closeSupportView()" type="button"
+            style="position: absolute; top: 18px; right: 18px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; font-size: 18px; transition: background 0.2s;"
+            onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+            onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';" title="Close">&times;</button>
+
+          <!-- Header -->
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 22px;">
+            <div
+              style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <img src="img/customer-service.png" style="width: 28px; height: 28px; object-fit: contain;">
+            </div>
+            <div>
+              <h2 style="margin: 0; color: #1e293b; font-size: 20px; font-weight: 700;">Customer Support & AMC</h2>
+              <p style="margin: 3px 0 0; color: #64748b; font-size: 13px;">Helpdesk, License & Software Maintenance
+                Policy</p>
+            </div>
+          </div>
+
+          <!-- Section 1: Support Numbers -->
+          <div style="margin-bottom: 20px;">
+            <div
+              style="font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                </path>
+              </svg>
+              Support Contact Numbers
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              <!-- Contact 1 -->
+              <div
+                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px;">HELPLINE 1</div>
+                <a href="tel:+919876543210"
+                  style="color: #0284c7; font-size: 13.5px; font-weight: 700; text-decoration: none; display: block;">+91
+                  98765 43210</a>
+                <div style="font-size: 10.5px; color: #94a3b8; margin-top: 2px;">General Support</div>
+              </div>
+
+              <!-- Contact 2 -->
+              <div
+                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px;">HELPLINE 2</div>
+                <a href="tel:+919876543211"
+                  style="color: #0284c7; font-size: 13.5px; font-weight: 700; text-decoration: none; display: block;">+91
+                  98765 43211</a>
+                <div style="font-size: 10.5px; color: #94a3b8; margin-top: 2px;">Technical Support</div>
+              </div>
+
+              <!-- Contact 3 -->
+              <div
+                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px;">HELPLINE 3</div>
+                <a href="tel:+919876543212"
+                  style="color: #0284c7; font-size: 13.5px; font-weight: 700; text-decoration: none; display: block;">+91
+                  98765 43212</a>
+                <div style="font-size: 10.5px; color: #94a3b8; margin-top: 2px;">Escalation Support</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Registration Date & Next AMC Date -->
+          <div style="margin-bottom: 20px;">
+            <div
+              style="font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Registration & AMC Details
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <!-- Registration Date -->
+              <div
+                style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 11.5px; font-weight: 600; color: #166534; text-transform: uppercase;">
+                    Registration Date</div>
+                  <div id="supportRegDate" style="font-size: 15px; font-weight: 700; color: #14532d; margin-top: 3px;">
+                    01-Jan-2024</div>
+                </div>
+              </div>
+
+              <!-- Next AMC Date -->
+              <div
+                style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 11.5px; font-weight: 600; color: #1e40af; text-transform: uppercase;">Next AMC
+                    Date</div>
+                  <div id="supportNextAmcDate"
+                    style="font-size: 15px; font-weight: 700; color: #1e3a8a; margin-top: 3px;">01-Jan-2027</div>
+                </div>
+                <span
+                  style="background: #dbeafe; color: #1d4ed8; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; border: 1px solid #93c5fd;">Active
+                  AMC</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Software Update Policy & Disclaimer -->
+          <div
+            style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 14px 16px; margin-bottom: 22px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span style="font-size: 13.5px; font-weight: 700; color: #92400e;">Support Policy & Disclaimer</span>
+            </div>
+            <div style="font-size: 12.5px; color: #78350f; line-height: 1.55;">
+              <p style="margin: 0 0 6px;">
+                <strong>Support Timings:</strong> Standard support is available from <strong>9:00 AM to 9:00
+                  PM</strong>. Support after 9:00 PM will only be provided in case of major/critical issues.
+              </p>
+              <p style="margin: 0 0 6px;">
+                <strong>Software Updates:</strong> We provide software updates <strong>only from Monday to
+                  Friday</strong>. If you request or carry out software updates on <strong>Saturday or Sunday</strong>,
+                it will be entirely at your own responsibility and risk. Our team will not hold any responsibility for
+                any operational downtime, business loss, or issues arising from weekend updates.
+              </p>
+              <p
+                style="margin: 0; font-size: 11.5px; color: #b45309; border-top: 1px dashed #fcd34d; padding-top: 6px;">
+                नोट: सपोर्ट का समय सुबह 9:00 AM से रात 9:00 PM तक रहेगा। रात 9:00 PM के बाद केवल किसी बड़े/क्रिटिकल
+                इश्यू पर ही सपोर्ट दिया जाएगा। सॉफ्टवेयर अपडेट केवल सोमवार से शुक्रवार तक ही किया जाएगा; शनिवार या
+                रविवार को अपडेट करवाने पर पूरी जिम्मेदारी आपकी होगी और किसी नुकसान की हमारी जिम्मेदारी नहीं होगी।
+              </p>
+            </div>
+          </div>
+
+
+
+        </div>
       </div>
 
       <!-- Change Password View -->
@@ -3847,7 +4079,8 @@
           <div class="master-grid report-grid">
             <div class="master-card card-blue report-option-card" data-report="payment-report">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                   <line x1="2" y1="10" x2="22" y2="10"></line>
                   <line x1="6" y1="15" x2="10" y2="15"></line>
@@ -3859,13 +4092,16 @@
                 <p>Review payment transactions</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-indigo report-option-card" data-page="mcardpaymentreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="4" width="18" height="16" rx="3"></rect>
                   <path d="M7 15h3m4 0h3"></path>
                   <path d="M7 9l5 4 5-4"></path>
@@ -3876,13 +4112,16 @@
                 <p>Review MCard payments</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-cyan report-option-card" data-report="game-report">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="6" width="20" height="12" rx="4"></rect>
                   <line x1="6" y1="12" x2="10" y2="12"></line>
                   <line x1="8" y1="10" x2="8" y2="14"></line>
@@ -3895,13 +4134,16 @@
                 <p>Review game activity</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-emerald report-option-card" data-page="distinctrfidreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4.93 4.93a10 10 0 0 1 14.14 0"></path>
                   <path d="M7.76 7.76a6 6 0 0 1 8.48 0"></path>
                   <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
@@ -3913,13 +4155,16 @@
                 <p>View distinct RFID activity</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-amber report-option-card" data-page="playednotrechargedreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                   <line x1="2" y1="10" x2="22" y2="10"></line>
                   <line x1="12" y1="12" x2="12" y2="13.5"></line>
@@ -3932,14 +4177,19 @@
                 <p>View unrecharged cards</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-rose report-option-card" data-page="techcardpunchreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                  </path>
                 </svg>
               </div>
               <div class="master-info">
@@ -3947,13 +4197,16 @@
                 <p>Review card punch details</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-teal report-option-card" data-page="lostcardreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="4" width="15" height="11" rx="2"></rect>
                   <line x1="2" y1="8" x2="17" y2="8"></line>
                   <circle cx="16" cy="16" r="5"></circle>
@@ -3965,13 +4218,16 @@
                 <p>Review lost card records</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-blue report-option-card" data-page="directbillingreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -3984,13 +4240,16 @@
                 <p>Review direct billing</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-indigo report-option-card" data-page="directsalereturnreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="1 4 1 10 7 10"></polyline>
                   <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
                   <path d="M12 8v4l3 2"></path>
@@ -4001,13 +4260,16 @@
                 <p>Review direct sale returns</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-cyan report-option-card" data-page="quickbillingreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                 </svg>
               </div>
@@ -4016,13 +4278,16 @@
                 <p>Review quick sales</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-emerald report-option-card" data-page="quicksalereturnreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M9 14l-4-4 4-4"></path>
                   <path d="M5 10h11a4 4 0 1 1 0 8h-1"></path>
                 </svg>
@@ -4032,13 +4297,16 @@
                 <p>Review quick sale returns</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-amber report-option-card" data-page="monthwisegamereport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -4053,13 +4321,16 @@
                 <p>Compare monthly game activity</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-rose report-option-card" data-page="customerbalancereport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
                   <path d="M4 6v12a2 2 0 0 0 2 2h14v-4"></path>
                   <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
@@ -4070,13 +4341,16 @@
                 <p>Review customer balances</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-teal report-option-card" data-page="customerpackagereport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="21 8 21 21 3 21 3 8"></polyline>
                   <rect x="1" y="3" width="22" height="5"></rect>
                   <line x1="10" y1="12" x2="14" y2="12"></line>
@@ -4088,13 +4362,16 @@
                 <p>Review customer packages</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-blue report-option-card" data-page="paymentmodereport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                   <line x1="1" y1="10" x2="23" y2="10"></line>
                   <circle cx="7" cy="15" r="1.5"></circle>
@@ -4106,13 +4383,16 @@
                 <p>Payment modes & cashier breakdown</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-indigo report-option-card" data-page="taxbreakdownreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <line x1="19" y1="5" x2="5" y2="19"></line>
                   <circle cx="7.5" cy="7.5" r="2.5"></circle>
                   <circle cx="16.5" cy="16.5" r="2.5"></circle>
@@ -4123,13 +4403,16 @@
                 <p>Review tax totals</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-cyan report-option-card" data-page="userbreakdownreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                   <circle cx="9" cy="7" r="4"></circle>
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -4141,13 +4424,16 @@
                 <p>User collections & payment modes</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-emerald report-option-card" data-page="tokenredeemreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
                   <circle cx="12" cy="12" r="6"></circle>
                   <path d="M12 9v6M9 12h6"></path>
@@ -4158,13 +4444,16 @@
                 <p>Review token redemptions</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-amber report-option-card" data-page="tokenredeemlogreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                   <path d="M9 12l2 2 4-4"></path>
@@ -4175,14 +4464,19 @@
                 <p>Review redeem logs</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-rose report-option-card" data-page="ticketslabrewardreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                  </polygon>
                 </svg>
               </div>
               <div class="master-info">
@@ -4190,13 +4484,16 @@
                 <p>Review slab reward history</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-teal report-option-card" data-page="poswisereport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                   <line x1="8" y1="21" x2="16" y2="21"></line>
                   <line x1="12" y1="17" x2="12" y2="21"></line>
@@ -4207,13 +4504,16 @@
                 <p>Review POS-wise collections & sales</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-blue report-option-card" data-page="dailyreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="3" y1="9" x2="21" y2="9"></line>
                   <line x1="9" y1="21" x2="9" y2="9"></line>
@@ -4224,13 +4524,16 @@
                 <p>Review daily activity</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-indigo report-option-card" data-page="gamerefundreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
                   <polyline points="21 3 21 8 16 8"></polyline>
                   <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
@@ -4242,13 +4545,16 @@
                 <p>Review game refunds</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-cyan report-option-card">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <path d="M9 15l2 2 4-4"></path>
@@ -4259,13 +4565,16 @@
                 <p>Review declaration forms</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-emerald report-option-card" data-page="customerqrreport.html">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                   <circle cx="9" cy="7" r="4"></circle>
                   <line x1="17" y1="11" x2="23" y2="11"></line>
@@ -4278,13 +4587,16 @@
                 <p>Review customer QR list &amp; balances</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-amber report-option-card" data-view="food">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
                   <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
                   <line x1="6" y1="1" x2="6" y2="4"></line>
@@ -4297,13 +4609,16 @@
                 <p>Open food report</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
 
             <div class="master-card card-rose report-option-card">
               <div class="master-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
                   <path d="M2 12h20"></path>
@@ -4314,7 +4629,9 @@
                 <p>Review business insights</p>
               </div>
               <div class="master-arrow">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </div>
             </div>
           </div>
@@ -4322,7 +4639,8 @@
       </div>
 
       <div id="reportDetailContent" style="display: none; height: 100%; width: 100%;">
-        <iframe id="reportDetailFrame" src="reportdetail.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe id="reportDetailFrame" src="reportdetail.html"
+          style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
 
       <!-- Payment Report View -->
@@ -4417,7 +4735,20 @@
 
       <!-- Shift Schedule View -->
       <div id="shiftScheduleContent" style="display: none; height: 100%; width: 100%;">
-        <iframe src="shiftschedule.html" id="shiftScheduleFrame" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe src="shiftschedule.html" id="shiftScheduleFrame"
+          style="width: 100%; height: 100%; border: none;"></iframe>
+      </div>
+
+      <!-- Declaration Form View -->
+      <div id="declarationFormContent" style="display: none; height: 100%; width: 100%;">
+        <iframe src="declarationform.html" id="declarationFormFrame"
+          style="width: 100%; height: 100%; border: none;"></iframe>
+      </div>
+
+      <!-- Manage Coupons View -->
+      <div id="manageCouponsContent" style="display: none; height: 100%; width: 100%;">
+        <iframe src="managecoupons.html" id="manageCouponsFrame"
+          style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
 
       <!-- Default view (Empty state) -->
@@ -4491,7 +4822,8 @@
                     <input class="ms-cashier-inp" data-key="cardCount" type="text" value="-21" readonly disabled
                       tabindex="-1" title="Current Cashier field cannot be edited" />
                   </td>
-                  <td class="ms-net-cell" data-net="cardCount"><span style="font-weight: 700; color: #0f172a; font-size: 13px;">-42</span></td>
+                  <td class="ms-net-cell" data-net="cardCount"><span
+                      style="font-weight: 700; color: #0f172a; font-size: 13px;">-42</span></td>
                 </tr>
                 <tr>
                   <td class="ms-label-cell">Cash:</td>
@@ -4503,7 +4835,8 @@
                     <input class="ms-cashier-inp" data-key="cash" type="text" value="₹57,692.96" readonly disabled
                       tabindex="-1" title="Current Cashier field cannot be edited" />
                   </td>
-                  <td class="ms-net-cell" data-net="cash"><span style="font-weight: 700; color: #0f172a; font-size: 13px;">₹1,15,385.92</span></td>
+                  <td class="ms-net-cell" data-net="cash"><span
+                      style="font-weight: 700; color: #0f172a; font-size: 13px;">₹1,15,385.92</span></td>
                 </tr>
                 <tr>
                   <td class="ms-label-cell">Debit Card:</td>
@@ -4515,7 +4848,8 @@
                     <input class="ms-cashier-inp" data-key="debitCard" type="text" value="₹64,797.36" readonly disabled
                       tabindex="-1" title="Current Cashier field cannot be edited" />
                   </td>
-                  <td class="ms-net-cell" data-net="debitCard"><span style="font-weight: 700; color: #0f172a; font-size: 13px;">₹1,29,594.72</span></td>
+                  <td class="ms-net-cell" data-net="debitCard"><span
+                      style="font-weight: 700; color: #0f172a; font-size: 13px;">₹1,29,594.72</span></td>
                 </tr>
                 <tr>
                   <td class="ms-label-cell">UPI:</td>
@@ -4527,7 +4861,8 @@
                     <input class="ms-cashier-inp" data-key="gameCard" type="text" value="₹75.00" readonly disabled
                       tabindex="-1" title="Current Cashier field cannot be edited" />
                   </td>
-                  <td class="ms-net-cell" data-net="gameCard"><span style="font-weight: 700; color: #0f172a; font-size: 13px;">₹150.00</span></td>
+                  <td class="ms-net-cell" data-net="gameCard"><span
+                      style="font-weight: 700; color: #0f172a; font-size: 13px;">₹150.00</span></td>
                 </tr>
                 <tr>
                   <td class="ms-label-cell">OTHER:</td>
@@ -4539,7 +4874,8 @@
                     <input class="ms-cashier-inp" data-key="cheques" type="text" value="₹0.00" readonly disabled
                       tabindex="-1" title="Current Cashier field cannot be edited" />
                   </td>
-                  <td class="ms-net-cell" data-net="cheques"><span style="font-weight: 700; color: #0f172a; font-size: 13px;">₹0.00</span></td>
+                  <td class="ms-net-cell" data-net="cheques"><span
+                      style="font-weight: 700; color: #0f172a; font-size: 13px;">₹0.00</span></td>
                 </tr>
                 <tr class="ms-total-row" style="border-top: 2px solid #cbd5e1; background: rgba(241, 245, 249, 0.7);">
                   <td class="ms-label-cell" style="font-weight: 700; color: #0f172a;">Total:</td>
@@ -4553,7 +4889,8 @@
                       tabindex="-1" title="Current Cashier Total cannot be edited"
                       style="font-weight: 700; color: #0f172a; background: #e2e8f0;" />
                   </td>
-                  <td class="ms-net-cell" data-net="total" style="font-weight: 700;"><span style="font-weight: 800; color: #0f172a; font-size: 13.5px;">₹2,45,130.64</span></td>
+                  <td class="ms-net-cell" data-net="total" style="font-weight: 700;"><span
+                      style="font-weight: 800; color: #0f172a; font-size: 13.5px;">₹2,45,130.64</span></td>
                 </tr>
               </tbody>
             </table>
@@ -4609,6 +4946,7 @@
     var manageCustomerContent = document.getElementById('manageCustomerContent');
     var defaultContent = document.getElementById('defaultContent');
     var aboutUsContent = document.getElementById('aboutUsContent');
+    var supportContent = document.getElementById('supportContent');
     var changePwdContent = document.getElementById('changePwdContent');
     var backupSchedulerContent = document.getElementById('backupSchedulerContent');
     var paymentReportContent = document.getElementById('paymentReportContent');
@@ -4632,16 +4970,20 @@
     var managePosContent = document.getElementById('managePosContent');
     var reconcileContent = document.getElementById('reconcileContent');
     var shiftScheduleContent = document.getElementById('shiftScheduleContent');
+    var manageCouponsContent = document.getElementById('manageCouponsContent');
     var reportContent = document.getElementById('reportContent');
     var reportDetailContent = document.getElementById('reportDetailContent');
     var reportDetailFrame = document.getElementById('reportDetailFrame');
     var myShiftContent = document.getElementById('myShiftContent');
+    var declarationFormContent = document.getElementById('declarationFormContent');
 
     var masterMenuBtn = document.getElementById('masterMenuBtn');
     var reportMenuBtn = document.getElementById('reportMenuBtn');
     var foodMenuBtn = document.getElementById('foodMenuBtn');
+    var declarationFormMenuBtn = document.getElementById('declarationFormMenuBtn');
     var backupSchedulerBtn = document.getElementById('backupSchedulerBtn');
     var aboutUsBtn = document.getElementById('aboutUsBtn');
+    var supportBtn = document.getElementById('supportBtn');
     var changePwdBtn = document.getElementById('changePwdBtn');
     var myShiftBtn = document.getElementById('myShiftBtn');
     var userIcon = document.getElementById('userIcon');
@@ -4756,6 +5098,19 @@
       });
     }
 
+    // Menubar: Declaration Form click
+    if (declarationFormMenuBtn) {
+      declarationFormMenuBtn.addEventListener('click', function (e) {
+        showView(declarationFormContent, 'block', declarationFormMenuBtn);
+        if (userDropdown) userDropdown.classList.remove('show');
+        if (e) e.stopPropagation();
+      });
+    }
+
+    window.showDeclarationFormView = function () {
+      showView(declarationFormContent, 'block', declarationFormMenuBtn);
+    };
+
     // Master cards click logic
     function registerMasterCard(cardId, contentEl) {
       var card = document.getElementById(cardId);
@@ -4769,7 +5124,7 @@
     registerMasterCard('rfidCardSetupCard', rfidCardSetupContent);
     registerMasterCard('billingsettings', billingSettingsContent);
     registerMasterCard('manageGameGroupCard', manageDeviceGroupContent);
-    
+
     // Check Master Manage Device "list" permission
     function applyMasterManageDevicePerms() {
       var currentUser = localStorage.getItem('pos_current_user') || 'admin';
@@ -4780,7 +5135,7 @@
           var parsed = JSON.parse(raw);
           if ('list' in parsed) mdPerms.list = parsed.list;
         }
-      } catch (e) {}
+      } catch (e) { }
 
       var card = document.getElementById('manageDeviceCard');
       if (card) {
@@ -4816,7 +5171,7 @@
               return;
             }
           }
-        } catch (err) {}
+        } catch (err) { }
         showView(manageDeviceContent, 'block', masterMenuBtn);
       }, true);
     }
@@ -4831,6 +5186,7 @@
     registerMasterCard('manageValidityCard', manageValidityContent);
     registerMasterCard('reconcileCard', reconcileContent);
     registerMasterCard('shiftScheduleCard', shiftScheduleContent);
+    registerMasterCard('manageCouponsCard', manageCouponsContent);
 
     // Report cards click logic
     document.querySelectorAll('.report-option-card').forEach(function (card) {
@@ -4874,6 +5230,8 @@
         window.showReportsView();
       } else if (event.data && event.data.type === 'show-master') {
         window.showMasterView();
+      } else if (event.data && event.data.type === 'show-declaration-form') {
+        window.showDeclarationFormView();
       }
     });
 
@@ -4884,6 +5242,19 @@
         if (userDropdown) userDropdown.classList.remove('show');
       });
     }
+
+    if (supportBtn) {
+      supportBtn.addEventListener('click', function () {
+        showView(supportContent, 'flex');
+        if (userDropdown) userDropdown.classList.remove('show');
+      });
+    }
+
+    function closeSupportView() {
+      var defaultBtn = document.querySelector('.side-btn[data-name="manage-customer"]');
+      showView(manageCustomerContent, 'block', defaultBtn);
+    }
+    window.closeSupportView = closeSupportView;
 
     if (changePwdBtn) {
       changePwdBtn.addEventListener('click', function () {
@@ -5403,9 +5774,12 @@
                   <circle cx="7.5" cy="16.5" r="1.5"></circle>
                 </svg>
               </span>
-              <input type="password" id="reconcileKeyInput" class="reconcile-key-field" placeholder="Enter key (e.g. 1234 or admin)" autocomplete="off" autofocus />
-              <button type="button" class="reconcile-toggle-pwd" onclick="toggleReconcileKeyVisibility()" title="Show/Hide Key">
-                <svg id="recEyeIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <input type="password" id="reconcileKeyInput" class="reconcile-key-field"
+                placeholder="Enter key (e.g. 1234 or admin)" autocomplete="off" autofocus />
+              <button type="button" class="reconcile-toggle-pwd" onclick="toggleReconcileKeyVisibility()"
+                title="Show/Hide Key">
+                <svg id="recEyeIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                  viewBox="0 0 24 24">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>

@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>License & AMC Management</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --ink: #0f172a;
+      --ink-soft: #334155;
+      --ink-faint: #64748b;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+
+      --ok: #10b981;
+      --ok-bg: #ecfdf5;
+      --ok-border: #a7f3d0;
+
+      --amber: #f59e0b;
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+
+      --radius: 10px;
+      --radius-sm: 6px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 13.5px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .page-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Top Header */
+    .top-header {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .top-header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Stats Overview Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Card Panels */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.col-span-2 {
+      grid-column: span 2;
+    }
+
+    .form-group.col-span-3 {
+      grid-column: span 3;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
+    .form-label span.req {
+      color: var(--danger);
+    }
+
+    .form-input,
+    .form-select {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      color: var(--ink);
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      border-color: var(--line);
+      color: var(--ink-soft);
+    }
+
+    .btn-outline:hover {
+      background: #f1f5f9;
+      color: var(--ink);
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      border-color: var(--danger-border);
+      color: var(--danger);
+    }
+
+    .btn-danger-outline:hover {
+      background: var(--danger-bg);
+    }
+
+    .btn-sm {
+      height: 30px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
+    /* Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink-soft);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .badge-ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+      border: 1px solid var(--ok-border);
+    }
+
+    .badge-amber {
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+    }
+
+    .badge-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--ink-faint);
+      font-size: 13px;
+    }
+
+    /* Modal Backdrop & Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 520px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      background: #f8fafc;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.col-span-2,
+      .form-group.col-span-3 {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page-container">
+
+
+
+    <!-- Stats KPI Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">License Valid</div>
+        <div class="stat-value" id="dispLicenseValidDate" style="color: #0284c7;">-</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Registration Date</div>
+        <div class="stat-value" id="dispRegDate">-</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Next AMC Date</div>
+        <div class="stat-value" id="dispNextAmcDate" style="color: #0284c7;">-</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Total AMC Paid</div>
+        <div class="stat-value" id="dispTotalPaid">₹0</div>
+      </div>
+    </section>
+
+    <!-- License & Registration Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">License & Registration</div>
+      </div>
+
+      <form id="licenseForm" onsubmit="saveLicenseDetails(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1.6fr auto; gap: 16px; align-items: flex-end;">
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="form-label" for="inpRegDate" style="margin-bottom: 0;">Registration Date <span
+                  class="req">*</span></label>
+              <button type="button" class="btn btn-outline" style="height: 20px; padding: 0 6px; font-size: 11px;"
+                onclick="setRegDateToday()">Today</button>
+            </div>
+            <input type="date" id="inpRegDate" class="form-input" required onchange="onRegDateChange()" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inpLicenseNumber">License Number <span class="req">*</span></label>
+            <input type="text" id="inpLicenseNumber" class="form-input" placeholder="e.g. FSQ-2026-LIC-XXXX" required />
+          </div>
+
+          <div>
+            <button type="submit" class="btn btn-primary" style="height: 38px; padding: 0 24px;">Save</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Paid AMC List Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Paid AMC List</div>
+        <button type="button" class="btn btn-primary btn-sm" onclick="openAddAmcModal()">+ Add AMC Payment</button>
+      </div>
+
+      <!-- AMC Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th>Receipt / Invoice No.</th>
+              <th>AMC Start Date</th>
+              <th>AMC End Date</th>
+              <th>Amount Paid</th>
+              <th>Payment Date</th>
+              <th>Payment Mode</th>
+              <th>Reference ID</th>
+              <th>Status</th>
+              <th style="width: 80px; text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="amcTableBody">
+            <!-- Populated via script -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Add AMC Payment Modal -->
+  <div class="modal-backdrop" id="amcModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Record AMC Payment</h2>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAddAmcModal()">&times;</button>
+      </div>
+      <form id="amcForm" onsubmit="saveAmcPayment(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="amcInvoiceNo">Receipt / Invoice Number <span class="req">*</span></label>
+            <input type="text" id="amcInvoiceNo" class="form-input" placeholder="e.g. INV-2026-001" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="amcStartDate">AMC Start Date <span class="req">*</span></label>
+              <input type="date" id="amcStartDate" class="form-input" required onchange="onAmcStartDateChange()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="amcEndDate">AMC End Date <span class="req">*</span></label>
+              <input type="date" id="amcEndDate" class="form-input" required readonly
+                style="background: #f8fafc; font-weight: 600; color: #0284c7;" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="amcAmount">Amount Paid (₹) <span class="req">*</span></label>
+              <input type="number" id="amcAmount" class="form-input" placeholder="e.g. 15000" min="0" step="0.01"
+                required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="amcPayDate">Payment Date <span class="req">*</span></label>
+              <input type="date" id="amcPayDate" class="form-input" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="amcPayMode">Payment Mode</label>
+              <select id="amcPayMode" class="form-select">
+                <option value="UPI / Online">UPI / Online</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="amcRefNo">Reference ID</label>
+              <input type="text" id="amcRefNo" class="form-input" placeholder="UTR / Ref No." />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeAddAmcModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Operation completed.</div>
+
+  <script>
+    var STORAGE_KEY_LICENSE = 'pos_license_data';
+    var STORAGE_KEY_AMC = 'pos_amc_records';
+
+    var licenseData = {
+      licenseNumber: '',
+      registrationDate: '',
+      clientName: '',
+      machineId: '',
+      status: 'Active'
+    };
+
+    var amcRecords = [];
+
+    function addOneYear(dateStr) {
+      if (!dateStr) return '';
+      var parts = dateStr.split('-');
+      if (parts.length !== 3) return '';
+      var y = parseInt(parts[0], 10) + 1;
+      var m = parseInt(parts[1], 10);
+      var d = parseInt(parts[2], 10);
+      if (m === 2 && d === 29) {
+        var isLeap = (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+        if (!isLeap) d = 28;
+      }
+      return y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    }
+
+    function calculateDaysRemaining(targetDateStr) {
+      if (!targetDateStr) return null;
+      var parts = targetDateStr.split('-');
+      if (parts.length !== 3) return null;
+      var target = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      target.setHours(0, 0, 0, 0);
+      var diffTime = target - today;
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadData();
+      renderLicenseDetails();
+      renderAmcTable();
+    });
+
+    function loadData() {
+      try {
+        var savedLic = localStorage.getItem(STORAGE_KEY_LICENSE);
+        if (savedLic) licenseData = JSON.parse(savedLic);
+      } catch (e) { }
+
+      try {
+        var savedAmc = localStorage.getItem(STORAGE_KEY_AMC);
+        if (savedAmc) amcRecords = JSON.parse(savedAmc);
+      } catch (e) { }
+    }
+
+    function setRegDateToday() {
+      var todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('inpRegDate').value = todayStr;
+      onRegDateChange();
+    }
+
+    function getValidDate() {
+      if (amcRecords && amcRecords.length > 0) {
+        var sorted = amcRecords.slice().sort(function (a, b) {
+          return new Date(b.endDate || b.payDate) - new Date(a.endDate || a.payDate);
+        });
+        return sorted[0].endDate;
+      }
+      if (licenseData.registrationDate) {
+        return addOneYear(licenseData.registrationDate);
+      }
+      return null;
+    }
+
+    function onRegDateChange() {
+      var regDateVal = document.getElementById('inpRegDate').value;
+      var nextAmcVal = addOneYear(regDateVal);
+
+      var dispReg = document.getElementById('dispRegDate');
+      if (dispReg) dispReg.textContent = regDateVal ? formatDate(regDateVal) : '-';
+
+      if (!amcRecords || amcRecords.length === 0) {
+        var dispValid = document.getElementById('dispLicenseValidDate');
+        if (dispValid) dispValid.textContent = nextAmcVal ? formatDate(nextAmcVal) : '-';
+
+        var dispNext = document.getElementById('dispNextAmcDate');
+        if (dispNext) dispNext.textContent = nextAmcVal ? formatDate(nextAmcVal) : '-';
+      }
+    }
+
+    function onAmcStartDateChange() {
+      var startVal = document.getElementById('amcStartDate').value;
+      if (startVal) {
+        document.getElementById('amcEndDate').value = addOneYear(startVal);
+      }
+    }
+
+    function renderLicenseDetails() {
+      document.getElementById('inpLicenseNumber').value = licenseData.licenseNumber || '';
+      document.getElementById('inpRegDate').value = licenseData.registrationDate || '';
+
+      var validDate = getValidDate();
+      var dispValid = document.getElementById('dispLicenseValidDate');
+      if (dispValid) {
+        dispValid.textContent = validDate ? formatDate(validDate) : '-';
+      }
+
+      var dispReg = document.getElementById('dispRegDate');
+      if (dispReg) {
+        dispReg.textContent = licenseData.registrationDate ? formatDate(licenseData.registrationDate) : '-';
+      }
+
+      var dispNext = document.getElementById('dispNextAmcDate');
+      if (dispNext) {
+        dispNext.textContent = validDate ? formatDate(validDate) : '-';
+      }
+
+      var badge = document.getElementById('quickStatusBadge');
+      if (badge) {
+        var isExpired = false;
+        if (validDate) {
+          isExpired = calculateDaysRemaining(validDate) <= 0;
+        }
+        if (licenseData.licenseNumber && !isExpired) {
+          badge.className = 'badge badge-ok';
+          badge.textContent = 'Active';
+        } else if (licenseData.licenseNumber && isExpired) {
+          badge.className = 'badge badge-danger';
+          badge.textContent = 'Expired';
+        } else {
+          badge.className = 'badge badge-amber';
+          badge.textContent = 'Pending';
+        }
+      }
+    }
+
+    function saveLicenseDetails(e) {
+      if (e) e.preventDefault();
+
+      licenseData.licenseNumber = document.getElementById('inpLicenseNumber').value.trim();
+      licenseData.registrationDate = document.getElementById('inpRegDate').value;
+
+      try {
+        localStorage.setItem(STORAGE_KEY_LICENSE, JSON.stringify(licenseData));
+        showToast('Saved successfully.');
+        renderLicenseDetails();
+        renderAmcTable();
+      } catch (err) {
+        alert('Failed to save: ' + err.message);
+      }
+    }
+
+    function renderAmcTable() {
+      var tbody = document.getElementById('amcTableBody');
+      tbody.innerHTML = '';
+
+      var totalPaid = 0;
+      var latestAmcDate = null;
+
+      if (!amcRecords || amcRecords.length === 0) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="10" class="empty-state">No AMC payment records found.</td>';
+        tbody.appendChild(tr);
+
+        if (licenseData.registrationDate) {
+          latestAmcDate = addOneYear(licenseData.registrationDate);
+        }
+      } else {
+        var sorted = amcRecords.slice().sort(function (a, b) {
+          return new Date(b.endDate || b.payDate) - new Date(a.endDate || a.payDate);
+        });
+
+        sorted.forEach(function (rec, idx) {
+          var amt = parseFloat(rec.amount) || 0;
+          totalPaid += amt;
+
+          if (!latestAmcDate && rec.endDate) {
+            latestAmcDate = rec.endDate;
+          }
+
+          var daysLeft = calculateDaysRemaining(rec.endDate);
+          var isExpired = daysLeft !== null && daysLeft <= 0;
+          var statusBadge = isExpired
+            ? '<span class="badge badge-danger">Expired</span>'
+            : (daysLeft <= 30
+              ? '<span class="badge badge-amber">' + daysLeft + 'd left</span>'
+              : '<span class="badge badge-ok">Active</span>');
+
+          var row = document.createElement('tr');
+          row.innerHTML = '<td>' + (idx + 1) + '</td>' +
+            '<td><strong>' + escapeHtml(rec.invoiceNo || '-') + '</strong></td>' +
+            '<td>' + formatDate(rec.startDate) + '</td>' +
+            '<td>' + formatDate(rec.endDate) + '</td>' +
+            '<td>₹' + amt.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>' +
+            '<td>' + formatDate(rec.payDate) + '</td>' +
+            '<td>' + escapeHtml(rec.payMode || '-') + '</td>' +
+            '<td>' + escapeHtml(rec.refNo || '-') + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td style="text-align: center;">' +
+            '<button type="button" class="btn btn-danger-outline btn-sm" onclick="deleteAmcRecord(' + rec.id + ')">Delete</button>' +
+            '</td>';
+          tbody.appendChild(row);
+        });
+      }
+
+      document.getElementById('dispTotalPaid').textContent = '₹' + totalPaid.toLocaleString('en-IN');
+      document.getElementById('dispNextAmcDate').textContent = latestAmcDate ? formatDate(latestAmcDate) : '-';
+      var dispValid = document.getElementById('dispLicenseValidDate');
+      if (dispValid) {
+        dispValid.textContent = latestAmcDate ? formatDate(latestAmcDate) : (licenseData.registrationDate ? formatDate(addOneYear(licenseData.registrationDate)) : '-');
+      }
+    }
+
+    function openAddAmcModal() {
+      document.getElementById('amcForm').reset();
+
+      var defaultStart = '';
+      if (amcRecords && amcRecords.length > 0) {
+        var sorted = amcRecords.slice().sort(function (a, b) {
+          return new Date(b.endDate) - new Date(a.endDate);
+        });
+        defaultStart = sorted[0].endDate;
+      } else if (licenseData.registrationDate) {
+        defaultStart = licenseData.registrationDate;
+      } else {
+        defaultStart = new Date().toISOString().split('T')[0];
+      }
+
+      document.getElementById('amcStartDate').value = defaultStart;
+      document.getElementById('amcEndDate').value = addOneYear(defaultStart);
+      document.getElementById('amcPayDate').value = new Date().toISOString().split('T')[0];
+
+      document.getElementById('amcModal').classList.add('open');
+    }
+
+    function closeAddAmcModal() {
+      document.getElementById('amcModal').classList.remove('open');
+    }
+
+    function saveAmcPayment(e) {
+      if (e) e.preventDefault();
+
+      var invoiceNo = document.getElementById('amcInvoiceNo').value.trim();
+      var startDate = document.getElementById('amcStartDate').value;
+      var endDate = document.getElementById('amcEndDate').value;
+      var amount = document.getElementById('amcAmount').value;
+      var payDate = document.getElementById('amcPayDate').value;
+      var payMode = document.getElementById('amcPayMode').value;
+      var refNo = document.getElementById('amcRefNo').value.trim();
+
+      if (!invoiceNo || !startDate || !endDate || !amount || !payDate) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      var record = {
+        id: Date.now(),
+        invoiceNo: invoiceNo,
+        startDate: startDate,
+        endDate: endDate,
+        amount: parseFloat(amount),
+        payDate: payDate,
+        payMode: payMode,
+        refNo: refNo
+      };
+
+      amcRecords.push(record);
+
+      try {
+        localStorage.setItem(STORAGE_KEY_AMC, JSON.stringify(amcRecords));
+        closeAddAmcModal();
+        renderAmcTable();
+        showToast('Payment record added.');
+      } catch (err) {
+        alert('Failed to save: ' + err.message);
+      }
+    }
+
+    function deleteAmcRecord(id) {
+      if (!confirm('Delete this record?')) return;
+      amcRecords = amcRecords.filter(function (r) { return r.id !== id; });
+      try {
+        localStorage.setItem(STORAGE_KEY_AMC, JSON.stringify(amcRecords));
+        renderAmcTable();
+        showToast('Record deleted.');
+      } catch (err) {
+        alert('Failed to delete: ' + err.message);
+      }
+    }
+
+    function formatDate(dStr) {
+      if (!dStr) return '-';
+      try {
+        var parts = dStr.split('-');
+        if (parts.length === 3) {
+          var day = parts[2];
+          var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          var mon = months[parseInt(parts[1], 10) - 1] || parts[1];
+          var yr = parts[0];
+          return day + '-' + mon + '-' + yr;
+        }
+        var d = new Date(dStr);
+        if (isNaN(d.getTime())) return dStr;
+        var day = String(d.getDate()).padStart(2, '0');
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var mon = months[d.getMonth()];
+        var yr = d.getFullYear();
+        return day + '-' + mon + '-' + yr;
+      } catch (e) {
+        return dStr;
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+
+</html>
